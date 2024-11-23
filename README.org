@@ -1,1 +1,7 @@
 [[./zine.svg]]
+
+Zine is an environment. A cozy one.
+
+* Naming
+
+Much as GNU’s Not Unix, Zine Is Not Emacs.
