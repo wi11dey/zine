@@ -2,6 +2,10 @@
 
 Zine is an environment. A cozy one.
 
+Elisp is completely supported, as is ECMAScript. All is compiled down to R^{6}RS Scheme and run on Chez.
+
+Zine is a unity of Elisp packages, Guix packages, Nyxt, the Unified XUL Platform, Linux from Scratch, and Racket.
+
 * Naming
 
 Much as GNU’s Not Unix, Zine Is Not Emacs.
