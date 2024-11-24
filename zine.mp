@@ -36,7 +36,7 @@ beginfig(1);
 
   path nbar, n;
   nbar := (0, xheight)--(0, 0);
-  n = (0, xheight - ythickness)..(en/2, xheight)..(en, xheight - ythickness)--(en, 0);
+  n = (0, xheight - 1.5ythickness){dir 20}..tension 1.2..(actualen, xheight - 2ythickness){down}--(actualen, 0);
   draw nbar shifted (xshift, 0);
   draw n shifted (xshift, 0);
 
