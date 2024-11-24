@@ -2,16 +2,14 @@ prologues := 3;
 outputtemplate := "%j.mp.svg";
 outputformat := "svg";
 
-u := 1pt;
 beginfig(1);
+  xheight := 400pt;
+  en := 400pt;
+  eccentricity := 50pt;
+  spacing := 70pt;
 
-  xheight := 400u;
-  en := 400u;
-  eccentricity := 50u;
-  spacing := 70u;
-
-  xthickness := 170u;
-  ythickness := 40u;
+  xthickness := 170pt;
+  ythickness := 40pt;
   interim linejoin := mitered;
   pen rectangle;
   rectangle := pensquare xscaled xthickness yscaled ythickness;
@@ -43,13 +41,13 @@ beginfig(1);
   draw n shifted (xshift, 0);
 
   path p[];
-  p3 := (2068.7944u, 269.46484u) .. controls (1894.5761u, 269.46484u) and (1813.0352u, 289.72474u) .. (1813.0352u, 354.59766u) --
-    (1813.0352u, 632.54102u) .. controls (1813.0352u, 747u) and (1962.5172u, 747.23242u) .. (2121.7944u, 747.23242u) --
-    (2430.5536u, 747.23242u) .. controls (2430.5536u, 705.34359u) and (2430.5536u, 624.17773u) .. (2430.5536u, 542.79102u) --
-    (2252.9589u, 720.79102u) --
-    (2252.9589u, 782.28264u) .. controls (2252.9589u, 802.86702u) and (2211.3571u, 836.66868u) .. (2152.6235u, 836.66868u) --
-    (2093.8899u, 836.66868u) .. controls (2035.1563u, 836.66868u) and (2093.8899u, 836.66868u) .. (2093.8899u, 759.18182u) --
-    (2469.1554u, 390.16006u) .. controls (2469.1554u, 349.63351u) and (2283.6144u, 348.09835u) .. (2109.3961u, 348.09835u) --
+  p3 := (2068.7944pt, 269.46484pt) .. controls (1894.5761pt, 269.46484pt) and (1813.0352pt, 289.72474pt) .. (1813.0352pt, 354.59766pt) --
+    (1813.0352pt, 632.54102pt) .. controls (1813.0352pt, 747pt) and (1962.5172pt, 747.23242pt) .. (2121.7944pt, 747.23242pt) --
+    (2430.5536pt, 747.23242pt) .. controls (2430.5536pt, 705.34359pt) and (2430.5536pt, 624.17773pt) .. (2430.5536pt, 542.79102pt) --
+    (2252.9589pt, 720.79102pt) --
+    (2252.9589pt, 782.28264pt) .. controls (2252.9589pt, 802.86702pt) and (2211.3571pt, 836.66868pt) .. (2152.6235pt, 836.66868pt) --
+    (2093.8899pt, 836.66868pt) .. controls (2035.1563pt, 836.66868pt) and (2093.8899pt, 836.66868pt) .. (2093.8899pt, 759.18182pt) --
+    (2469.1554pt, 390.16006pt) .. controls (2469.1554pt, 349.63351pt) and (2283.6144pt, 348.09835pt) .. (2109.3961pt, 348.09835pt) --
     cycle;
   fill p3 withcolor black;
   draw p3 withpen pencircle scaled 1bp withcolor black;
