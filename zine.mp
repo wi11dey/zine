@@ -2,22 +2,23 @@ prologues := 3;
 outputtemplate := "%j.mp.svg";
 outputformat := "svg";
 
+u := 1pt;
 beginfig(1);
-  u := 1pt;
 
   xheight := 400u;
   en := 400u;
   eccentricity := 50u;
   spacing := 75u;
 
-  xthickness := 180u;
+  xthickness := 160u;
   ythickness := 40u;
 
   xshift := 0;
   pickup pensquare xscaled xthickness yscaled ythickness;
 
-  path z;
+  path z, zcorner;
   z := (eccentricity, xheight)--(en, xheight)--(0, 0)--(en, 0);
+  zcorner := (en, xheight + ythickness/2);
   draw z shifted (xshift, 0);
 
   xshift := xshift + en + xthickness + spacing;
