@@ -1,5 +1,6 @@
 prologues := 3;
-outputtemplate := "%j-%c.mps";
+outputtemplate := "%j.svg";
+outputformat := "svg";
 
 beginfig(1);
   u := 1pt;
