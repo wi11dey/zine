@@ -10,29 +10,35 @@ beginfig(1);
   eccentricity := 50u;
   spacing := 75u;
 
-  xthickness := 160u;
+  xthickness := 170u;
   ythickness := 40u;
 
   xshift := 0;
-  pickup pensquare xscaled xthickness yscaled ythickness;
+  interim linejoin := mitered;
+  pen rectangle;
+  rectangle := pensquare xscaled xthickness yscaled ythickness;
+  pickup rectangle;
 
-  path z, zcorner;
-  z := (eccentricity, xheight)--(en, xheight)--(0, 0)--(en, 0);
-  zcorner := (en, xheight + ythickness/2);
+  path z, zbase;
+  z := (eccentricity, xheight)--(en, xheight)--(0, 0);
+  zbase := (0, 0)--(xpart (lrcorner (envelope rectangle of z)) - xthickness/2, 0);
   draw z shifted (xshift, 0);
+  draw zbase shifted (xshift, 0);
 
   xshift := xshift + en + xthickness + spacing;
 
-  path idot, i;
-  idot = (0, xheight + 2ythickness);
-  i = (0, xheight)--(0, 0);
+  path i, idot;
+  i := (0, xheight)--(0, 0);
+  idot := (0, xheight + 2ythickness);
   draw idot shifted (xshift, 0);
   draw i shifted (xshift, 0);
 
   xshift := xshift + xthickness + spacing;
 
-  path n;
-  n = (0, xheight)--(0, 0)--(0, xheight - ythickness)..(en/2, xheight)..(en, xheight - ythickness)--(en, 0);
+  path nbar, n;
+  nbar := (0, xheight)--(0, 0);
+  n = (0, xheight - ythickness)..(en/2, xheight)..(en, xheight - ythickness)--(en, 0);
+  draw nbar shifted (xshift, 0);
   draw n shifted (xshift, 0);
 
   path p[];
