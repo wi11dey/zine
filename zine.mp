@@ -8,24 +8,25 @@ beginfig(1);
   xheight := 400u;
   en := 400u;
   eccentricity := 50u;
-  spacing := 75u;
+  spacing := 70u;
 
   xthickness := 170u;
   ythickness := 40u;
-
-  xshift := 0;
   interim linejoin := mitered;
   pen rectangle;
   rectangle := pensquare xscaled xthickness yscaled ythickness;
+
+  xshift := 0;
   pickup rectangle;
 
   path z, zbase;
   z := (eccentricity, xheight)--(en, xheight)--(0, 0);
-  zbase := (0, 0)--(xpart (lrcorner (envelope rectangle of z)) - xthickness/2, 0);
+  actualen := xpart (lrcorner (envelope rectangle of z)) - xthickness/2;
+  zbase := (0, 0)--(actualen, 0);
   draw z shifted (xshift, 0);
   draw zbase shifted (xshift, 0);
 
-  xshift := xshift + en + xthickness + spacing;
+  xshift := xshift + actualen + xthickness + spacing;
 
   path i, idot;
   i := (0, xheight)--(0, 0);
