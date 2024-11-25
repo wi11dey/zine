@@ -38,9 +38,9 @@ beginfig(1);
   % n
   draw ((0, xheight)--(0, 0)) shifted (xshift, 0);
   fill ((xthickness/2, topbound - hang){dir 10}
-      ..tension 1.3..(actualen + xthickness/2, topbound - curvelength){down}
-      ..(actualen + xthickness/2, 0 - ythickness/2){down}
-      --(actualen - xthickness/2, 0 - ythickness/2)
+      ..tension 1.2..(actualen + xthickness/2, topbound - curvelength){down}
+      ..(actualen + xthickness/2, -ythickness/2){down}
+      --(actualen - xthickness/2, -ythickness/2)
       --(actualen - xthickness/2, topbound - curvelength){up}
       ..(xthickness/2, topbound - hang - ythickness){dir 190}
       --cycle) shifted (xshift, 0);
@@ -48,12 +48,26 @@ beginfig(1);
   xshift := xshift + actualen + xthickness + spacing;
 
   % e
-  draw ((0, 0)
-      --(actualen, xheight - curvelength){up}
-      ..(actualen/2, xheight){left}
-      ..(0, xheight - curvelength){down}
-      --(0, curvelength){down}
-      ..(actualen/2, 0){right}
-      ..(actualen, curvelength){up}) shifted (xshift, 0);
+  fill ((actualen + xthickness/2, topbound - ythickness - curvelength/2){up}
+      ..(actualen - xthickness/2, topbound){left}
+      --(xthickness/2, topbound){left}
+      ..(-xthickness/2, topbound - curvelength){down}
+      --(-xthickness/2, curvelength - ythickness/2){down}
+      ..(xthickness/2, -ythickness/2){right}
+      --(actualen - xthickness/2, -ythickness/2){right}
+      ..(actualen + xthickness/2, curvelength - ythickness/2){up}
+      --(actualen + xthickness/2, 250)
+      --(actualen - xthickness/2, 75)
+      --(actualen - xthickness/2, ythickness/2 + curvelength/2){down}
+      ..(actualen - xthickness, ythickness/2){left}
+      ..(xthickness, ythickness/2){left}
+      ..(xthickness/2, ythickness/2 + curvelength/2){up}
+      --(xthickness/2, topbound - ythickness - curvelength/2){up}
+      ..(xthickness, topbound - ythickness){right}
+      --(actualen - xthickness, topbound - ythickness){right}
+      ..(actualen - xthickness/2, topbound - ythickness - 0.25curvelength){dir 225}
+      --(0, 0)
+      --(xthickness, 0)
+      --cycle) shifted (xshift, 0);
 endfig;
 end;
