@@ -20,8 +20,8 @@ export default grammar
       $.ket
       $.set
     )
-    exists: ($) -> seq choice('∃', seq 'exists', ' '), $.expression, '. ', $.expression
-    forall: ($) -> seq choice('∀', seq 'forall', ' '), $.expression, '. ', $.expression
+    exists: ($) -> seq 'E', $.expression, '. ', $.expression
+    forall: ($) -> seq 'A', $.expression, '. ', $.expression
     postfix: ($) -> seq $.root, /['!#]/
     integer: ($) -> /[0-9]+/
     subscript: ($) -> prec.left 2, seq $.root, '_', $.expression

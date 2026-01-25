@@ -1,7 +1,6 @@
 {
   "$schema": "https://tree-sitter.github.io/tree-sitter/assets/schemas/grammar.schema.json",
   "name": "zine",
-  "word": "identifier",
   "rules": {
     "full": {
       "type": "SEQ",
@@ -79,6 +78,10 @@
         {
           "type": "SYMBOL",
           "name": "set"
+        },
+        {
+          "type": "SYMBOL",
+          "name": "exists"
         }
       ]
     },
@@ -86,26 +89,8 @@
       "type": "SEQ",
       "members": [
         {
-          "type": "CHOICE",
-          "members": [
-            {
-              "type": "STRING",
-              "value": "∃"
-            },
-            {
-              "type": "SEQ",
-              "members": [
-                {
-                  "type": "STRING",
-                  "value": "exists"
-                },
-                {
-                  "type": "STRING",
-                  "value": " "
-                }
-              ]
-            }
-          ]
+          "type": "STRING",
+          "value": "E"
         },
         {
           "type": "SYMBOL",
@@ -125,26 +110,8 @@
       "type": "SEQ",
       "members": [
         {
-          "type": "CHOICE",
-          "members": [
-            {
-              "type": "STRING",
-              "value": "∀"
-            },
-            {
-              "type": "SEQ",
-              "members": [
-                {
-                  "type": "STRING",
-                  "value": "forall"
-                },
-                {
-                  "type": "STRING",
-                  "value": " "
-                }
-              ]
-            }
-          ]
+          "type": "STRING",
+          "value": "A"
         },
         {
           "type": "SYMBOL",
@@ -636,8 +603,6 @@
   "precedences": [],
   "externals": [],
   "inline": [],
-  "supertypes": [
-    "expression"
-  ],
+  "supertypes": [],
   "reserved": {}
 }
