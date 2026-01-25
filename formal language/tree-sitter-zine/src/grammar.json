@@ -93,22 +93,31 @@
               "value": "∃"
             },
             {
-              "type": "STRING",
-              "value": "exists"
+              "type": "SEQ",
+              "members": [
+                {
+                  "type": "STRING",
+                  "value": "exists"
+                },
+                {
+                  "type": "STRING",
+                  "value": " "
+                }
+              ]
             }
           ]
         },
         {
           "type": "SYMBOL",
-          "name": "root"
+          "name": "expression"
         },
         {
           "type": "STRING",
-          "value": "."
+          "value": ". "
         },
         {
           "type": "SYMBOL",
-          "name": "root"
+          "name": "expression"
         }
       ]
     },
@@ -123,22 +132,31 @@
               "value": "∀"
             },
             {
-              "type": "STRING",
-              "value": "forall"
+              "type": "SEQ",
+              "members": [
+                {
+                  "type": "STRING",
+                  "value": "forall"
+                },
+                {
+                  "type": "STRING",
+                  "value": " "
+                }
+              ]
             }
           ]
         },
         {
           "type": "SYMBOL",
-          "name": "root"
+          "name": "expression"
         },
         {
           "type": "STRING",
-          "value": "."
+          "value": ". "
         },
         {
           "type": "SYMBOL",
-          "name": "root"
+          "name": "expression"
         }
       ]
     },
@@ -214,7 +232,7 @@
         },
         {
           "type": "SYMBOL",
-          "name": "root"
+          "name": "expression"
         },
         {
           "type": "STRING",
@@ -222,7 +240,7 @@
         },
         {
           "type": "SYMBOL",
-          "name": "root"
+          "name": "expression"
         },
         {
           "type": "STRING",
@@ -238,8 +256,16 @@
           "value": "("
         },
         {
+          "type": "PATTERN",
+          "value": "\\s*"
+        },
+        {
           "type": "SYMBOL",
           "name": "root"
+        },
+        {
+          "type": "PATTERN",
+          "value": "\\s*"
         },
         {
           "type": "STRING",
@@ -256,7 +282,7 @@
         },
         {
           "type": "SYMBOL",
-          "name": "root"
+          "name": "expression"
         },
         {
           "type": "STRING",
@@ -273,7 +299,7 @@
         },
         {
           "type": "SYMBOL",
-          "name": "root"
+          "name": "expression"
         },
         {
           "type": "STRING",
@@ -515,6 +541,14 @@
         {
           "type": "STRING",
           "value": "*"
+        },
+        {
+          "type": "STRING",
+          "value": "<"
+        },
+        {
+          "type": "STRING",
+          "value": ">"
         },
         {
           "type": "STRING",

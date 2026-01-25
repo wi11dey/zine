@@ -20,17 +20,17 @@ export default grammar
       $.ket
       $.set
     )
-    exists: ($) -> seq choice('∃', 'exists'), $.root, '.', $.root
-    forall: ($) -> seq choice('∀', 'forall'), $.root, '.', $.root
+    exists: ($) -> seq choice('∃', seq 'exists', ' '), $.expression, '. ', $.expression
+    forall: ($) -> seq choice('∀', seq 'forall', ' '), $.expression, '. ', $.expression
     postfix: ($) -> seq $.root, /['!#]/
     integer: ($) -> /[0-9]+/
     subscript: ($) -> prec.left 2, seq $.root, '_', $.expression
     superscript: ($) -> prec.left 2, seq $.root, '^', $.expression
     identifier: ($) -> /[a-zA-Z]+/
-    set: ($) -> seq '{', $.root, '|', $.root, '}'
-    parens: ($) -> seq '(', $.root, ')'
-    bra: ($) -> seq '<', $.root, '|'
-    ket: ($) -> seq '|', $.root, '>'
+    set: ($) -> seq '{', $.expression, '|', $.expression, '}'
+    parens: ($) -> seq '(', /\s*/, $.root, /\s*/, ')'
+    bra: ($) -> seq '<', $.expression, '|'
+    ket: ($) -> seq '|', $.expression, '>'
     projection: ($) -> seq '<', $.root, '|', $.root, '>'
     interval: ($) -> seq(
       field('start', choice '(', '[')
@@ -51,6 +51,8 @@ export default grammar
       '/'
       '='
       '*'
+      '<'
+      '>'
       '==>'
       '<=='
       '<=>'

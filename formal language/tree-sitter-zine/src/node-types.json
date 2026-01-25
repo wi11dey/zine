@@ -86,7 +86,7 @@
       "required": true,
       "types": [
         {
-          "type": "root",
+          "type": "expression",
           "named": true
         }
       ]
@@ -117,7 +117,7 @@
       "required": true,
       "types": [
         {
-          "type": "root",
+          "type": "expression",
           "named": true
         }
       ]
@@ -215,7 +215,7 @@
       "required": true,
       "types": [
         {
-          "type": "root",
+          "type": "expression",
           "named": true
         }
       ]
