@@ -40,7 +40,7 @@
         "named": true
       },
       {
-        "type": "set_builder",
+        "type": "set",
         "named": true
       },
       {
@@ -207,7 +207,7 @@
     }
   },
   {
-    "type": "set_builder",
+    "type": "set",
     "named": true,
     "fields": {},
     "children": {

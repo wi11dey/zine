@@ -78,7 +78,67 @@
         },
         {
           "type": "SYMBOL",
-          "name": "set_builder"
+          "name": "set"
+        }
+      ]
+    },
+    "exists": {
+      "type": "SEQ",
+      "members": [
+        {
+          "type": "CHOICE",
+          "members": [
+            {
+              "type": "STRING",
+              "value": "∃"
+            },
+            {
+              "type": "STRING",
+              "value": "exists"
+            }
+          ]
+        },
+        {
+          "type": "SYMBOL",
+          "name": "root"
+        },
+        {
+          "type": "STRING",
+          "value": "."
+        },
+        {
+          "type": "SYMBOL",
+          "name": "root"
+        }
+      ]
+    },
+    "forall": {
+      "type": "SEQ",
+      "members": [
+        {
+          "type": "CHOICE",
+          "members": [
+            {
+              "type": "STRING",
+              "value": "∀"
+            },
+            {
+              "type": "STRING",
+              "value": "forall"
+            }
+          ]
+        },
+        {
+          "type": "SYMBOL",
+          "name": "root"
+        },
+        {
+          "type": "STRING",
+          "value": "."
+        },
+        {
+          "type": "SYMBOL",
+          "name": "root"
         }
       ]
     },
@@ -145,7 +205,7 @@
       "type": "PATTERN",
       "value": "[a-zA-Z]+"
     },
-    "set_builder": {
+    "set": {
       "type": "SEQ",
       "members": [
         {
@@ -507,6 +567,27 @@
           {
             "type": "STRING",
             "value": "-"
+          },
+          {
+            "type": "SYMBOL",
+            "name": "root"
+          }
+        ]
+      }
+    },
+    "not": {
+      "type": "PREC_LEFT",
+      "value": 4,
+      "content": {
+        "type": "SEQ",
+        "members": [
+          {
+            "type": "STRING",
+            "value": "not"
+          },
+          {
+            "type": "STRING",
+            "value": "s+"
           },
           {
             "type": "SYMBOL",

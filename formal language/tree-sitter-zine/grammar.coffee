@@ -18,14 +18,16 @@ export default grammar
       $.superscript
       $.bra
       $.ket
-      $.set_builder
+      $.set
     )
+    exists: ($) -> seq choice('∃', 'exists'), $.root, '.', $.root
+    forall: ($) -> seq choice('∀', 'forall'), $.root, '.', $.root
     postfix: ($) -> seq $.root, /['!#]/
     integer: ($) -> /[0-9]+/
     subscript: ($) -> prec.left 2, seq $.root, '_', $.expression
     superscript: ($) -> prec.left 2, seq $.root, '^', $.expression
     identifier: ($) -> /[a-zA-Z]+/
-    set_builder: ($) -> seq '{', $.root, '|', $.root, '}'
+    set: ($) -> seq '{', $.root, '|', $.root, '}'
     parens: ($) -> seq '(', $.root, ')'
     bra: ($) -> seq '<', $.root, '|'
     ket: ($) -> seq '|', $.root, '>'
@@ -61,3 +63,4 @@ export default grammar
       'contains'
     )
     negation: ($) -> prec.left 4, seq '-', $.root
+    not: ($) -> prec.left 4, seq 'not', '\s+', $.root
