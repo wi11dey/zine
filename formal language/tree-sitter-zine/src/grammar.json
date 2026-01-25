@@ -1,6 +1,7 @@
 {
   "$schema": "https://tree-sitter.github.io/tree-sitter/assets/schemas/grammar.schema.json",
   "name": "zine",
+  "word": "identifier",
   "rules": {
     "full": {
       "type": "SEQ",
@@ -41,19 +42,11 @@
         },
         {
           "type": "SYMBOL",
-          "name": "division"
-        },
-        {
-          "type": "SYMBOL",
           "name": "parens"
         },
         {
           "type": "SYMBOL",
-          "name": "addition"
-        },
-        {
-          "type": "SYMBOL",
-          "name": "subtraction"
+          "name": "binary"
         },
         {
           "type": "SYMBOL",
@@ -66,6 +59,26 @@
         {
           "type": "SYMBOL",
           "name": "postfix"
+        },
+        {
+          "type": "SYMBOL",
+          "name": "subscript"
+        },
+        {
+          "type": "SYMBOL",
+          "name": "superscript"
+        },
+        {
+          "type": "SYMBOL",
+          "name": "bra"
+        },
+        {
+          "type": "SYMBOL",
+          "name": "ket"
+        },
+        {
+          "type": "SYMBOL",
+          "name": "set_builder"
         }
       ]
     },
@@ -87,38 +100,46 @@
       "value": "[0-9]+"
     },
     "subscript": {
-      "type": "SEQ",
-      "members": [
-        {
-          "type": "SYMBOL",
-          "name": "root"
-        },
-        {
-          "type": "STRING",
-          "value": "_"
-        },
-        {
-          "type": "SYMBOL",
-          "name": "root"
-        }
-      ]
+      "type": "PREC_LEFT",
+      "value": 2,
+      "content": {
+        "type": "SEQ",
+        "members": [
+          {
+            "type": "SYMBOL",
+            "name": "root"
+          },
+          {
+            "type": "STRING",
+            "value": "_"
+          },
+          {
+            "type": "SYMBOL",
+            "name": "expression"
+          }
+        ]
+      }
     },
     "superscript": {
-      "type": "SEQ",
-      "members": [
-        {
-          "type": "SYMBOL",
-          "name": "root"
-        },
-        {
-          "type": "STRING",
-          "value": "^"
-        },
-        {
-          "type": "SYMBOL",
-          "name": "root"
-        }
-      ]
+      "type": "PREC_LEFT",
+      "value": 2,
+      "content": {
+        "type": "SEQ",
+        "members": [
+          {
+            "type": "SYMBOL",
+            "name": "root"
+          },
+          {
+            "type": "STRING",
+            "value": "^"
+          },
+          {
+            "type": "SYMBOL",
+            "name": "expression"
+          }
+        ]
+      }
     },
     "identifier": {
       "type": "PATTERN",
@@ -374,7 +395,7 @@
         ]
       }
     },
-    "addition": {
+    "binary": {
       "type": "PREC_LEFT",
       "value": 0,
       "content": {
@@ -385,36 +406,97 @@
             "name": "root"
           },
           {
-            "type": "STRING",
-            "value": "+"
+            "type": "PATTERN",
+            "value": "\\s*"
           },
           {
             "type": "SYMBOL",
-            "name": "root"
+            "name": "binop"
+          },
+          {
+            "type": "PATTERN",
+            "value": "\\s*"
+          },
+          {
+            "type": "CHOICE",
+            "members": [
+              {
+                "type": "SYMBOL",
+                "name": "root"
+              },
+              {
+                "type": "STRING",
+                "value": "..."
+              }
+            ]
           }
         ]
       }
     },
-    "subtraction": {
-      "type": "PREC_LEFT",
-      "value": 0,
-      "content": {
-        "type": "SEQ",
-        "members": [
-          {
-            "type": "SYMBOL",
-            "name": "root"
-          },
-          {
-            "type": "STRING",
-            "value": "-"
-          },
-          {
-            "type": "SYMBOL",
-            "name": "root"
-          }
-        ]
-      }
+    "binop": {
+      "type": "CHOICE",
+      "members": [
+        {
+          "type": "STRING",
+          "value": "+"
+        },
+        {
+          "type": "STRING",
+          "value": "-"
+        },
+        {
+          "type": "STRING",
+          "value": "/"
+        },
+        {
+          "type": "STRING",
+          "value": "="
+        },
+        {
+          "type": "STRING",
+          "value": "*"
+        },
+        {
+          "type": "STRING",
+          "value": "==>"
+        },
+        {
+          "type": "STRING",
+          "value": "<=="
+        },
+        {
+          "type": "STRING",
+          "value": "<=>"
+        },
+        {
+          "type": "STRING",
+          "value": "<="
+        },
+        {
+          "type": "STRING",
+          "value": ">="
+        },
+        {
+          "type": "STRING",
+          "value": ":="
+        },
+        {
+          "type": "STRING",
+          "value": "and"
+        },
+        {
+          "type": "STRING",
+          "value": "or"
+        },
+        {
+          "type": "STRING",
+          "value": "in"
+        },
+        {
+          "type": "STRING",
+          "value": "contains"
+        }
+      ]
     },
     "negation": {
       "type": "PREC_LEFT",

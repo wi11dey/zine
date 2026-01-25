@@ -2,24 +2,28 @@ export default grammar
   name: 'zine'
   extras: ($) -> []
   supertypes: ($) -> [$.expression]
+  word: ($) -> $.identifier
   rules:
     full: ($) -> seq $.root, /\s*/
     root: ($) -> choice $._spacer, $.expression
     expression: ($) -> choice(
       $.identifier
       $.multiplication
-      $.division
       $.parens
-      $.addition
-      $.subtraction
+      $.binary
       $.negation
       $.integer
       $.postfix
+      $.subscript
+      $.superscript
+      $.bra
+      $.ket
+      $.set_builder
     )
     postfix: ($) -> seq $.root, /['!#]/
     integer: ($) -> /[0-9]+/
-    subscript: ($) -> seq $.root, '_', $.root
-    superscript: ($) -> seq $.root, '^', $.root
+    subscript: ($) -> prec.left 2, seq $.root, '_', $.expression
+    superscript: ($) -> prec.left 2, seq $.root, '^', $.expression
     identifier: ($) -> /[a-zA-Z]+/
     set_builder: ($) -> seq '{', $.root, '|', $.root, '}'
     parens: ($) -> seq '(', $.root, ')'
@@ -38,6 +42,22 @@ export default grammar
     )
     _spacer: ($) -> prec.left 2, seq ' ', $.root
     division: ($) -> prec.left seq $.root, '/', $.root
-    addition: ($) -> prec.left seq $.root, '+', $.root
-    subtraction: ($) -> prec.left seq $.root, '-', $.root
+    binary: ($) -> prec.left seq $.root, /\s*/, $.binop, /\s*/, choice $.root, '...'
+    binop: -> choice(
+      '+'
+      '-'
+      '/'
+      '='
+      '*'
+      '==>'
+      '<=='
+      '<=>'
+      '<='
+      '>='
+      ':='
+      'and'
+      'or'
+      'in'
+      'contains'
+    )
     negation: ($) -> prec.left 4, seq '-', $.root
