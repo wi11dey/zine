@@ -16,6 +16,10 @@
           "named": true
         },
         {
+          "type": "integer",
+          "named": true
+        },
+        {
           "type": "interval",
           "named": true
         },
@@ -28,7 +32,7 @@
           "named": true
         },
         {
-          "type": "number",
+          "type": "parens",
           "named": true
         },
         {
@@ -84,6 +88,10 @@
           "named": true
         },
         {
+          "type": "integer",
+          "named": true
+        },
+        {
           "type": "interval",
           "named": true
         },
@@ -96,7 +104,7 @@
           "named": true
         },
         {
-          "type": "number",
+          "type": "parens",
           "named": true
         },
         {
@@ -123,6 +131,10 @@
           "named": true
         },
         {
+          "type": "integer",
+          "named": true
+        },
+        {
           "type": "interval",
           "named": true
         },
@@ -135,7 +147,7 @@
           "named": true
         },
         {
-          "type": "number",
+          "type": "parens",
           "named": true
         },
         {
@@ -162,6 +174,10 @@
           "named": true
         },
         {
+          "type": "integer",
+          "named": true
+        },
+        {
           "type": "interval",
           "named": true
         },
@@ -174,7 +190,50 @@
           "named": true
         },
         {
-          "type": "number",
+          "type": "parens",
+          "named": true
+        },
+        {
+          "type": "set",
+          "named": true
+        }
+      ]
+    }
+  },
+  {
+    "type": "parens",
+    "named": true,
+    "fields": {},
+    "children": {
+      "multiple": false,
+      "required": true,
+      "types": [
+        {
+          "type": "bra",
+          "named": true
+        },
+        {
+          "type": "identifier",
+          "named": true
+        },
+        {
+          "type": "integer",
+          "named": true
+        },
+        {
+          "type": "interval",
+          "named": true
+        },
+        {
+          "type": "ket",
+          "named": true
+        },
+        {
+          "type": "multiplication",
+          "named": true
+        },
+        {
+          "type": "parens",
           "named": true
         },
         {
@@ -201,6 +260,10 @@
           "named": true
         },
         {
+          "type": "integer",
+          "named": true
+        },
+        {
           "type": "interval",
           "named": true
         },
@@ -213,7 +276,7 @@
           "named": true
         },
         {
-          "type": "number",
+          "type": "parens",
           "named": true
         },
         {
@@ -241,6 +304,10 @@
           "named": true
         },
         {
+          "type": "integer",
+          "named": true
+        },
+        {
           "type": "interval",
           "named": true
         },
@@ -253,7 +320,7 @@
           "named": true
         },
         {
-          "type": "number",
+          "type": "parens",
           "named": true
         },
         {
@@ -300,7 +367,7 @@
     "named": true
   },
   {
-    "type": "number",
+    "type": "integer",
     "named": true
   },
   {

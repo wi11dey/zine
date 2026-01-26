@@ -6,8 +6,8 @@ Open
 
 (source
   (interval
-    (number)
-    (number)))
+    (integer)
+    (integer)))
 
 ======
 Clopen
@@ -17,8 +17,8 @@ Clopen
 
 (source
   (interval
-    (number)
-    (number)))
+    (integer)
+    (integer)))
 
 ================
 Clopen other way
@@ -28,8 +28,8 @@ Clopen other way
 
 (source
   (interval
-    (number)
-    (number)))
+    (integer)
+    (integer)))
 
 ======
 Closed
@@ -39,5 +39,5 @@ Closed
 
 (source
   (interval
-    (number)
-    (number)))
+    (integer)
+    (integer)))

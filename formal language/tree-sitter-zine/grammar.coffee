@@ -7,7 +7,6 @@ export default grammar
 		_expression: ($) -> choice(
 			$._spacer
 			$._unspaced
-			# $.parens
 			# $.binary
 			# $.negation
 			# $.integer
@@ -20,15 +19,16 @@ export default grammar
 		_spacer: ($) -> prec.left 2, seq ' ', $._expression
 		_unspaced: ($) -> choice(
 			$.identifier
-			$.number
+			$.integer
 			$.multiplication
 			$.set
 			$.bra
 			$.ket
 			$.interval
+			$.parens
 		)
 		identifier: ($) -> /[a-zA-Z]+/
-		number: ($) -> /[0-9]+/
+		integer: ($) -> /[0-9]+/
 		multiplication: ($) -> prec.left 3, seq $._expression, ' ', $._expression
 		set: ($) -> seq '{', $._unspaced, '|', $._unspaced, '}'
 		bra: ($) -> seq '<', $._unspaced, '|'
@@ -38,6 +38,7 @@ export default grammar
 			$._unspaced, ',', $._unspaced
 			field 'end', choice ')', ']'
 		)
+		parens: ($) -> seq '(', $._unspaced, ')'
 		# binary: ($) -> prec.left seq $._unspaced, $.binop, choice $._unspaced, '...'
 		# binop: ($) -> choice(
 		# 	' + '
@@ -49,7 +50,6 @@ export default grammar
 		# integer: ($) -> /[0-9]+/
 		# subscript: ($) -> prec.left 2, seq $.root, '_', $.expression
 		# superscript: ($) -> prec.left 2, seq $.root, '^', $.expression
-		# parens: ($) -> seq '(', /\s*/, $.root, /\s*/, ')'
 		# choice(
 		# 	prec.left 3, seq $.expression, ' ', $.expression
 		# 	prec.left 1, seq $.root, $.parens
