@@ -1,20 +1,15 @@
 export default grammar
 	name: 'zine'
+	supertypes: ($) -> [$.math]
 	extras: ($) -> []
 	word: ($) -> $.identifier
 	rules:
+		math: ($) -> choice $.display, $.inline
+		display: ($) -> seq '$$', $._expression, '$'
 		inline: ($) -> seq '$', $._expression, '$'
 		_expression: ($) -> choice(
 			$._spacer
 			$._unspaced
-			# $.binary
-			# $.negation
-			# $.integer
-			# $.postfix
-			# $.subscript
-			# $.superscript
-			# $.bra
-			# $.ket
 		)
 		_unspaced: ($) -> choice(
 			$.identifier

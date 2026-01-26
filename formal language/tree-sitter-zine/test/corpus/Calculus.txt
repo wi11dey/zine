@@ -4,5 +4,5 @@ Integrals
 $int$
 ---
 
-(inline
+(math(inline
   (identifier))

@@ -4,7 +4,7 @@ One
 $(1)$
 ---
 
-(inline
+(math(inline
   (parens
     (integer)))
 
@@ -14,7 +14,7 @@ Two
 $((1))$
 ---
 
-(inline
+(math(inline
   (parens
     (parens
       (integer))))
@@ -25,7 +25,7 @@ Three
 $(((1)))$
 ---
 
-(inline
+(math(inline
   (parens
     (parens
       (parens
@@ -37,7 +37,7 @@ With interval
 $(((1,2)))$
 ---
 
-(inline
+(math(inline
   (parens
     (parens
       (interval
@@ -50,7 +50,7 @@ With broken interval
 $(((1,)))$
 ---
 
-(inline
+(math(inline
   (parens
     (parens
       (parens
@@ -63,7 +63,7 @@ Multiplication
 $(((1)(1)))$
 ---
 
-(inline
+(math(inline
   (parens
     (parens
       (noncommutative

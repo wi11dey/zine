@@ -4,7 +4,7 @@ Bra
 $<psi|$
 ---
 
-(inline
+(math(inline
   (bra
     (identifier)))
 
@@ -14,7 +14,7 @@ Ket
 $|psi>$
 ---
 
-(inline
+(math(inline
   (ket
     (identifier)))
 
@@ -24,7 +24,7 @@ Projection
 $<psi|psi>$
 ---
 
-(inline
+(math(inline
   (projection
     (identifier)
     (identifier)))

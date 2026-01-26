@@ -4,7 +4,7 @@ Add
 $1 + 2$
 ---
 
-(inline
+(math(inline
   (commutative
     (integer)
     (integer)))
@@ -15,7 +15,7 @@ Sequence
 $1 + 2 + 3$
 ---
 
-(inline
+(math(inline
   (commutative
     (commutative
       (integer)
@@ -28,7 +28,7 @@ Ellipsis
 $1 + 2 + ...$
 ---
 
-(inline
+(math(inline
   (commutative
     (commutative
       (integer)

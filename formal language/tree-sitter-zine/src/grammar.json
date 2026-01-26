@@ -3,6 +3,36 @@
   "name": "zine",
   "word": "identifier",
   "rules": {
+    "math": {
+      "type": "CHOICE",
+      "members": [
+        {
+          "type": "SYMBOL",
+          "name": "display"
+        },
+        {
+          "type": "SYMBOL",
+          "name": "inline"
+        }
+      ]
+    },
+    "display": {
+      "type": "SEQ",
+      "members": [
+        {
+          "type": "STRING",
+          "value": "$$"
+        },
+        {
+          "type": "SYMBOL",
+          "name": "_expression"
+        },
+        {
+          "type": "STRING",
+          "value": "$"
+        }
+      ]
+    },
     "inline": {
       "type": "SEQ",
       "members": [
@@ -355,6 +385,8 @@
   "precedences": [],
   "externals": [],
   "inline": [],
-  "supertypes": [],
+  "supertypes": [
+    "math"
+  ],
   "reserved": {}
 }

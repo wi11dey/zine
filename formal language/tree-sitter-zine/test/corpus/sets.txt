@@ -4,7 +4,7 @@ Set
 ${x|x}$
 ---
 
-(inline
+(math(inline
   (set
     (identifier)
     (identifier)))

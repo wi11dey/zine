@@ -4,7 +4,7 @@ Multiplications
 $sin k a$
 ---
 
-(inline
+(math(inline
   (noncommutative
     (noncommutative
       (identifier)
@@ -17,7 +17,7 @@ Grouping
 $sin  k a$
 ---
 
-(inline
+(math(inline
   (noncommutative
     (identifier)
     (noncommutative
@@ -30,7 +30,7 @@ Nested grouping
 $sin   k  a b$
 ---
 
-(inline
+(math(inline
   (noncommutative
     (identifier)
     (noncommutative
@@ -45,7 +45,7 @@ Unnested for comparison
 $sin k  a b$
 ---
 
-(inline
+(math(inline
   (noncommutative
     (noncommutative
       (identifier)
@@ -60,7 +60,7 @@ Fully unnested for comparison
 $sin k a b$
 ---
 
-(inline
+(math(inline
   (noncommutative
     (noncommutative
       (noncommutative
