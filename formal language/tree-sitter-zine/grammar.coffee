@@ -1,15 +1,12 @@
 export default grammar
 	name: 'zine'
 	extras: ($) -> []
-	# supertypes: ($) -> [$.expression]
 	word: ($) -> $.identifier
 	rules:
 		source: ($) -> $._expression
-		# root: ($) -> choice $._spacer, $.expression
 		_expression: ($) -> choice(
 			$._spacer
-			$.identifier
-			$.multiplication
+			$._unspaced
 			# $.parens
 			# $.binary
 			# $.negation
@@ -19,16 +16,22 @@ export default grammar
 			# $.superscript
 			# $.bra
 			# $.ket
-			# $.set
 		)
+		_spacer: ($) -> prec.left 2, seq ' ', $._expression
+		_unspaced: ($) -> choice(
+			$.identifier
+			$.multiplication
+			$.set
+		)
+		identifier: ($) -> /[a-zA-Z]+/
+		multiplication: ($) -> prec.left 3, seq $._expression, ' ', $._expression
+		set: ($) -> seq '{', $._unspaced, '|', $._unspaced, '}'
 		# exists: ($) -> seq 'E', $.expression, '. ', $.expression
 		# forall: ($) -> seq 'A', $.expression, '. ', $.expression
 		# postfix: ($) -> seq $.root, /['!#]/
 		# integer: ($) -> /[0-9]+/
 		# subscript: ($) -> prec.left 2, seq $.root, '_', $.expression
 		# superscript: ($) -> prec.left 2, seq $.root, '^', $.expression
-		identifier: ($) -> /[a-zA-Z]+/
-		# set: ($) -> seq '{', $.expression, '|', $.expression, '}'
 		# parens: ($) -> seq '(', /\s*/, $.root, /\s*/, ')'
 		# bra: ($) -> seq '<', $.expression, '|'
 		# ket: ($) -> seq '|', $.expression, '>'
@@ -38,13 +41,11 @@ export default grammar
 			# $.root, ',', $.root
 			# field('end', choice ')', ']')
 		# )
-		multiplication: ($) -> prec.left 3, seq $._expression, ' ', $._expression
 		# choice(
 		# 	prec.left 3, seq $.expression, ' ', $.expression
 		# 	prec.left 1, seq $.root, $.parens
 		# 	prec.left 3, seq $.parens, $.parens
 		# )
-		_spacer: ($) -> prec.left 2, seq ' ', $._expression
 		# division: ($) -> prec.left seq $.root, '/', $.root
 		# binary: ($) -> prec.left seq $.root, /\s*/, $.binop, /\s*/, choice $.root, '...'
 		# binop: -> choice(

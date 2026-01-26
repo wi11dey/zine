@@ -5,6 +5,29 @@
     "fields": {},
     "children": {
       "multiple": true,
+      "required": false,
+      "types": [
+        {
+          "type": "identifier",
+          "named": true
+        },
+        {
+          "type": "multiplication",
+          "named": true
+        },
+        {
+          "type": "set",
+          "named": true
+        }
+      ]
+    }
+  },
+  {
+    "type": "set",
+    "named": true,
+    "fields": {},
+    "children": {
+      "multiple": true,
       "required": true,
       "types": [
         {
@@ -13,6 +36,10 @@
         },
         {
           "type": "multiplication",
+          "named": true
+        },
+        {
+          "type": "set",
           "named": true
         }
       ]
@@ -25,7 +52,7 @@
     "fields": {},
     "children": {
       "multiple": false,
-      "required": true,
+      "required": false,
       "types": [
         {
           "type": "identifier",
@@ -33,6 +60,10 @@
         },
         {
           "type": "multiplication",
+          "named": true
+        },
+        {
+          "type": "set",
           "named": true
         }
       ]
@@ -45,5 +76,17 @@
   {
     "type": "identifier",
     "named": true
+  },
+  {
+    "type": "{",
+    "named": false
+  },
+  {
+    "type": "|",
+    "named": false
+  },
+  {
+    "type": "}",
+    "named": false
   }
 ]
