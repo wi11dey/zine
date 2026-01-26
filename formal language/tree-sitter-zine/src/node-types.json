@@ -2,99 +2,6 @@
   {
     "type": "expression",
     "named": true,
-    "subtypes": [
-      {
-        "type": "binary",
-        "named": true
-      },
-      {
-        "type": "bra",
-        "named": true
-      },
-      {
-        "type": "identifier",
-        "named": true
-      },
-      {
-        "type": "integer",
-        "named": true
-      },
-      {
-        "type": "ket",
-        "named": true
-      },
-      {
-        "type": "multiplication",
-        "named": true
-      },
-      {
-        "type": "negation",
-        "named": true
-      },
-      {
-        "type": "parens",
-        "named": true
-      },
-      {
-        "type": "postfix",
-        "named": true
-      },
-      {
-        "type": "set",
-        "named": true
-      },
-      {
-        "type": "subscript",
-        "named": true
-      },
-      {
-        "type": "superscript",
-        "named": true
-      }
-    ]
-  },
-  {
-    "type": "binary",
-    "named": true,
-    "fields": {},
-    "children": {
-      "multiple": true,
-      "required": true,
-      "types": [
-        {
-          "type": "binop",
-          "named": true
-        },
-        {
-          "type": "root",
-          "named": true
-        }
-      ]
-    }
-  },
-  {
-    "type": "binop",
-    "named": true,
-    "fields": {}
-  },
-  {
-    "type": "bra",
-    "named": true,
-    "fields": {},
-    "children": {
-      "multiple": false,
-      "required": true,
-      "types": [
-        {
-          "type": "expression",
-          "named": true
-        }
-      ]
-    }
-  },
-  {
-    "type": "full",
-    "named": true,
     "root": true,
     "fields": {},
     "children": {
@@ -102,22 +9,15 @@
       "required": true,
       "types": [
         {
-          "type": "root",
-          "named": true
-        }
-      ]
-    }
-  },
-  {
-    "type": "ket",
-    "named": true,
-    "fields": {},
-    "children": {
-      "multiple": false,
-      "required": true,
-      "types": [
-        {
           "type": "expression",
+          "named": true
+        },
+        {
+          "type": "identifier",
+          "named": true
+        },
+        {
+          "type": "multiplication",
           "named": true
         }
       ]
@@ -132,128 +32,7 @@
       "required": true,
       "types": [
         {
-          "type": "parens",
-          "named": true
-        },
-        {
-          "type": "root",
-          "named": true
-        }
-      ]
-    }
-  },
-  {
-    "type": "negation",
-    "named": true,
-    "fields": {},
-    "children": {
-      "multiple": false,
-      "required": true,
-      "types": [
-        {
-          "type": "root",
-          "named": true
-        }
-      ]
-    }
-  },
-  {
-    "type": "parens",
-    "named": true,
-    "fields": {},
-    "children": {
-      "multiple": false,
-      "required": true,
-      "types": [
-        {
-          "type": "root",
-          "named": true
-        }
-      ]
-    }
-  },
-  {
-    "type": "postfix",
-    "named": true,
-    "fields": {},
-    "children": {
-      "multiple": false,
-      "required": true,
-      "types": [
-        {
-          "type": "root",
-          "named": true
-        }
-      ]
-    }
-  },
-  {
-    "type": "root",
-    "named": true,
-    "fields": {},
-    "children": {
-      "multiple": false,
-      "required": true,
-      "types": [
-        {
           "type": "expression",
-          "named": true
-        },
-        {
-          "type": "root",
-          "named": true
-        }
-      ]
-    }
-  },
-  {
-    "type": "set",
-    "named": true,
-    "fields": {},
-    "children": {
-      "multiple": true,
-      "required": true,
-      "types": [
-        {
-          "type": "expression",
-          "named": true
-        }
-      ]
-    }
-  },
-  {
-    "type": "subscript",
-    "named": true,
-    "fields": {},
-    "children": {
-      "multiple": true,
-      "required": true,
-      "types": [
-        {
-          "type": "expression",
-          "named": true
-        },
-        {
-          "type": "root",
-          "named": true
-        }
-      ]
-    }
-  },
-  {
-    "type": "superscript",
-    "named": true,
-    "fields": {},
-    "children": {
-      "multiple": true,
-      "required": true,
-      "types": [
-        {
-          "type": "expression",
-          "named": true
-        },
-        {
-          "type": "root",
           "named": true
         }
       ]
@@ -264,111 +43,7 @@
     "named": false
   },
   {
-    "type": "(",
-    "named": false
-  },
-  {
-    "type": ")",
-    "named": false
-  },
-  {
-    "type": "*",
-    "named": false
-  },
-  {
-    "type": "+",
-    "named": false
-  },
-  {
-    "type": "-",
-    "named": false
-  },
-  {
-    "type": "...",
-    "named": false
-  },
-  {
-    "type": "/",
-    "named": false
-  },
-  {
-    "type": ":=",
-    "named": false
-  },
-  {
-    "type": "<",
-    "named": false
-  },
-  {
-    "type": "<=",
-    "named": false
-  },
-  {
-    "type": "<==",
-    "named": false
-  },
-  {
-    "type": "<=>",
-    "named": false
-  },
-  {
-    "type": "=",
-    "named": false
-  },
-  {
-    "type": "==>",
-    "named": false
-  },
-  {
-    "type": ">",
-    "named": false
-  },
-  {
-    "type": ">=",
-    "named": false
-  },
-  {
-    "type": "^",
-    "named": false
-  },
-  {
-    "type": "_",
-    "named": false
-  },
-  {
-    "type": "and",
-    "named": false
-  },
-  {
-    "type": "contains",
-    "named": false
-  },
-  {
     "type": "identifier",
     "named": true
-  },
-  {
-    "type": "in",
-    "named": false
-  },
-  {
-    "type": "integer",
-    "named": true
-  },
-  {
-    "type": "or",
-    "named": false
-  },
-  {
-    "type": "{",
-    "named": false
-  },
-  {
-    "type": "|",
-    "named": false
-  },
-  {
-    "type": "}",
-    "named": false
   }
 ]

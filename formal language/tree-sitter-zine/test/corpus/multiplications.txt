@@ -1,19 +1,34 @@
 ===============
 Multiplications
 ===============
-
 sin k a
-
 ---
 
-(full
-  (root
-    (multiplication
-      (root
+(expression
+  (multiplication
+    (expression
+      (multiplication
+        (expression
+          (identifier))
+        (expression
+          (identifier))))
+    (expression
+      (identifier))))
+
+========
+Grouping
+========
+sin  k a
+---
+
+(expression
+  (multiplication
+    (expression
+      (identifier))
+    (expression
+      (expression
         (multiplication
-          (root
+          (expression
             (identifier))
-          (root
-            (identifier))))
-      (root
-        (identifier)))))
+          (expression
+            (identifier)))))))
