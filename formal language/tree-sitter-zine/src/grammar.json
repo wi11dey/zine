@@ -20,23 +20,6 @@
         }
       ]
     },
-    "_spacer": {
-      "type": "PREC_LEFT",
-      "value": 2,
-      "content": {
-        "type": "SEQ",
-        "members": [
-          {
-            "type": "STRING",
-            "value": " "
-          },
-          {
-            "type": "SYMBOL",
-            "name": "_expression"
-          }
-        ]
-      }
-    },
     "_unspaced": {
       "type": "CHOICE",
       "members": [
@@ -51,6 +34,10 @@
         {
           "type": "SYMBOL",
           "name": "multiplication"
+        },
+        {
+          "type": "SYMBOL",
+          "name": "addition"
         },
         {
           "type": "SYMBOL",
@@ -86,12 +73,29 @@
       "type": "PATTERN",
       "value": "[0-9]+"
     },
+    "_spacer": {
+      "type": "PREC_LEFT",
+      "value": 1,
+      "content": {
+        "type": "SEQ",
+        "members": [
+          {
+            "type": "STRING",
+            "value": " "
+          },
+          {
+            "type": "SYMBOL",
+            "name": "_expression"
+          }
+        ]
+      }
+    },
     "multiplication": {
       "type": "CHOICE",
       "members": [
         {
           "type": "PREC_LEFT",
-          "value": 3,
+          "value": 2,
           "content": {
             "type": "SEQ",
             "members": [
@@ -128,6 +132,27 @@
           }
         }
       ]
+    },
+    "addition": {
+      "type": "PREC_LEFT",
+      "value": 3,
+      "content": {
+        "type": "SEQ",
+        "members": [
+          {
+            "type": "SYMBOL",
+            "name": "_unspaced"
+          },
+          {
+            "type": "STRING",
+            "value": " + "
+          },
+          {
+            "type": "SYMBOL",
+            "name": "_unspaced"
+          }
+        ]
+      }
     },
     "set": {
       "type": "SEQ",

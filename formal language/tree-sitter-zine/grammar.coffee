@@ -16,11 +16,11 @@ export default grammar
 			# $.bra
 			# $.ket
 		)
-		_spacer: ($) -> prec.left 2, seq ' ', $._expression
 		_unspaced: ($) -> choice(
 			$.identifier
 			$.integer
 			$.multiplication
+			$.addition
 			$.set
 			$.bra
 			$.ket
@@ -30,11 +30,12 @@ export default grammar
 		)
 		identifier: ($) -> /[a-zA-Z]+/
 		integer: ($) -> /[0-9]+/
+		_spacer: ($) -> prec.left 1, seq ' ', $._expression
 		multiplication: ($) -> choice(
-			prec.left 3, seq $._expression, ' ', $._expression
+			prec.left 2, seq $._expression, ' ', $._expression
 			prec.left seq $.parens, $.parens
 		)
-		addition: ($) -> prec.left seq $._unspaced, ' + ', $._unspaced
+		addition: ($) -> prec.left 3, seq $._unspaced, ' + ', $._unspaced
 		set: ($) -> seq '{', $._unspaced, '|', $._unspaced, '}'
 		bra: ($) -> seq '<', $._unspaced, '|'
 		ket: ($) -> seq '|', $._unspaced, '>'

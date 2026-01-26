@@ -1,5 +1,56 @@
 [
   {
+    "type": "addition",
+    "named": true,
+    "fields": {},
+    "children": {
+      "multiple": true,
+      "required": true,
+      "types": [
+        {
+          "type": "addition",
+          "named": true
+        },
+        {
+          "type": "bra",
+          "named": true
+        },
+        {
+          "type": "identifier",
+          "named": true
+        },
+        {
+          "type": "integer",
+          "named": true
+        },
+        {
+          "type": "interval",
+          "named": true
+        },
+        {
+          "type": "ket",
+          "named": true
+        },
+        {
+          "type": "multiplication",
+          "named": true
+        },
+        {
+          "type": "parens",
+          "named": true
+        },
+        {
+          "type": "projection",
+          "named": true
+        },
+        {
+          "type": "set",
+          "named": true
+        }
+      ]
+    }
+  },
+  {
     "type": "bra",
     "named": true,
     "fields": {},
@@ -7,6 +58,10 @@
       "multiple": false,
       "required": true,
       "types": [
+        {
+          "type": "addition",
+          "named": true
+        },
         {
           "type": "bra",
           "named": true
@@ -84,6 +139,10 @@
       "required": true,
       "types": [
         {
+          "type": "addition",
+          "named": true
+        },
+        {
           "type": "bra",
           "named": true
         },
@@ -130,6 +189,10 @@
       "multiple": false,
       "required": true,
       "types": [
+        {
+          "type": "addition",
+          "named": true
+        },
         {
           "type": "bra",
           "named": true
@@ -178,6 +241,10 @@
       "required": false,
       "types": [
         {
+          "type": "addition",
+          "named": true
+        },
+        {
           "type": "bra",
           "named": true
         },
@@ -224,6 +291,10 @@
       "multiple": false,
       "required": true,
       "types": [
+        {
+          "type": "addition",
+          "named": true
+        },
         {
           "type": "bra",
           "named": true
@@ -272,6 +343,10 @@
       "required": true,
       "types": [
         {
+          "type": "addition",
+          "named": true
+        },
+        {
           "type": "bra",
           "named": true
         },
@@ -318,6 +393,10 @@
       "multiple": true,
       "required": true,
       "types": [
+        {
+          "type": "addition",
+          "named": true
+        },
         {
           "type": "bra",
           "named": true
@@ -367,6 +446,10 @@
       "required": false,
       "types": [
         {
+          "type": "addition",
+          "named": true
+        },
+        {
           "type": "bra",
           "named": true
         },
@@ -407,6 +490,10 @@
   },
   {
     "type": " ",
+    "named": false
+  },
+  {
+    "type": " + ",
     "named": false
   },
   {
