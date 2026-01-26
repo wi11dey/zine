@@ -1,20 +1,20 @@
 ===
 One
 ===
-(1)
+$(1)$
 ---
 
-(source
+(inline
   (parens
     (integer)))
 
 ===
 Two
 ===
-((1))
+$((1))$
 ---
 
-(source
+(inline
   (parens
     (parens
       (integer))))
@@ -22,10 +22,10 @@ Two
 ======
 Three
 ======
-(((1)))
+$(((1)))$
 ---
 
-(source
+(inline
   (parens
     (parens
       (parens
@@ -34,10 +34,10 @@ Three
 =============
 With interval
 =============
-(((1,2)))
+$(((1,2)))$
 ---
 
-(source
+(inline
   (parens
     (parens
       (interval
@@ -47,10 +47,10 @@ With interval
 ====================
 With broken interval
 ====================
-(((1,)))
+$(((1,)))$
 ---
 
-(source
+(inline
   (parens
     (parens
       (parens
@@ -60,13 +60,13 @@ With broken interval
 ==============
 Multiplication
 ==============
-(((1)(1)))
+$(((1)(1)))$
 ---
 
-(source
+(inline
   (parens
     (parens
-      (multiplication
+      (noncommutative
         (parens
           (integer))
         (parens

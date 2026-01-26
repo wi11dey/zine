@@ -32,7 +32,7 @@
           "named": true
         },
         {
-          "type": "multiplication",
+          "type": "noncommutative",
           "named": true
         },
         {
@@ -102,7 +102,59 @@
           "named": true
         },
         {
-          "type": "multiplication",
+          "type": "noncommutative",
+          "named": true
+        },
+        {
+          "type": "parens",
+          "named": true
+        },
+        {
+          "type": "projection",
+          "named": true
+        },
+        {
+          "type": "set",
+          "named": true
+        }
+      ]
+    }
+  },
+  {
+    "type": "inline",
+    "named": true,
+    "root": true,
+    "fields": {},
+    "children": {
+      "multiple": false,
+      "required": false,
+      "types": [
+        {
+          "type": "bra",
+          "named": true
+        },
+        {
+          "type": "commutative",
+          "named": true
+        },
+        {
+          "type": "identifier",
+          "named": true
+        },
+        {
+          "type": "integer",
+          "named": true
+        },
+        {
+          "type": "interval",
+          "named": true
+        },
+        {
+          "type": "ket",
+          "named": true
+        },
+        {
+          "type": "noncommutative",
           "named": true
         },
         {
@@ -182,7 +234,7 @@
           "named": true
         },
         {
-          "type": "multiplication",
+          "type": "noncommutative",
           "named": true
         },
         {
@@ -233,7 +285,7 @@
           "named": true
         },
         {
-          "type": "multiplication",
+          "type": "noncommutative",
           "named": true
         },
         {
@@ -252,7 +304,7 @@
     }
   },
   {
-    "type": "multiplication",
+    "type": "noncommutative",
     "named": true,
     "fields": {},
     "children": {
@@ -284,7 +336,7 @@
           "named": true
         },
         {
-          "type": "multiplication",
+          "type": "noncommutative",
           "named": true
         },
         {
@@ -335,7 +387,7 @@
           "named": true
         },
         {
-          "type": "multiplication",
+          "type": "noncommutative",
           "named": true
         },
         {
@@ -386,7 +438,7 @@
           "named": true
         },
         {
-          "type": "multiplication",
+          "type": "noncommutative",
           "named": true
         },
         {
@@ -437,59 +489,7 @@
           "named": true
         },
         {
-          "type": "multiplication",
-          "named": true
-        },
-        {
-          "type": "parens",
-          "named": true
-        },
-        {
-          "type": "projection",
-          "named": true
-        },
-        {
-          "type": "set",
-          "named": true
-        }
-      ]
-    }
-  },
-  {
-    "type": "source",
-    "named": true,
-    "root": true,
-    "fields": {},
-    "children": {
-      "multiple": false,
-      "required": false,
-      "types": [
-        {
-          "type": "bra",
-          "named": true
-        },
-        {
-          "type": "commutative",
-          "named": true
-        },
-        {
-          "type": "identifier",
-          "named": true
-        },
-        {
-          "type": "integer",
-          "named": true
-        },
-        {
-          "type": "interval",
-          "named": true
-        },
-        {
-          "type": "ket",
-          "named": true
-        },
-        {
-          "type": "multiplication",
+          "type": "noncommutative",
           "named": true
         },
         {
@@ -517,6 +517,10 @@
   },
   {
     "type": " - ",
+    "named": false
+  },
+  {
+    "type": "$",
     "named": false
   },
   {

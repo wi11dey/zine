@@ -1,30 +1,30 @@
 ===
 Bra
 ===
-<psi|
+$<psi|$
 ---
 
-(source
+(inline
   (bra
     (identifier)))
 
 ===
 Ket
 ===
-|psi>
+$|psi>$
 ---
 
-(source
+(inline
   (ket
     (identifier)))
 
 ==========
 Projection
 ==========
-<psi|psi>
+$<psi|psi>$
 ---
 
-(source
+(inline
   (projection
     (identifier)
     (identifier)))

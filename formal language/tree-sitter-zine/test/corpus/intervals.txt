@@ -1,10 +1,10 @@
 ====
 Open
 ====
-(1,2)
+$(1,2)$
 ---
 
-(source
+(inline
   (interval
     (integer)
     (integer)))
@@ -12,10 +12,10 @@ Open
 ======
 Clopen
 ======
-[1,2)
+$[1,2)$
 ---
 
-(source
+(inline
   (interval
     (integer)
     (integer)))
@@ -23,10 +23,10 @@ Clopen
 ================
 Clopen other way
 ================
-(1,2]
+$(1,2]$
 ---
 
-(source
+(inline
   (interval
     (integer)
     (integer)))
@@ -34,10 +34,10 @@ Clopen other way
 ======
 Closed
 ======
-[1,1]
+$[1,1]$
 ---
 
-(source
+(inline
   (interval
     (integer)
     (integer)))

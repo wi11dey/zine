@@ -3,7 +3,7 @@ export default grammar
 	extras: ($) -> []
 	word: ($) -> $.identifier
 	rules:
-		source: ($) -> $._expression
+		inline: ($) -> seq '$', $._expression, '$'
 		_expression: ($) -> choice(
 			$._spacer
 			$._unspaced

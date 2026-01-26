@@ -1,8 +1,8 @@
 =========
 Integrals
 =========
-int
+$int$
 ---
 
-(source
+(inline
   (identifier))

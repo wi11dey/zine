@@ -1,12 +1,12 @@
 ===============
 Multiplications
 ===============
-sin k a
+$sin k a$
 ---
 
-(source
-  (multiplication
-    (multiplication
+(inline
+  (noncommutative
+    (noncommutative
       (identifier)
       (identifier))
     (identifier)))
@@ -14,56 +14,56 @@ sin k a
 ========
 Grouping
 ========
-sin  k a
+$sin  k a$
 ---
 
-(source
-  (multiplication
+(inline
+  (noncommutative
     (identifier)
-    (multiplication
+    (noncommutative
       (identifier)
       (identifier))))
 
 ===============
 Nested grouping
 ===============
-sin   k  a b
+$sin   k  a b$
 ---
 
-(source
-  (multiplication
+(inline
+  (noncommutative
     (identifier)
-    (multiplication
+    (noncommutative
       (identifier)
-      (multiplication
+      (noncommutative
         (identifier)
         (identifier)))))
 
 =======================
 Unnested for comparison
 =======================
-sin k  a b
+$sin k  a b$
 ---
 
-(source
-  (multiplication
-    (multiplication
+(inline
+  (noncommutative
+    (noncommutative
       (identifier)
       (identifier))
-    (multiplication
+    (noncommutative
       (identifier)
       (identifier))))
 
 =============================
 Fully unnested for comparison
 =============================
-sin k a b
+$sin k a b$
 ---
 
-(source
-  (multiplication
-    (multiplication
-      (multiplication
+(inline
+  (noncommutative
+    (noncommutative
+      (noncommutative
         (identifier)
         (identifier))
       (identifier))

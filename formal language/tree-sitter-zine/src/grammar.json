@@ -3,9 +3,22 @@
   "name": "zine",
   "word": "identifier",
   "rules": {
-    "source": {
-      "type": "SYMBOL",
-      "name": "_expression"
+    "inline": {
+      "type": "SEQ",
+      "members": [
+        {
+          "type": "STRING",
+          "value": "$"
+        },
+        {
+          "type": "SYMBOL",
+          "name": "_expression"
+        },
+        {
+          "type": "STRING",
+          "value": "$"
+        }
+      ]
     },
     "_expression": {
       "type": "CHOICE",
@@ -33,7 +46,7 @@
         },
         {
           "type": "SYMBOL",
-          "name": "multiplication"
+          "name": "noncommutative"
         },
         {
           "type": "SYMBOL",
@@ -94,7 +107,7 @@
         ]
       }
     },
-    "multiplication": {
+    "noncommutative": {
       "type": "CHOICE",
       "members": [
         {
