@@ -7,3 +7,52 @@ One
 (source
   (parens
     (integer)))
+
+===
+Two
+===
+((1))
+---
+
+(source
+  (parens
+    (parens
+      (integer))))
+
+======
+Three
+======
+(((1)))
+---
+
+(source
+  (parens
+    (parens
+      (parens
+        (integer)))))
+
+=============
+With interval
+=============
+(((1,2)))
+---
+
+(source
+  (parens
+    (parens
+      (interval
+        (integer)
+        (integer)))))
+
+====================
+With broken interval
+====================
+(((1,)))
+---
+
+(source
+  (parens
+    (parens
+      (parens
+        (integer)
+	  (ERROR)))))
