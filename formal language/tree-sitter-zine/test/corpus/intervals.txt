@@ -1,7 +1,40 @@
 ====
 Open
 ====
-(1,1)
+(1,2)
+---
+
+(source
+  (interval
+    (number)
+    (number)))
+
+======
+Clopen
+======
+[1,2)
+---
+
+(source
+  (interval
+    (number)
+    (number)))
+
+================
+Clopen other way
+================
+(1,2]
+---
+
+(source
+  (interval
+    (number)
+    (number)))
+
+======
+Closed
+======
+[1,1]
 ---
 
 (source
