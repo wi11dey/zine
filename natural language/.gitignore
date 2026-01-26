@@ -1,2 +1,4 @@
-# Models
-*.jar
+/ape.exe
+/ape-*.zip
+/packages
+*~
