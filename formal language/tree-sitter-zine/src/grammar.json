@@ -3,7 +3,11 @@
   "name": "zine",
   "word": "identifier",
   "rules": {
-    "expression": {
+    "source": {
+      "type": "SYMBOL",
+      "name": "_expression"
+    },
+    "_expression": {
       "type": "CHOICE",
       "members": [
         {
@@ -32,7 +36,7 @@
         "members": [
           {
             "type": "SYMBOL",
-            "name": "expression"
+            "name": "_expression"
           },
           {
             "type": "STRING",
@@ -40,7 +44,7 @@
           },
           {
             "type": "SYMBOL",
-            "name": "expression"
+            "name": "_expression"
           }
         ]
       }
@@ -57,7 +61,7 @@
           },
           {
             "type": "SYMBOL",
-            "name": "expression"
+            "name": "_expression"
           }
         ]
       }

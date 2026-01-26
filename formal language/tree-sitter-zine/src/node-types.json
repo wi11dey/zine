@@ -1,17 +1,12 @@
 [
   {
-    "type": "expression",
+    "type": "multiplication",
     "named": true,
-    "root": true,
     "fields": {},
     "children": {
-      "multiple": false,
+      "multiple": true,
       "required": true,
       "types": [
-        {
-          "type": "expression",
-          "named": true
-        },
         {
           "type": "identifier",
           "named": true
@@ -24,15 +19,20 @@
     }
   },
   {
-    "type": "multiplication",
+    "type": "source",
     "named": true,
+    "root": true,
     "fields": {},
     "children": {
-      "multiple": true,
+      "multiple": false,
       "required": true,
       "types": [
         {
-          "type": "expression",
+          "type": "identifier",
+          "named": true
+        },
+        {
+          "type": "multiplication",
           "named": true
         }
       ]

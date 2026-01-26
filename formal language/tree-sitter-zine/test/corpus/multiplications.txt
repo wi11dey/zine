@@ -4,16 +4,12 @@ Multiplications
 sin k a
 ---
 
-(expression
+(source
   (multiplication
-    (expression
-      (multiplication
-        (expression
-          (identifier))
-        (expression
-          (identifier))))
-    (expression
-      (identifier))))
+    (multiplication
+      (identifier)
+      (identifier))
+    (identifier)))
 
 ========
 Grouping
@@ -21,14 +17,54 @@ Grouping
 sin  k a
 ---
 
-(expression
+(source
   (multiplication
-    (expression
+    (identifier)
+    (multiplication
+      (identifier)
+      (identifier))))
+
+===============
+Nested grouping
+===============
+sin   k  a b
+---
+
+(source
+  (multiplication
+    (identifier)
+    (multiplication
+      (identifier)
+      (multiplication
+        (identifier)
+        (identifier)))))
+
+=======================
+Unnested for comparison
+=======================
+sin k  a b
+---
+
+(source
+  (multiplication
+    (multiplication
+      (identifier)
       (identifier))
-    (expression
-      (expression
-        (multiplication
-          (expression
-            (identifier))
-          (expression
-            (identifier)))))))
+    (multiplication
+      (identifier)
+      (identifier))))
+
+=============================
+Fully unnested for comparison
+=============================
+sin k a b
+---
+
+(source
+  (multiplication
+    (multiplication
+      (multiplication
+        (identifier)
+        (identifier))
+      (identifier))
+    (identifier)))

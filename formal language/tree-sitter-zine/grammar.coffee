@@ -4,9 +4,9 @@ export default grammar
 	# supertypes: ($) -> [$.expression]
 	word: ($) -> $.identifier
 	rules:
-		# source_file: ($) -> seq /\s*/, $.expression, /\s*/
+		source: ($) -> $._expression
 		# root: ($) -> choice $._spacer, $.expression
-		expression: ($) -> choice(
+		_expression: ($) -> choice(
 			$._spacer
 			$.identifier
 			$.multiplication
@@ -38,13 +38,13 @@ export default grammar
 			# $.root, ',', $.root
 			# field('end', choice ')', ']')
 		# )
-		multiplication: ($) -> prec.left 3, seq $.expression, ' ', $.expression
+		multiplication: ($) -> prec.left 3, seq $._expression, ' ', $._expression
 		# choice(
 		# 	prec.left 3, seq $.expression, ' ', $.expression
 		# 	prec.left 1, seq $.root, $.parens
 		# 	prec.left 3, seq $.parens, $.parens
 		# )
-		_spacer: ($) -> prec.left 2, seq ' ', $.expression
+		_spacer: ($) -> prec.left 2, seq ' ', $._expression
 		# division: ($) -> prec.left seq $.root, '/', $.root
 		# binary: ($) -> prec.left seq $.root, /\s*/, $.binop, /\s*/, choice $.root, '...'
 		# binop: -> choice(
