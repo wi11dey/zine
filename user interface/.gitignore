@@ -1,0 +1,5 @@
+debug/
+target/
+
+# Executable
+Cargo.lock
