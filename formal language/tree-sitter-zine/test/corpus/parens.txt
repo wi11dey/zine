@@ -1,73 +1,79 @@
 ===
 One
 ===
-$(1)$
+{(1)}
 ---
 
-(math(inline
-  (parens
-    (integer)))
+(text
+  (inline
+    (parens
+      (integer))))
 
 ===
 Two
 ===
-$((1))$
+{((1))}
 ---
 
-(math(inline
-  (parens
+(text
+  (inline
     (parens
-      (integer))))
+      (parens
+        (integer)))))
 
 ======
 Three
 ======
-$(((1)))$
+{(((1)))}
 ---
 
-(math(inline
-  (parens
+(text
+  (inline
     (parens
       (parens
-        (integer)))))
+        (parens
+          (integer))))))
 
 =============
 With interval
 =============
-$(((1,2)))$
+{(((1,2)))}
 ---
 
-(math(inline
-  (parens
+(text
+  (inline
     (parens
-      (interval
-        (integer)
-        (integer)))))
+      (parens
+        (interval
+          (integer)
+          (integer))))))
 
 ====================
 With broken interval
 ====================
-$(((1,)))$
+{(((1,)))}
 ---
 
-(math(inline
-  (parens
+(text
+  (inline
     (parens
       (parens
-        (integer)
-        (ERROR)))))
+        (parens
+          (integer)
+          (ERROR))))))
 
 ==============
 Multiplication
 ==============
-$(((1)(1)))$
+{(((1)(1)))}
 ---
 
-(math(inline
-  (parens
+(text
+  (inline
     (parens
-      (noncommutative
-        (parens
-          (integer))
-        (parens
-          (integer))))))
+      (parens
+        (noncommutative
+          (parens
+            (integer))
+          (parens
+            (integer)))))))

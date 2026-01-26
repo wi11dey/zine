@@ -3,6 +3,48 @@
   "name": "zine",
   "word": "identifier",
   "rules": {
+    "text": {
+      "type": "SEQ",
+      "members": [
+        {
+          "type": "SYMBOL",
+          "name": "token"
+        },
+        {
+          "type": "REPEAT",
+          "content": {
+            "type": "SEQ",
+            "members": [
+              {
+                "type": "STRING",
+                "value": " "
+              },
+              {
+                "type": "SYMBOL",
+                "name": "token"
+              }
+            ]
+          }
+        }
+      ]
+    },
+    "token": {
+      "type": "CHOICE",
+      "members": [
+        {
+          "type": "SYMBOL",
+          "name": "math"
+        },
+        {
+          "type": "SYMBOL",
+          "name": "word"
+        }
+      ]
+    },
+    "word": {
+      "type": "PATTERN",
+      "value": "[^ \\r\\n{}]+"
+    },
     "math": {
       "type": "CHOICE",
       "members": [
@@ -21,7 +63,7 @@
       "members": [
         {
           "type": "STRING",
-          "value": "$$"
+          "value": "{{"
         },
         {
           "type": "SYMBOL",
@@ -29,7 +71,7 @@
         },
         {
           "type": "STRING",
-          "value": "$"
+          "value": "}}"
         }
       ]
     },
@@ -38,7 +80,7 @@
       "members": [
         {
           "type": "STRING",
-          "value": "$"
+          "value": "{"
         },
         {
           "type": "SYMBOL",
@@ -46,7 +88,7 @@
         },
         {
           "type": "STRING",
-          "value": "$"
+          "value": "}"
         }
       ]
     },
@@ -228,7 +270,7 @@
       "members": [
         {
           "type": "STRING",
-          "value": "{"
+          "value": "["
         },
         {
           "type": "SYMBOL",
@@ -244,7 +286,7 @@
         },
         {
           "type": "STRING",
-          "value": "}"
+          "value": "]"
         }
       ]
     },
@@ -386,7 +428,8 @@
   "externals": [],
   "inline": [],
   "supertypes": [
-    "math"
+    "math",
+    "token"
   ],
   "reserved": {}
 }

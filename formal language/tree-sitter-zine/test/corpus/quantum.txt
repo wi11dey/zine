@@ -4,9 +4,8 @@ Bra
 $<psi|$
 ---
 
-(math(inline
-  (bra
-    (identifier)))
+(text
+  (word))
 
 ===
 Ket
@@ -14,9 +13,8 @@ Ket
 $|psi>$
 ---
 
-(math(inline
-  (ket
-    (identifier)))
+(text
+  (word))
 
 ==========
 Projection
@@ -24,7 +22,5 @@ Projection
 $<psi|psi>$
 ---
 
-(math(inline
-  (projection
-    (identifier)
-    (identifier)))
+(text
+  (word))

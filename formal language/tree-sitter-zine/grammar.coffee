@@ -1,12 +1,18 @@
 export default grammar
 	name: 'zine'
-	supertypes: ($) -> [$.math]
+	supertypes: ($) -> [$.math, $.token]
 	extras: ($) -> []
 	word: ($) -> $.identifier
 	rules:
+		text: ($) -> seq $.token, repeat seq ' ', $.token
+		token: ($) -> choice(
+			$.math
+			$.word
+		)
+		word: ($) -> /[^ \r\n{}]+/
 		math: ($) -> choice $.display, $.inline
-		display: ($) -> seq '$$', $._expression, '$'
-		inline: ($) -> seq '$', $._expression, '$'
+		display: ($) -> seq '{{', $._expression, '}}'
+		inline: ($) -> seq '{', $._expression, '}'
 		_expression: ($) -> choice(
 			$._spacer
 			$._unspaced
@@ -36,7 +42,7 @@ export default grammar
 			field 'operator', choice ' + ', ' - '
 			choice $._unspaced, $.ellipsis
 		)
-		set: ($) -> seq '{', $._unspaced, '|', $._unspaced, '}'
+		set: ($) -> seq '[', $._unspaced, '|', $._unspaced, ']'
 		bra: ($) -> seq '<', $._unspaced, '|'
 		ket: ($) -> seq '|', $._unspaced, '>'
 		projection: ($) -> prec 1, seq '<', $._unspaced, '|', $._unspaced, '>'

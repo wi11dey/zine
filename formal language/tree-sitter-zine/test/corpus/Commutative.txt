@@ -1,36 +1,39 @@
 ===
 Add
 ===
-$1 + 2$
+{1 + 2}
 ---
 
-(math(inline
-  (commutative
-    (integer)
-    (integer)))
+(text
+  (inline
+    (commutative
+      (integer)
+      (integer))))
 
 ========
 Sequence
 ========
-$1 + 2 + 3$
+{1 + 2 + 3}
 ---
 
-(math(inline
-  (commutative
+(text
+  (inline
     (commutative
-      (integer)
-      (integer))
-    (integer)))
+      (commutative
+        (integer)
+        (integer))
+      (integer))))
 
 ========
 Ellipsis
 ========
-$1 + 2 + ...$
+{1 + 2 + ...}
 ---
 
-(math(inline
-  (commutative
+(text
+  (inline
     (commutative
-      (integer)
-      (integer))
-    (ellipsis)))
+      (commutative
+        (integer)
+        (integer))
+      (ellipsis))))

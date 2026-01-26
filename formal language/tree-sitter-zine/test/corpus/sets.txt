@@ -1,10 +1,11 @@
 ===
 Set
 ===
-${x|x}$
+{[x|x]}
 ---
 
-(math(inline
-  (set
-    (identifier)
-    (identifier)))
+(text
+  (inline
+    (set
+      (identifier)
+      (identifier))))

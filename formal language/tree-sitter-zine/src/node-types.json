@@ -14,6 +14,20 @@
     ]
   },
   {
+    "type": "token",
+    "named": true,
+    "subtypes": [
+      {
+        "type": "math",
+        "named": true
+      },
+      {
+        "type": "word",
+        "named": true
+      }
+    ]
+  },
+  {
     "type": "bra",
     "named": true,
     "fields": {},
@@ -572,6 +586,22 @@
     }
   },
   {
+    "type": "text",
+    "named": true,
+    "root": true,
+    "fields": {},
+    "children": {
+      "multiple": true,
+      "required": true,
+      "types": [
+        {
+          "type": "token",
+          "named": true
+        }
+      ]
+    }
+  },
+  {
     "type": " ",
     "named": false
   },
@@ -581,14 +611,6 @@
   },
   {
     "type": " - ",
-    "named": false
-  },
-  {
-    "type": "$",
-    "named": false
-  },
-  {
-    "type": "$$",
     "named": false
   },
   {
@@ -632,7 +654,15 @@
     "named": true
   },
   {
+    "type": "word",
+    "named": true
+  },
+  {
     "type": "{",
+    "named": false
+  },
+  {
+    "type": "{{",
     "named": false
   },
   {
@@ -641,6 +671,10 @@
   },
   {
     "type": "}",
+    "named": false
+  },
+  {
+    "type": "}}",
     "named": false
   }
 ]

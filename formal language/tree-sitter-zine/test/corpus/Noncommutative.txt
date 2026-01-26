@@ -1,70 +1,75 @@
 ===============
 Multiplications
 ===============
-$sin k a$
+{sin k a}
 ---
 
-(math(inline
-  (noncommutative
+(text
+  (inline
     (noncommutative
-      (identifier)
-      (identifier))
-    (identifier)))
+      (noncommutative
+        (identifier)
+        (identifier))
+      (identifier))))
 
 ========
 Grouping
 ========
-$sin  k a$
+{sin  k a}
 ---
 
-(math(inline
-  (noncommutative
-    (identifier)
-    (noncommutative
-      (identifier)
-      (identifier))))
-
-===============
-Nested grouping
-===============
-$sin   k  a b$
----
-
-(math(inline
-  (noncommutative
-    (identifier)
+(text
+  (inline
     (noncommutative
       (identifier)
       (noncommutative
         (identifier)
         (identifier)))))
 
+===============
+Nested grouping
+===============
+{sin   k  a b}
+---
+
+(text
+  (inline
+    (noncommutative
+      (identifier)
+      (noncommutative
+        (identifier)
+        (noncommutative
+          (identifier)
+          (identifier))))))
+
 =======================
 Unnested for comparison
 =======================
-$sin k  a b$
+{sin k  a b}
 ---
 
-(math(inline
-  (noncommutative
-    (noncommutative
-      (identifier)
-      (identifier))
-    (noncommutative
-      (identifier)
-      (identifier))))
-
-=============================
-Fully unnested for comparison
-=============================
-$sin k a b$
----
-
-(math(inline
-  (noncommutative
+(text
+  (inline
     (noncommutative
       (noncommutative
         (identifier)
         (identifier))
-      (identifier))
-    (identifier)))
+      (noncommutative
+        (identifier)
+        (identifier)))))
+
+=============================
+Fully unnested for comparison
+=============================
+{sin k a b}
+---
+
+(text
+  (inline
+    (noncommutative
+      (noncommutative
+        (noncommutative
+          (identifier)
+          (identifier))
+        (identifier))
+      (identifier))))

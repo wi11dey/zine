@@ -1,8 +1,9 @@
 =========
 Integrals
 =========
-$int$
+{int}
 ---
 
-(math(inline
-  (identifier))
+(text
+  (inline
+    (identifier)))
