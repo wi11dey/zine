@@ -21,12 +21,10 @@ Ket
 ==========
 Projection
 ==========
-<psi| |psi>
+<psi|psi>
 ---
 
 (source
-  (multiplication
-    (bra
-      (identifier))
-    (ket
-      (identifier))))
+  (projection
+    (identifier)
+    (identifier)))

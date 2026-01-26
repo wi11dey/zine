@@ -24,15 +24,21 @@ export default grammar
 			$.set
 			$.bra
 			$.ket
+			$.projection
 			$.interval
 			$.parens
 		)
 		identifier: ($) -> /[a-zA-Z]+/
 		integer: ($) -> /[0-9]+/
-		multiplication: ($) -> prec.left 3, seq $._expression, ' ', $._expression
+		multiplication: ($) -> choice(
+			prec.left 3, seq $._expression, ' ', $._expression
+			prec.left seq $.parens, $.parens
+		)
+		addition: ($) -> prec.left seq $._unspaced, ' + ', $._unspaced
 		set: ($) -> seq '{', $._unspaced, '|', $._unspaced, '}'
 		bra: ($) -> seq '<', $._unspaced, '|'
 		ket: ($) -> seq '|', $._unspaced, '>'
+		projection: ($) -> prec 1, seq '<', $._unspaced, '|', $._unspaced, '>'
 		interval: ($) -> seq(
 			field 'start', choice '(', '['
 			$._unspaced, ',', $._unspaced

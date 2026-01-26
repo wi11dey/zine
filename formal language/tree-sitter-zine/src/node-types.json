@@ -36,6 +36,10 @@
           "named": true
         },
         {
+          "type": "projection",
+          "named": true
+        },
+        {
           "type": "set",
           "named": true
         }
@@ -108,6 +112,10 @@
           "named": true
         },
         {
+          "type": "projection",
+          "named": true
+        },
+        {
           "type": "set",
           "named": true
         }
@@ -148,6 +156,10 @@
         },
         {
           "type": "parens",
+          "named": true
+        },
+        {
+          "type": "projection",
           "named": true
         },
         {
@@ -194,6 +206,10 @@
           "named": true
         },
         {
+          "type": "projection",
+          "named": true
+        },
+        {
           "type": "set",
           "named": true
         }
@@ -234,6 +250,57 @@
         },
         {
           "type": "parens",
+          "named": true
+        },
+        {
+          "type": "projection",
+          "named": true
+        },
+        {
+          "type": "set",
+          "named": true
+        }
+      ]
+    }
+  },
+  {
+    "type": "projection",
+    "named": true,
+    "fields": {},
+    "children": {
+      "multiple": true,
+      "required": true,
+      "types": [
+        {
+          "type": "bra",
+          "named": true
+        },
+        {
+          "type": "identifier",
+          "named": true
+        },
+        {
+          "type": "integer",
+          "named": true
+        },
+        {
+          "type": "interval",
+          "named": true
+        },
+        {
+          "type": "ket",
+          "named": true
+        },
+        {
+          "type": "multiplication",
+          "named": true
+        },
+        {
+          "type": "parens",
+          "named": true
+        },
+        {
+          "type": "projection",
           "named": true
         },
         {
@@ -280,6 +347,10 @@
           "named": true
         },
         {
+          "type": "projection",
+          "named": true
+        },
+        {
           "type": "set",
           "named": true
         }
@@ -321,6 +392,10 @@
         },
         {
           "type": "parens",
+          "named": true
+        },
+        {
+          "type": "projection",
           "named": true
         },
         {

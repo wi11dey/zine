@@ -55,4 +55,19 @@ With broken interval
     (parens
       (parens
         (integer)
-	  (ERROR)))))
+        (ERROR)))))
+
+==============
+Multiplication
+==============
+(((1)(1)))
+---
+
+(source
+  (parens
+    (parens
+      (multiplication
+        (parens
+          (integer))
+        (parens
+          (integer))))))
