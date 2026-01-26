@@ -1,9 +1,32 @@
 ===
 Bra
 ===
-<x|
+<psi|
 ---
 
 (source
   (bra
     (identifier)))
+
+===
+Ket
+===
+|psi>
+---
+
+(source
+  (ket
+    (identifier)))
+
+==========
+Projection
+==========
+<psi| |psi>
+---
+
+(source
+  (multiplication
+    (bra
+      (identifier))
+    (ket
+      (identifier))))
