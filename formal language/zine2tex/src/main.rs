@@ -1,8 +1,9 @@
-use clap::{Parser as ClapParser, ValueEnum};
+use std::io::{Write, Result, stdout};
 use tree_sitter::{Parser, Node};
+use clap::{Parser as ClapParser, ValueEnum};
 use tree_sitter_zine::LANGUAGE;
 
-#[derive(Copy, Clone, Debug, PartialEq, Eq, PartialOrd, Ord, ValueEnum)]
+#[derive(Copy, Clone, Debug, PartialEq, ValueEnum)]
 enum Format {
     #[value(name = "plain")]
     Plain,
@@ -20,14 +21,13 @@ struct Args {
     format: Format,
 }
 
-fn traverse_tree(node: Node, depth: usize) {
-    let indent = "  ".repeat(depth);
-    println!("\\{}{}", indent, node.kind());
-    
-    let mut cursor = node.walk();
-    for child in node.children(&mut cursor) {
-        traverse_tree(child, depth + 1);
+fn convert<W: Write>(out: &mut W, format: Format, root: Node) -> Result<()> {
+    write!(out, "\\{}", root.kind())?;
+    let mut cursor = root.walk();
+    for child in root.children(&mut cursor) {
+        convert(out, format, child)?;
     }
+    Ok(())
 }
 
 fn main() {
@@ -39,7 +39,6 @@ fn main() {
     parser.set_language(&LANGUAGE.into()).expect("Error loading Zine parser");
     
     let tree = parser.parse(code, None).expect("Error parsing code");
-    let root_node = tree.root_node();
-    
-    traverse_tree(root_node, 0);
+
+    convert(&mut stdout(), args.format, tree.root_node()).expect("Error converting");
 }
