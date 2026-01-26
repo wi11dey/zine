@@ -37,7 +37,7 @@
         },
         {
           "type": "SYMBOL",
-          "name": "addition"
+          "name": "commutative"
         },
         {
           "type": "SYMBOL",
@@ -64,6 +64,10 @@
           "name": "parens"
         }
       ]
+    },
+    "ellipsis": {
+      "type": "STRING",
+      "value": "..."
     },
     "identifier": {
       "type": "PATTERN",
@@ -133,7 +137,7 @@
         }
       ]
     },
-    "addition": {
+    "commutative": {
       "type": "PREC_LEFT",
       "value": 3,
       "content": {
@@ -144,12 +148,34 @@
             "name": "_unspaced"
           },
           {
-            "type": "STRING",
-            "value": " + "
+            "type": "FIELD",
+            "name": "operator",
+            "content": {
+              "type": "CHOICE",
+              "members": [
+                {
+                  "type": "STRING",
+                  "value": " + "
+                },
+                {
+                  "type": "STRING",
+                  "value": " - "
+                }
+              ]
+            }
           },
           {
-            "type": "SYMBOL",
-            "name": "_unspaced"
+            "type": "CHOICE",
+            "members": [
+              {
+                "type": "SYMBOL",
+                "name": "_unspaced"
+              },
+              {
+                "type": "SYMBOL",
+                "name": "ellipsis"
+              }
+            ]
           }
         ]
       }

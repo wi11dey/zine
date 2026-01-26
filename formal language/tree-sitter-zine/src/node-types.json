@@ -1,18 +1,18 @@
 [
   {
-    "type": "addition",
+    "type": "bra",
     "named": true,
     "fields": {},
     "children": {
-      "multiple": true,
+      "multiple": false,
       "required": true,
       "types": [
         {
-          "type": "addition",
+          "type": "bra",
           "named": true
         },
         {
-          "type": "bra",
+          "type": "commutative",
           "named": true
         },
         {
@@ -51,19 +51,38 @@
     }
   },
   {
-    "type": "bra",
+    "type": "commutative",
     "named": true,
-    "fields": {},
+    "fields": {
+      "operator": {
+        "multiple": false,
+        "required": true,
+        "types": [
+          {
+            "type": " + ",
+            "named": false
+          },
+          {
+            "type": " - ",
+            "named": false
+          }
+        ]
+      }
+    },
     "children": {
-      "multiple": false,
+      "multiple": true,
       "required": true,
       "types": [
         {
-          "type": "addition",
+          "type": "bra",
           "named": true
         },
         {
-          "type": "bra",
+          "type": "commutative",
+          "named": true
+        },
+        {
+          "type": "ellipsis",
           "named": true
         },
         {
@@ -139,11 +158,11 @@
       "required": true,
       "types": [
         {
-          "type": "addition",
+          "type": "bra",
           "named": true
         },
         {
-          "type": "bra",
+          "type": "commutative",
           "named": true
         },
         {
@@ -190,11 +209,11 @@
       "required": true,
       "types": [
         {
-          "type": "addition",
+          "type": "bra",
           "named": true
         },
         {
-          "type": "bra",
+          "type": "commutative",
           "named": true
         },
         {
@@ -241,11 +260,11 @@
       "required": false,
       "types": [
         {
-          "type": "addition",
+          "type": "bra",
           "named": true
         },
         {
-          "type": "bra",
+          "type": "commutative",
           "named": true
         },
         {
@@ -292,11 +311,11 @@
       "required": true,
       "types": [
         {
-          "type": "addition",
+          "type": "bra",
           "named": true
         },
         {
-          "type": "bra",
+          "type": "commutative",
           "named": true
         },
         {
@@ -343,11 +362,11 @@
       "required": true,
       "types": [
         {
-          "type": "addition",
+          "type": "bra",
           "named": true
         },
         {
-          "type": "bra",
+          "type": "commutative",
           "named": true
         },
         {
@@ -394,11 +413,11 @@
       "required": true,
       "types": [
         {
-          "type": "addition",
+          "type": "bra",
           "named": true
         },
         {
-          "type": "bra",
+          "type": "commutative",
           "named": true
         },
         {
@@ -446,11 +465,11 @@
       "required": false,
       "types": [
         {
-          "type": "addition",
+          "type": "bra",
           "named": true
         },
         {
-          "type": "bra",
+          "type": "commutative",
           "named": true
         },
         {
@@ -497,6 +516,10 @@
     "named": false
   },
   {
+    "type": " - ",
+    "named": false
+  },
+  {
     "type": "(",
     "named": false
   },
@@ -523,6 +546,10 @@
   {
     "type": "]",
     "named": false
+  },
+  {
+    "type": "ellipsis",
+    "named": true
   },
   {
     "type": "identifier",

@@ -1,0 +1,36 @@
+===
+Add
+===
+1 + 2
+---
+
+(source
+  (commutative
+    (integer)
+    (integer)))
+
+========
+Sequence
+========
+1 + 2 + 3
+---
+
+(source
+  (commutative
+    (commutative
+      (integer)
+      (integer))
+    (integer)))
+
+========
+Ellipsis
+========
+1 + 2 + ...
+---
+
+(source
+  (commutative
+    (commutative
+      (integer)
+      (integer))
+    (ellipsis)))

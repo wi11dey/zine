@@ -19,8 +19,8 @@ export default grammar
 		_unspaced: ($) -> choice(
 			$.identifier
 			$.integer
-			$.multiplication
-			$.addition
+			$.noncommutative
+			$.commutative
 			$.set
 			$.bra
 			$.ket
@@ -28,14 +28,19 @@ export default grammar
 			$.interval
 			$.parens
 		)
+		ellipsis: ($) -> '...'
 		identifier: ($) -> /[a-zA-Z]+/
 		integer: ($) -> /[0-9]+/
 		_spacer: ($) -> prec.left 1, seq ' ', $._expression
-		multiplication: ($) -> choice(
+		noncommutative: ($) -> choice(
 			prec.left 2, seq $._expression, ' ', $._expression
 			prec.left seq $.parens, $.parens
 		)
-		addition: ($) -> prec.left 3, seq $._unspaced, ' + ', $._unspaced
+		commutative: ($) -> prec.left 3, seq(
+			$._unspaced
+			field 'operator', choice ' + ', ' - '
+			choice $._unspaced, $.ellipsis
+		)
 		set: ($) -> seq '{', $._unspaced, '|', $._unspaced, '}'
 		bra: ($) -> seq '<', $._unspaced, '|'
 		ket: ($) -> seq '|', $._unspaced, '>'
