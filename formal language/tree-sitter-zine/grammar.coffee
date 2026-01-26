@@ -4,7 +4,7 @@ export default grammar
   supertypes: ($) -> [$.expression]
   word: ($) -> $.identifier
   rules:
-    full: ($) -> seq $.root, /\s*/
+    full: ($) -> seq /\s*/, $.root, /\s*/
     root: ($) -> choice $._spacer, $.expression
     expression: ($) -> choice(
       $.identifier

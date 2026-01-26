@@ -1,0 +1,19 @@
+===============
+Multiplications
+===============
+
+sin k a
+
+---
+
+(full
+  (root
+    (multiplication
+      (root
+        (multiplication
+          (root
+            (identifier))
+          (root
+            (identifier))))
+      (root
+        (identifier)))))

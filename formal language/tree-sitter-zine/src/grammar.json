@@ -1,10 +1,15 @@
 {
   "$schema": "https://tree-sitter.github.io/tree-sitter/assets/schemas/grammar.schema.json",
   "name": "zine",
+  "word": "identifier",
   "rules": {
     "full": {
       "type": "SEQ",
       "members": [
+        {
+          "type": "PATTERN",
+          "value": "\\s*"
+        },
         {
           "type": "SYMBOL",
           "name": "root"
@@ -78,10 +83,6 @@
         {
           "type": "SYMBOL",
           "name": "set"
-        },
-        {
-          "type": "SYMBOL",
-          "name": "exists"
         }
       ]
     },
@@ -603,6 +604,8 @@
   "precedences": [],
   "externals": [],
   "inline": [],
-  "supertypes": [],
+  "supertypes": [
+    "expression"
+  ],
   "reserved": {}
 }
