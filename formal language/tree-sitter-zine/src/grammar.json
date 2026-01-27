@@ -86,7 +86,7 @@
         },
         {
           "type": "SYMBOL",
-          "name": "_expression"
+          "name": "expression"
         },
         {
           "type": "STRING",
@@ -103,7 +103,7 @@
         },
         {
           "type": "SYMBOL",
-          "name": "_expression"
+          "name": "expression"
         },
         {
           "type": "STRING",
@@ -115,16 +115,29 @@
       "type": "CHOICE",
       "members": [
         {
-          "type": "SYMBOL",
-          "name": "_spacer"
+          "type": "PREC_LEFT",
+          "value": 1,
+          "content": {
+            "type": "SEQ",
+            "members": [
+              {
+                "type": "STRING",
+                "value": " "
+              },
+              {
+                "type": "SYMBOL",
+                "name": "_expression"
+              }
+            ]
+          }
         },
         {
           "type": "SYMBOL",
-          "name": "_unspaced"
+          "name": "expression"
         }
       ]
     },
-    "_unspaced": {
+    "expression": {
       "type": "CHOICE",
       "members": [
         {
@@ -181,23 +194,6 @@
       "type": "PATTERN",
       "value": "[0-9]+"
     },
-    "_spacer": {
-      "type": "PREC_LEFT",
-      "value": 1,
-      "content": {
-        "type": "SEQ",
-        "members": [
-          {
-            "type": "STRING",
-            "value": " "
-          },
-          {
-            "type": "SYMBOL",
-            "name": "_expression"
-          }
-        ]
-      }
-    },
     "noncommutative": {
       "type": "CHOICE",
       "members": [
@@ -249,7 +245,7 @@
         "members": [
           {
             "type": "SYMBOL",
-            "name": "_unspaced"
+            "name": "expression"
           },
           {
             "type": "FIELD",
@@ -273,7 +269,7 @@
             "members": [
               {
                 "type": "SYMBOL",
-                "name": "_unspaced"
+                "name": "expression"
               },
               {
                 "type": "SYMBOL",
@@ -293,7 +289,7 @@
         },
         {
           "type": "SYMBOL",
-          "name": "_unspaced"
+          "name": "expression"
         },
         {
           "type": "STRING",
@@ -301,7 +297,7 @@
         },
         {
           "type": "SYMBOL",
-          "name": "_unspaced"
+          "name": "expression"
         },
         {
           "type": "STRING",
@@ -318,7 +314,7 @@
         },
         {
           "type": "SYMBOL",
-          "name": "_unspaced"
+          "name": "expression"
         },
         {
           "type": "STRING",
@@ -335,7 +331,7 @@
         },
         {
           "type": "SYMBOL",
-          "name": "_unspaced"
+          "name": "expression"
         },
         {
           "type": "STRING",
@@ -355,7 +351,7 @@
           },
           {
             "type": "SYMBOL",
-            "name": "_unspaced"
+            "name": "expression"
           },
           {
             "type": "STRING",
@@ -363,7 +359,7 @@
           },
           {
             "type": "SYMBOL",
-            "name": "_unspaced"
+            "name": "expression"
           },
           {
             "type": "STRING",
@@ -394,7 +390,7 @@
         },
         {
           "type": "SYMBOL",
-          "name": "_unspaced"
+          "name": "expression"
         },
         {
           "type": "STRING",
@@ -402,7 +398,7 @@
         },
         {
           "type": "SYMBOL",
-          "name": "_unspaced"
+          "name": "expression"
         },
         {
           "type": "FIELD",
@@ -432,7 +428,7 @@
         },
         {
           "type": "SYMBOL",
-          "name": "_unspaced"
+          "name": "expression"
         },
         {
           "type": "STRING",
@@ -448,7 +444,8 @@
   "inline": [],
   "supertypes": [
     "math",
-    "token"
+    "token",
+    "expression"
   ],
   "reserved": {}
 }

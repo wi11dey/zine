@@ -1,6 +1,6 @@
 export default grammar
 	name: 'zine'
-	supertypes: ($) -> [$.math, $.token]
+	supertypes: ($) -> [$.math, $.token, $.expression]
 	extras: ($) -> []
 	word: ($) -> $.identifier
 	rules:
@@ -17,13 +17,13 @@ export default grammar
 		)
 		word: ($) -> /[^ \r\n{}]+/
 		math: ($) -> choice $.display, $.inline
-		display: ($) -> seq '{{', $._expression, '}}'
-		inline: ($) -> seq '{', $._expression, '}'
+		display: ($) -> seq '{{', $.expression, '}}'
+		inline: ($) -> seq '{', $.expression, '}'
 		_expression: ($) -> choice(
-			$._spacer
-			$._unspaced
+			prec.left 1, seq ' ', $._expression
+			$.expression
 		)
-		_unspaced: ($) -> choice(
+		expression: ($) -> choice(
 			$.identifier
 			$.integer
 			$.noncommutative
@@ -38,27 +38,26 @@ export default grammar
 		ellipsis: ($) -> '...'
 		identifier: ($) -> /[a-zA-Z]+/
 		integer: ($) -> /[0-9]+/
-		_spacer: ($) -> prec.left 1, seq ' ', $._expression
 		noncommutative: ($) -> choice(
 			prec.left 2, seq $._expression, ' ', $._expression
 			prec.left seq $.parens, $.parens
 		)
 		commutative: ($) -> prec.left 3, seq(
-			$._unspaced
+			$.expression
 			field 'operator', choice ' + ', ' - '
-			choice $._unspaced, $.ellipsis
+			choice $.expression, $.ellipsis
 		)
-		set: ($) -> seq '[', $._unspaced, '|', $._unspaced, ']'
-		bra: ($) -> seq '<', $._unspaced, '|'
-		ket: ($) -> seq '|', $._unspaced, '>'
-		projection: ($) -> prec 1, seq '<', $._unspaced, '|', $._unspaced, '>'
+		set: ($) -> seq '[', $.expression, '|', $.expression, ']'
+		bra: ($) -> seq '<', $.expression, '|'
+		ket: ($) -> seq '|', $.expression, '>'
+		projection: ($) -> prec 1, seq '<', $.expression, '|', $.expression, '>'
 		interval: ($) -> seq(
 			field 'start', choice '(', '['
-			$._unspaced, ',', $._unspaced
+			$.expression, ',', $.expression
 			field 'end', choice ')', ']'
 		)
-		parens: ($) -> seq '(', $._unspaced, ')'
-		# binary: ($) -> prec.left seq $._unspaced, $.binop, choice $._unspaced, '...'
+		parens: ($) -> seq '(', $.expression, ')'
+		# binary: ($) -> prec.left seq $.expression, $.binop, choice $.expression, '...'
 		# binop: ($) -> choice(
 		# 	' + '
 		# 	'/'
