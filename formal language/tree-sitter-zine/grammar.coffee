@@ -6,7 +6,6 @@ export default grammar sugar.desugar sugar.unthisify
 	word: -> @.identifier
 	rules:
 		text: -> repeat1 @.token
-
 		token:
 			span: -> seq(
 				token seq field('keyword', /[a-z]+/), '{'
