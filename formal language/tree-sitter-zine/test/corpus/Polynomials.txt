@@ -1,0 +1,41 @@
+=========
+Quadratic
+=========
+{a x^2 + b x + c}
+---
+
+(text
+  (inline
+    (commutative
+      (commutative
+        (noncommutative
+          (identifier)
+          (superscript
+            (identifier)
+            (integer)))
+        (noncommutative
+          (identifier)
+          (identifier)))
+      (identifier))))
+
+======
+Series
+======
+{a_n x^n + ... + a_0}
+---
+
+(text
+  (inline
+    (commutative
+      (commutative
+        (noncommutative
+          (subscript
+            (identifier)
+            (identifier))
+          (superscript
+            (identifier)
+            (identifier)))
+        (ellipsis))
+      (subscript
+        (identifier)
+        (integer)))))
