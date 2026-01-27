@@ -1,5 +1,7 @@
 import {desugar, unthisify} from './sugar.js'
 
+# TODO double-check precedence
+
 export default grammar desugar unthisify
 	name: 'zine'
 	extras: -> [] # Whitespace-sensitive language
