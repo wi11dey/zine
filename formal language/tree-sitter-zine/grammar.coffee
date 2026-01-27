@@ -1,62 +1,68 @@
-export default grammar
+desugar = ({ rules: sugared, rest... }) ->
+	flattened = do flatten = (rules = sugared) ->
+		for key, value of rules
+			if typeof value is 'object'
+				yield from flatten value
+			else
+				yield
+					"#{key}": value
+	supertypeRules = do createSupertypes = (rules = sugared) ->
+		for key, value of rules when typeof value is 'object'
+			yield from createSupertypes value
+			yield
+				"#{key}": do (value) -> ($) -> choice ($[subtype] for subtype in Object.keys value)...
+	{
+		rest...
+		supertypes: ($) -> Array.from do collect = (rules = sugared) ->
+			for key, value of rules when typeof value is 'object'
+				yield from collect value
+				yield $[key]
+		rules: Object.assign {}, flattened..., supertypeRules...
+	}
+
+export default grammar desugar
 	name: 'zine'
-	supertypes: ($) -> [$.math, $.token, $.expression]
 	extras: ($) -> []
 	word: ($) -> $.identifier
 	rules:
 		text: ($) -> repeat1 $.token
-		token: ($) -> choice(
-			$.math
-			$.span
-			$.word
-		)
-		span: ($) -> seq(
-			token seq field('keyword', /[a-z]+/), '{'
-			$.text
-			'}'
-		)
-		word: ($) -> /[^ \r\n{}]+/
-		math: ($) -> choice $.display, $.inline
-		display: ($) -> seq '{{', $.expression, '}}'
-		inline: ($) -> seq '{', $.expression, '}'
+		token:
+			span: ($) -> seq(
+				token seq field('keyword', /[a-z]+/), '{'
+				$.text
+				'}'
+			)
+			word: ($) -> /[^ \r\n{}]+/
+			math:
+				display: ($) -> seq '{{', $.expression, '}}'
+				inline: ($) -> seq '{', $.expression, '}'
 		_expression: ($) -> choice(
 			prec.left 1, seq ' ', $._expression
 			$.expression
 		)
-		expression: ($) -> choice(
-			$.identifier
-			$.integer
-			$.noncommutative
-			$.commutative
-			$.set
-			$.bra
-			$.ket
-			$.projection
-			$.interval
-			$.parens
-		)
+		expression:
+			identifier: ($) -> /[a-zA-Z]+/
+			integer: ($) -> /[0-9]+/
+			noncommutative: ($) -> choice(
+				prec.left 2, seq $._expression, ' ', $._expression
+				prec.left seq $.parens, $.parens
+			)
+			commutative: ($) -> prec.left 3, seq(
+				$.expression
+				field 'operator', choice ' + ', ' - '
+				choice $.expression, $.ellipsis
+			)
+			set: ($) -> seq '[', $.expression, '|', $.expression, ']'
+			bra: ($) -> seq '<', $.expression, '|'
+			ket: ($) -> seq '|', $.expression, '>'
+			projection: ($) -> prec 1, seq '<', $.expression, '|', $.expression, '>'
+			interval: ($) -> seq(
+				field 'start', choice '(', '['
+				$.expression, ',', $.expression
+				field 'end', choice ')', ']'
+			)
+			parens: ($) -> seq '(', $.expression, ')'
 		ellipsis: ($) -> '...'
-		identifier: ($) -> /[a-zA-Z]+/
-		integer: ($) -> /[0-9]+/
-		noncommutative: ($) -> choice(
-			prec.left 2, seq $._expression, ' ', $._expression
-			prec.left seq $.parens, $.parens
-		)
-		commutative: ($) -> prec.left 3, seq(
-			$.expression
-			field 'operator', choice ' + ', ' - '
-			choice $.expression, $.ellipsis
-		)
-		set: ($) -> seq '[', $.expression, '|', $.expression, ']'
-		bra: ($) -> seq '<', $.expression, '|'
-		ket: ($) -> seq '|', $.expression, '>'
-		projection: ($) -> prec 1, seq '<', $.expression, '|', $.expression, '>'
-		interval: ($) -> seq(
-			field 'start', choice '(', '['
-			$.expression, ',', $.expression
-			field 'end', choice ')', ']'
-		)
-		parens: ($) -> seq '(', $.expression, ')'
 		# binary: ($) -> prec.left seq $.expression, $.binop, choice $.expression, '...'
 		# binop: ($) -> choice(
 		# 	' + '
