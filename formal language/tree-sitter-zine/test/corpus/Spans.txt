@@ -26,3 +26,14 @@ A def{convergent sequence} is notated as {asdf}
   (word)
   (inline
     (identifier)))
+
+====
+Keywords on their own
+====
+A def b
+---
+
+(text
+  (word)
+  (word)
+  (word))
