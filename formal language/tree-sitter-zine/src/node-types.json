@@ -182,6 +182,10 @@
       "required": true,
       "types": [
         {
+          "type": "ellipsis",
+          "named": true
+        },
+        {
           "type": "expression",
           "named": true
         }

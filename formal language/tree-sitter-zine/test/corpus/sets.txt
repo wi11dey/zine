@@ -9,3 +9,17 @@ Set
     (set
       (identifier)
       (identifier))))
+
+============
+Continuation
+============
+{[1,2,...]}
+---
+
+(text
+  (inline
+    (set
+      (elements
+        (integer)
+        (integer)
+        (ellipsis)))))

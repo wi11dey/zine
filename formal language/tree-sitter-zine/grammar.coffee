@@ -48,5 +48,9 @@ export default grammar desugar unthisify
 				field 'end', choice ')', ']'
 			)
 			parens: -> seq '(', @.expression, ')'
-		elements: -> seq @.expression, repeat seq ',', @.expression
+		elements: -> seq(
+			@.expression, ',', @.expression
+			repeat seq ',', @.expression
+			optional seq ',', @.ellipsis, optional seq ',', @.expression, repeat seq ',', @.expression
+		)
 		ellipsis: -> '...'
