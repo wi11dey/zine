@@ -32,23 +32,11 @@
       "type": "SEQ",
       "members": [
         {
-          "type": "TOKEN",
+          "type": "FIELD",
+          "name": "keyword",
           "content": {
-            "type": "SEQ",
-            "members": [
-              {
-                "type": "FIELD",
-                "name": "keyword",
-                "content": {
-                  "type": "PATTERN",
-                  "value": "[a-z]+"
-                }
-              },
-              {
-                "type": "STRING",
-                "value": "{"
-              }
-            ]
+            "type": "PATTERN",
+            "value": "[a-z]+\\{"
           }
         },
         {

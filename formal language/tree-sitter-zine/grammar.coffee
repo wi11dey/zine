@@ -8,7 +8,7 @@ export default grammar sugar.desugar sugar.unthisify
 		text: -> seq @.token, repeat seq ' ', @.token
 		token:
 			span: -> seq(
-				token seq field('keyword', /[a-z]+/), '{'
+				field('keyword', /[a-z]+\{/)
 				@.text
 				'}'
 			)
