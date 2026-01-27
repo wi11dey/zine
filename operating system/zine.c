@@ -12,4 +12,4 @@ static int __init my_init(void)
   kthread_run(my_kthread, NULL, "my_app");
   return 0;  // initcall returns normally
 }
-late_initcall(my_init);
+late_initcall_sync(my_init);
