@@ -9,9 +9,9 @@ def{convergent}
     (text
       (word))))
 
-====
-Embedded Span
-====
+=============
+Embedded span
+=============
 A def{convergent sequence} is notated as {asdf}
 ---
 
@@ -27,9 +27,9 @@ A def{convergent sequence} is notated as {asdf}
   (inline
     (identifier)))
 
-====
+=====================
 Keywords on their own
-====
+=====================
 A def b
 ---
 

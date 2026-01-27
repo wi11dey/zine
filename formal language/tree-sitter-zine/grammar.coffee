@@ -6,6 +6,7 @@ export default grammar desugar unthisify
 	word: -> @.identifier
 	rules:
 		text: -> seq @.token, repeat seq ' ', @.token
+		punctuation: -> /[.!?:;,]/
 		token:
 			span: -> seq field('keyword', /[a-z]+\{/), @.text, '}'
 			word: -> /[^ \r\n{}]+/
@@ -18,8 +19,10 @@ export default grammar desugar unthisify
 			@.expression
 		)
 		expression:
-			identifier: -> /[a-zA-Z]+/
-			integer: -> /[0-9]+/
+			atom:
+				identifier: -> /[a-zA-Z]+/
+				integer: -> /[0-9]+/
+			subscript: -> seq @.atom, '_', choice @.atom, @.parens
 			noncommutative: -> choice(
 				prec.left 2, seq @._expression, ' ', @._expression
 				prec.left seq @.parens, @.parens

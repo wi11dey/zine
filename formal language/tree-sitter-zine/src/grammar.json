@@ -28,6 +28,10 @@
         }
       ]
     },
+    "punctuation": {
+      "type": "PATTERN",
+      "value": "[.!?:;,]"
+    },
     "span": {
       "type": "SEQ",
       "members": [
@@ -120,6 +124,32 @@
     "integer": {
       "type": "PATTERN",
       "value": "[0-9]+"
+    },
+    "subscript": {
+      "type": "SEQ",
+      "members": [
+        {
+          "type": "SYMBOL",
+          "name": "atom"
+        },
+        {
+          "type": "STRING",
+          "value": "_"
+        },
+        {
+          "type": "CHOICE",
+          "members": [
+            {
+              "type": "SYMBOL",
+              "name": "atom"
+            },
+            {
+              "type": "SYMBOL",
+              "name": "parens"
+            }
+          ]
+        }
+      ]
     },
     "noncommutative": {
       "type": "CHOICE",
@@ -397,7 +427,7 @@
         }
       ]
     },
-    "expression": {
+    "atom": {
       "type": "CHOICE",
       "members": [
         {
@@ -407,6 +437,19 @@
         {
           "type": "SYMBOL",
           "name": "integer"
+        }
+      ]
+    },
+    "expression": {
+      "type": "CHOICE",
+      "members": [
+        {
+          "type": "SYMBOL",
+          "name": "atom"
+        },
+        {
+          "type": "SYMBOL",
+          "name": "subscript"
         },
         {
           "type": "SYMBOL",
@@ -451,6 +494,7 @@
   "supertypes": [
     "math",
     "token",
+    "atom",
     "expression"
   ],
   "reserved": {}

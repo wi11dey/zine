@@ -1,22 +1,32 @@
 [
   {
-    "type": "expression",
+    "type": "atom",
     "named": true,
     "subtypes": [
-      {
-        "type": "bra",
-        "named": true
-      },
-      {
-        "type": "commutative",
-        "named": true
-      },
       {
         "type": "identifier",
         "named": true
       },
       {
         "type": "integer",
+        "named": true
+      }
+    ]
+  },
+  {
+    "type": "expression",
+    "named": true,
+    "subtypes": [
+      {
+        "type": "atom",
+        "named": true
+      },
+      {
+        "type": "bra",
+        "named": true
+      },
+      {
+        "type": "commutative",
         "named": true
       },
       {
@@ -41,6 +51,10 @@
       },
       {
         "type": "set",
+        "named": true
+      },
+      {
+        "type": "subscript",
         "named": true
       }
     ]
@@ -291,6 +305,25 @@
     }
   },
   {
+    "type": "subscript",
+    "named": true,
+    "fields": {},
+    "children": {
+      "multiple": true,
+      "required": true,
+      "types": [
+        {
+          "type": "atom",
+          "named": true
+        },
+        {
+          "type": "parens",
+          "named": true
+        }
+      ]
+    }
+  },
+  {
     "type": "text",
     "named": true,
     "root": true,
@@ -344,6 +377,10 @@
   },
   {
     "type": "]",
+    "named": false
+  },
+  {
+    "type": "_",
     "named": false
   },
   {
