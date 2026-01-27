@@ -1,24 +1,27 @@
-desugar = ({ rules: sugared, rest... }) ->
-	flattened = do flatten = (rules = sugared) ->
-		for key, value of rules
-			if typeof value is 'object'
-				yield from flatten value
-			else
-				yield
-					"#{key}": value
-	supertypeRules = do createSupertypes = (rules = sugared) ->
-		for key, value of rules when typeof value is 'object'
-			yield from createSupertypes value
-			yield
-				"#{key}": do (value) -> ($) -> choice ($[subtype] for subtype in Object.keys value)...
-	{
-		rest...
-		supertypes: ($) -> Array.from do collect = (rules = sugared) ->
+desugar = ({ rules: sugared, rest... }) -> {
+	rest...
+	supertypes: ($) ->
+		Array.from do collect = (rules = sugared) ->
 			for key, value of rules when typeof value is 'object'
 				yield from collect value
 				yield $[key]
-		rules: Object.assign {}, flattened..., supertypeRules...
-	}
+	rules: Object.assign(
+		Object.fromEntries do flatten = (rules = sugared) ->
+			for key, value of rules
+				if typeof value is 'object'
+					yield from flatten value
+				else
+					yield [key, value]
+		Object.fromEntries do choices = (rules = sugared) ->
+			for key, value of rules when typeof value is 'object'
+				yield from choices value
+				yield [
+					key
+					do (value) -> # Copy value in the returned lambda
+						($) -> choice ($[subtype] for subtype in Object.keys value)...
+				]
+	)
+}
 
 export default grammar desugar
 	name: 'zine'
@@ -26,6 +29,7 @@ export default grammar desugar
 	word: ($) -> $.identifier
 	rules:
 		text: ($) -> repeat1 $.token
+
 		token:
 			span: ($) -> seq(
 				token seq field('keyword', /[a-z]+/), '{'
@@ -36,6 +40,7 @@ export default grammar desugar
 			math:
 				display: ($) -> seq '{{', $.expression, '}}'
 				inline: ($) -> seq '{', $.expression, '}'
+
 		_expression: ($) -> choice(
 			prec.left 1, seq ' ', $._expression
 			$.expression
@@ -62,6 +67,7 @@ export default grammar desugar
 				field 'end', choice ')', ']'
 			)
 			parens: ($) -> seq '(', $.expression, ')'
+
 		ellipsis: ($) -> '...'
 		# binary: ($) -> prec.left seq $.expression, $.binop, choice $.expression, '...'
 		# binop: ($) -> choice(
