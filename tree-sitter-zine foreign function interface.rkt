@@ -2,7 +2,7 @@
 
 (require ffi/unsafe
          ffi/unsafe/define
-         "tree-sitter-ffi.rkt")
+         (file "tree-sitter foreign function interface.rkt"))
 
 (provide tree_sitter_zine
          parse-zine-string)

@@ -1,0 +1,10 @@
+====
+Span
+====
+def{convergent}
+---
+
+(text
+(span
+  (text
+    (word))))

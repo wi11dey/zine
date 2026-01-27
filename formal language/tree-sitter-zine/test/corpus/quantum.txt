@@ -1,26 +1,33 @@
 ===
 Bra
 ===
-$<psi|$
+{<psi|}
 ---
 
 (text
-  (word))
+  (inline
+    (bra
+      (identifier))))
 
 ===
 Ket
 ===
-$|psi>$
+{|psi>}
 ---
 
 (text
-  (word))
+  (inline
+    (ket
+      (identifier))))
 
 ==========
 Projection
 ==========
-$<psi|psi>$
+{<psi|psi>}
 ---
 
 (text
-  (word))
+  (inline
+    (projection
+      (identifier)
+      (identifier))))

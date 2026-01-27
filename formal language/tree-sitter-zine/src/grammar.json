@@ -4,29 +4,11 @@
   "word": "identifier",
   "rules": {
     "text": {
-      "type": "SEQ",
-      "members": [
-        {
-          "type": "SYMBOL",
-          "name": "token"
-        },
-        {
-          "type": "REPEAT",
-          "content": {
-            "type": "SEQ",
-            "members": [
-              {
-                "type": "STRING",
-                "value": " "
-              },
-              {
-                "type": "SYMBOL",
-                "name": "token"
-              }
-            ]
-          }
-        }
-      ]
+      "type": "REPEAT1",
+      "content": {
+        "type": "SYMBOL",
+        "name": "token"
+      }
     },
     "token": {
       "type": "CHOICE",
@@ -37,7 +19,44 @@
         },
         {
           "type": "SYMBOL",
+          "name": "span"
+        },
+        {
+          "type": "SYMBOL",
           "name": "word"
+        }
+      ]
+    },
+    "span": {
+      "type": "SEQ",
+      "members": [
+        {
+          "type": "TOKEN",
+          "content": {
+            "type": "SEQ",
+            "members": [
+              {
+                "type": "FIELD",
+                "name": "keyword",
+                "content": {
+                  "type": "PATTERN",
+                  "value": "[a-z]+"
+                }
+              },
+              {
+                "type": "STRING",
+                "value": "{"
+              }
+            ]
+          }
+        },
+        {
+          "type": "SYMBOL",
+          "name": "text"
+        },
+        {
+          "type": "STRING",
+          "value": "}"
         }
       ]
     },

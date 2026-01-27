@@ -4,10 +4,16 @@ export default grammar
 	extras: ($) -> []
 	word: ($) -> $.identifier
 	rules:
-		text: ($) -> seq $.token, repeat seq ' ', $.token
+		text: ($) -> repeat1 $.token
 		token: ($) -> choice(
 			$.math
+			$.span
 			$.word
+		)
+		span: ($) -> seq(
+			token seq field('keyword', /[a-z]+/), '{'
+			$.text
+			'}'
 		)
 		word: ($) -> /[^ \r\n{}]+/
 		math: ($) -> choice $.display, $.inline
