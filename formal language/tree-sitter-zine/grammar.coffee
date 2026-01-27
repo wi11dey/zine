@@ -1,6 +1,6 @@
-import * as sugar from './sugar.js'
+import {desugar, unthisify} from './sugar.js'
 
-export default grammar sugar.desugar sugar.unthisify
+export default grammar desugar unthisify
 	name: 'zine'
 	extras: -> []
 	word: -> @.identifier
