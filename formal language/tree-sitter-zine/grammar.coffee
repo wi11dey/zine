@@ -2,7 +2,7 @@ import {desugar, unthisify} from './sugar.js'
 
 export default grammar desugar unthisify
 	name: 'zine'
-	extras: -> []
+	extras: -> [] # Whitespace-sensitive language
 	word: -> @.identifier
 	conflicts: -> [
 		[@.interval, @.elements]
