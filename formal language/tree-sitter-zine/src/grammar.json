@@ -117,6 +117,28 @@
         }
       ]
     },
+    "negation": {
+      "type": "SEQ",
+      "members": [
+        {
+          "type": "STRING",
+          "value": "-"
+        },
+        {
+          "type": "CHOICE",
+          "members": [
+            {
+              "type": "SYMBOL",
+              "name": "atom"
+            },
+            {
+              "type": "SYMBOL",
+              "name": "parens"
+            }
+          ]
+        }
+      ]
+    },
     "identifier": {
       "type": "PATTERN",
       "value": "[a-zA-Z]+"
@@ -141,6 +163,10 @@
               {
                 "type": "SYMBOL",
                 "name": "parens"
+              },
+              {
+                "type": "SYMBOL",
+                "name": "norm"
               }
             ]
           },
@@ -171,8 +197,17 @@
         "type": "SEQ",
         "members": [
           {
-            "type": "SYMBOL",
-            "name": "atom"
+            "type": "CHOICE",
+            "members": [
+              {
+                "type": "SYMBOL",
+                "name": "atom"
+              },
+              {
+                "type": "SYMBOL",
+                "name": "norm"
+              }
+            ]
           },
           {
             "type": "STRING",
@@ -296,6 +331,23 @@
           }
         ]
       }
+    },
+    "norm": {
+      "type": "SEQ",
+      "members": [
+        {
+          "type": "STRING",
+          "value": "|"
+        },
+        {
+          "type": "SYMBOL",
+          "name": "expression"
+        },
+        {
+          "type": "STRING",
+          "value": "|"
+        }
+      ]
     },
     "set": {
       "type": "SEQ",
@@ -626,12 +678,25 @@
         }
       ]
     },
+    "molecule": {
+      "type": "CHOICE",
+      "members": [
+        {
+          "type": "SYMBOL",
+          "name": "negation"
+        },
+        {
+          "type": "SYMBOL",
+          "name": "atom"
+        }
+      ]
+    },
     "expression": {
       "type": "CHOICE",
       "members": [
         {
           "type": "SYMBOL",
-          "name": "atom"
+          "name": "molecule"
         },
         {
           "type": "SYMBOL",
@@ -640,6 +705,10 @@
         {
           "type": "SYMBOL",
           "name": "commutative"
+        },
+        {
+          "type": "SYMBOL",
+          "name": "norm"
         },
         {
           "type": "SYMBOL",
@@ -683,6 +752,7 @@
     "token",
     "script",
     "atom",
+    "molecule",
     "expression"
   ],
   "reserved": {}

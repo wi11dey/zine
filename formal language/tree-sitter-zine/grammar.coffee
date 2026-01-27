@@ -24,13 +24,23 @@ export default grammar desugar unthisify
 			@.expression
 		)
 		expression:
-			atom:
-				identifier: -> /[a-zA-Z]+/
-				integer: -> /[0-9]+/
-				script:
-					superscript: -> prec.right seq choice(@.atom, @.parens), '^', choice @.atom, @.parens
-					subscript: -> prec.right seq @.atom, '_', choice @.atom, @.parens
-				postfix: -> seq @.atom, field 'operator', /[!#']/
+			molecule:
+				negation: -> seq '-', choice @.atom, @.parens
+				atom:
+					identifier: -> /[a-zA-Z]+/
+					integer: -> /[0-9]+/
+					script:
+						superscript: -> prec.right seq(
+							choice(
+								@.atom
+								@.parens
+								@.norm
+							)
+							'^'
+							choice @.atom, @.parens
+						)
+						subscript: -> prec.right seq choice(@.atom, @.norm), '_', choice @.atom, @.parens
+					postfix: -> seq @.atom, field 'operator', /[!#']/
 			noncommutative: -> choice(
 				prec.left 3, seq @._expression, ' ', @._expression
 				prec.left seq @.parens, @.parens
@@ -40,6 +50,7 @@ export default grammar desugar unthisify
 				field 'operator', choice ' + ', ' - '
 				choice @._expression, @.ellipsis
 			)
+			norm: -> seq '|', @.expression, '|'
 			set: -> seq '[', choice(@.elements, seq @.expression, '|', @.expression), ']'
 			bra: -> seq '<', @.expression, '|'
 			ket: -> seq '|', @.expression, '>'

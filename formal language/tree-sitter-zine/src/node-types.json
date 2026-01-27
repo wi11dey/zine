@@ -26,10 +26,6 @@
     "named": true,
     "subtypes": [
       {
-        "type": "atom",
-        "named": true
-      },
-      {
         "type": "bra",
         "named": true
       },
@@ -46,7 +42,15 @@
         "named": true
       },
       {
+        "type": "molecule",
+        "named": true
+      },
+      {
         "type": "noncommutative",
+        "named": true
+      },
+      {
+        "type": "norm",
         "named": true
       },
       {
@@ -73,6 +77,20 @@
       },
       {
         "type": "inline",
+        "named": true
+      }
+    ]
+  },
+  {
+    "type": "molecule",
+    "named": true,
+    "subtypes": [
+      {
+        "type": "atom",
+        "named": true
+      },
+      {
+        "type": "negation",
         "named": true
       }
     ]
@@ -267,11 +285,45 @@
     }
   },
   {
+    "type": "negation",
+    "named": true,
+    "fields": {},
+    "children": {
+      "multiple": false,
+      "required": true,
+      "types": [
+        {
+          "type": "atom",
+          "named": true
+        },
+        {
+          "type": "parens",
+          "named": true
+        }
+      ]
+    }
+  },
+  {
     "type": "noncommutative",
     "named": true,
     "fields": {},
     "children": {
       "multiple": true,
+      "required": true,
+      "types": [
+        {
+          "type": "expression",
+          "named": true
+        }
+      ]
+    }
+  },
+  {
+    "type": "norm",
+    "named": true,
+    "fields": {},
+    "children": {
+      "multiple": false,
       "required": true,
       "types": [
         {
@@ -373,6 +425,10 @@
           "named": true
         },
         {
+          "type": "norm",
+          "named": true
+        },
+        {
           "type": "parens",
           "named": true
         }
@@ -389,6 +445,10 @@
       "types": [
         {
           "type": "atom",
+          "named": true
+        },
+        {
+          "type": "norm",
           "named": true
         },
         {
@@ -436,6 +496,10 @@
   },
   {
     "type": ",",
+    "named": false
+  },
+  {
+    "type": "-",
     "named": false
   },
   {

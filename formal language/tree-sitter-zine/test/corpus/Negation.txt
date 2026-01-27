@@ -1,0 +1,10 @@
+========
+Negation
+========
+{-x}
+---
+
+(text
+  (inline
+    (negation
+      (identifier))))
