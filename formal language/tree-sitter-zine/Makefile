@@ -72,11 +72,11 @@ $(LANGUAGE_NAME).pc: bindings/c/$(LANGUAGE_NAME).pc.in
 		-e 's|@PROJECT_HOMEPAGE_URL@|$(HOMEPAGE_URL)|' \
 		-e 's|@CMAKE_INSTALL_PREFIX@|$(PREFIX)|' $< > $@
 
-grammar.js: grammar.coffee
-	npx coffee --compile $^
+%.js: %.coffee
+	npx coffee --compile $<
 
-$(SRC_DIR)/grammar.json: grammar.js
-	$(TS) generate --no-parser $^
+$(SRC_DIR)/grammar.json: grammar.js sugar.js
+	$(TS) generate --no-parser $<
 
 $(PARSER): $(SRC_DIR)/grammar.json
 	$(TS) generate $^

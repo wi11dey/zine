@@ -1,91 +1,68 @@
-desugar = ({ rules: sugared, rest... }) -> {
-	rest...
-	supertypes: ($) ->
-		Array.from do collect = (rules = sugared) ->
-			for key, value of rules when typeof value is 'object'
-				yield from collect value
-				yield $[key]
-	rules: Object.assign(
-		Object.fromEntries do flatten = (rules = sugared) ->
-			for key, value of rules
-				if typeof value is 'object'
-					yield from flatten value
-				else
-					yield [key, value]
-		Object.fromEntries do choices = (rules = sugared) ->
-			for key, value of rules when typeof value is 'object'
-				yield from choices value
-				yield [
-					key
-					do (value) -> # Copy value in the returned lambda
-						($) -> choice ($[subtype] for subtype in Object.keys value)...
-				]
-	)
-}
+import * as sugar from './sugar.js'
 
-export default grammar desugar
+export default grammar sugar.desugar sugar.unthisify
 	name: 'zine'
-	extras: ($) -> []
-	word: ($) -> $.identifier
+	extras: -> []
+	word: -> @.identifier
 	rules:
-		text: ($) -> repeat1 $.token
+		text: -> repeat1 @.token
 
 		token:
-			span: ($) -> seq(
+			span: -> seq(
 				token seq field('keyword', /[a-z]+/), '{'
-				$.text
+				@.text
 				'}'
 			)
-			word: ($) -> /[^ \r\n{}]+/
+			word: -> /[^ \r\n{}]+/
 			math:
-				display: ($) -> seq '{{', $.expression, '}}'
-				inline: ($) -> seq '{', $.expression, '}'
+				display: -> seq '{{', @.expression, '}}'
+				inline: -> seq '{', @.expression, '}'
 
-		_expression: ($) -> choice(
-			prec.left 1, seq ' ', $._expression
-			$.expression
+		_expression: -> choice(
+			prec.left 1, seq ' ', @._expression
+			@.expression
 		)
 		expression:
-			identifier: ($) -> /[a-zA-Z]+/
-			integer: ($) -> /[0-9]+/
-			noncommutative: ($) -> choice(
-				prec.left 2, seq $._expression, ' ', $._expression
-				prec.left seq $.parens, $.parens
+			identifier: -> /[a-zA-Z]+/
+			integer: -> /[0-9]+/
+			noncommutative: -> choice(
+				prec.left 2, seq @._expression, ' ', @._expression
+				prec.left seq @.parens, @.parens
 			)
-			commutative: ($) -> prec.left 3, seq(
-				$.expression
+			commutative: -> prec.left 3, seq(
+				@.expression
 				field 'operator', choice ' + ', ' - '
-				choice $.expression, $.ellipsis
+				choice @.expression, @.ellipsis
 			)
-			set: ($) -> seq '[', $.expression, '|', $.expression, ']'
-			bra: ($) -> seq '<', $.expression, '|'
-			ket: ($) -> seq '|', $.expression, '>'
-			projection: ($) -> prec 1, seq '<', $.expression, '|', $.expression, '>'
-			interval: ($) -> seq(
+			set: -> seq '[', @.expression, '|', @.expression, ']'
+			bra: -> seq '<', @.expression, '|'
+			ket: -> seq '|', @.expression, '>'
+			projection: -> prec 1, seq '<', @.expression, '|', @.expression, '>'
+			interval: -> seq(
 				field 'start', choice '(', '['
-				$.expression, ',', $.expression
+				@.expression, ',', @.expression
 				field 'end', choice ')', ']'
 			)
-			parens: ($) -> seq '(', $.expression, ')'
+			parens: -> seq '(', @.expression, ')'
 
-		ellipsis: ($) -> '...'
-		# binary: ($) -> prec.left seq $.expression, $.binop, choice $.expression, '...'
-		# binop: ($) -> choice(
+		ellipsis: -> '...'
+		# binary: -> prec.left seq @.expression, @.binop, choice @.expression, '...'
+		# binop: -> choice(
 		# 	' + '
 		# 	'/'
 		# )
-		# exists: ($) -> seq 'E', $.expression, '. ', $.expression
-		# forall: ($) -> seq 'A', $.expression, '. ', $.expression
-		# postfix: ($) -> seq $.root, /['!#]/
-		# integer: ($) -> /[0-9]+/
-		# subscript: ($) -> prec.left 2, seq $.root, '_', $.expression
-		# superscript: ($) -> prec.left 2, seq $.root, '^', $.expression
+		# exists: -> seq 'E', @.expression, '. ', @.expression
+		# forall: -> seq 'A', @.expression, '. ', @.expression
+		# postfix: -> seq @.root, /['!#]/
+		# integer: -> /[0-9]+/
+		# subscript: -> prec.left 2, seq @.root, '_', @.expression
+		# superscript: -> prec.left 2, seq @.root, '^', @.expression
 		# choice(
-		# 	prec.left 3, seq $.expression, ' ', $.expression
-		# 	prec.left 1, seq $.root, $.parens
-		# 	prec.left 3, seq $.parens, $.parens
+		# 	prec.left 3, seq @.expression, ' ', @.expression
+		# 	prec.left 1, seq @.root, @.parens
+		# 	prec.left 3, seq @.parens, @.parens
 		# )
-		# division: ($) -> prec.left seq $.root, '/', $.root
+		# division: -> prec.left seq @.root, '/', @.root
 		# binop: -> choice(
 			# '+'
 			# '-'
@@ -105,5 +82,5 @@ export default grammar desugar
 			# 'in'
 			# 'contains'
 		# )
-		# negation: ($) -> prec.left 4, seq '-', $.root
-		# not: ($) -> prec.left 4, seq 'not', '\s+', $.root
+		# negation: -> prec.left 4, seq '-', @.root
+		# not: -> prec.left 4, seq 'not', '\s+', @.root
