@@ -4,11 +4,29 @@
   "word": "identifier",
   "rules": {
     "text": {
-      "type": "REPEAT1",
-      "content": {
-        "type": "SYMBOL",
-        "name": "token"
-      }
+      "type": "SEQ",
+      "members": [
+        {
+          "type": "SYMBOL",
+          "name": "token"
+        },
+        {
+          "type": "REPEAT",
+          "content": {
+            "type": "SEQ",
+            "members": [
+              {
+                "type": "STRING",
+                "value": " "
+              },
+              {
+                "type": "SYMBOL",
+                "name": "token"
+              }
+            ]
+          }
+        }
+      ]
     },
     "span": {
       "type": "SEQ",

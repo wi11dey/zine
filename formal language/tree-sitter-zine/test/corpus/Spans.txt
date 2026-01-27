@@ -5,6 +5,24 @@ def{convergent}
 ---
 
 (text
-(span
-  (text
-    (word))))
+  (span
+    (text
+      (word))))
+
+====
+Embedded Span
+====
+A def{convergent sequence} is notated as {asdf}
+---
+
+(text
+  (word)
+  (span
+    (text
+      (word)
+      (word)))
+  (word)
+  (word)
+  (word)
+  (inline
+    (identifier)))
