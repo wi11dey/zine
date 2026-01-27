@@ -20,7 +20,7 @@ export default grammar desugar unthisify
 				inline: -> seq '{', @.expression, '}'
 
 		_expression: -> choice(
-			prec.left 1, seq ' ', @._expression
+			prec.left 2, seq ' ', @._expression
 			@.expression
 		)
 		expression:
@@ -32,13 +32,13 @@ export default grammar desugar unthisify
 					subscript: -> prec.right seq @.atom, '_', choice @.atom, @.parens
 				postfix: -> seq @.atom, field 'operator', /[!#']/
 			noncommutative: -> choice(
-				prec.left 2, seq @._expression, ' ', @._expression
+				prec.left 3, seq @._expression, ' ', @._expression
 				prec.left seq @.parens, @.parens
 			)
-			commutative: -> prec.left 3, seq(
-				@.expression
+			commutative: -> prec.left 1, seq(
+				@._expression
 				field 'operator', choice ' + ', ' - '
-				choice @.expression, @.ellipsis
+				choice @._expression, @.ellipsis
 			)
 			set: -> seq '[', choice(@.elements, seq @.expression, '|', @.expression), ']'
 			bra: -> seq '<', @.expression, '|'
