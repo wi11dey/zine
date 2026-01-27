@@ -118,26 +118,30 @@
       ]
     },
     "negation": {
-      "type": "SEQ",
-      "members": [
-        {
-          "type": "STRING",
-          "value": "-"
-        },
-        {
-          "type": "CHOICE",
-          "members": [
-            {
-              "type": "SYMBOL",
-              "name": "atom"
-            },
-            {
-              "type": "SYMBOL",
-              "name": "parens"
-            }
-          ]
-        }
-      ]
+      "type": "PREC",
+      "value": 2,
+      "content": {
+        "type": "SEQ",
+        "members": [
+          {
+            "type": "STRING",
+            "value": "-"
+          },
+          {
+            "type": "CHOICE",
+            "members": [
+              {
+                "type": "SYMBOL",
+                "name": "atom"
+              },
+              {
+                "type": "SYMBOL",
+                "name": "parens"
+              }
+            ]
+          }
+        ]
+      }
     },
     "identifier": {
       "type": "PATTERN",
@@ -184,6 +188,10 @@
               {
                 "type": "SYMBOL",
                 "name": "parens"
+              },
+              {
+                "type": "SYMBOL",
+                "name": "negation"
               }
             ]
           }
@@ -223,6 +231,10 @@
               {
                 "type": "SYMBOL",
                 "name": "parens"
+              },
+              {
+                "type": "SYMBOL",
+                "name": "negation"
               }
             ]
           }
@@ -678,7 +690,7 @@
         }
       ]
     },
-    "molecule": {
+    "expression": {
       "type": "CHOICE",
       "members": [
         {
@@ -688,15 +700,6 @@
         {
           "type": "SYMBOL",
           "name": "atom"
-        }
-      ]
-    },
-    "expression": {
-      "type": "CHOICE",
-      "members": [
-        {
-          "type": "SYMBOL",
-          "name": "molecule"
         },
         {
           "type": "SYMBOL",
@@ -752,7 +755,6 @@
     "token",
     "script",
     "atom",
-    "molecule",
     "expression"
   ],
   "reserved": {}

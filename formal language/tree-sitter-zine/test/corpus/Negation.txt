@@ -8,3 +8,41 @@ Negation
   (inline
     (negation
       (identifier))))
+
+==================
+No double negation
+==================
+{--x}
+---
+
+(text
+  (inline
+    (ERROR)
+    (negation
+      (identifier))))
+
+===========================
+Double negation with parens
+===========================
+{-(-x)}
+---
+
+(text
+  (inline
+    (negation
+      (parens
+        (negation
+          (identifier))))))
+
+===========
+Superscript
+===========
+{2^-x}
+---
+
+(text
+  (inline
+    (superscript
+      (integer)
+      (negation
+        (identifier)))))
