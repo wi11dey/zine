@@ -4,4 +4,7 @@ version = "0.1.0"
 edition = "2024"
 
 [dependencies]
-winit = "0.30.12"
+winit = "0.30"
+harfbuzz_rs = "2.0"
+cairo-rs = { version = "0.18.5", features = ["png"] }
+pixels = "0.15.0"
