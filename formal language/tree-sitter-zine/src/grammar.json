@@ -117,32 +117,6 @@
         }
       ]
     },
-    "negation": {
-      "type": "PREC",
-      "value": 2,
-      "content": {
-        "type": "SEQ",
-        "members": [
-          {
-            "type": "STRING",
-            "value": "-"
-          },
-          {
-            "type": "CHOICE",
-            "members": [
-              {
-                "type": "SYMBOL",
-                "name": "atom"
-              },
-              {
-                "type": "SYMBOL",
-                "name": "parens"
-              }
-            ]
-          }
-        ]
-      }
-    },
     "identifier": {
       "type": "PATTERN",
       "value": "[a-zA-Z]+"
@@ -257,6 +231,32 @@
           }
         }
       ]
+    },
+    "negation": {
+      "type": "PREC",
+      "value": 2,
+      "content": {
+        "type": "SEQ",
+        "members": [
+          {
+            "type": "STRING",
+            "value": "-"
+          },
+          {
+            "type": "CHOICE",
+            "members": [
+              {
+                "type": "SYMBOL",
+                "name": "atom"
+              },
+              {
+                "type": "SYMBOL",
+                "name": "parens"
+              }
+            ]
+          }
+        ]
+      }
     },
     "noncommutative": {
       "type": "CHOICE",
@@ -489,7 +489,7 @@
         },
         {
           "type": "STRING",
-          "value": ","
+          "value": ".."
         },
         {
           "type": "SYMBOL",
@@ -695,11 +695,11 @@
       "members": [
         {
           "type": "SYMBOL",
-          "name": "negation"
+          "name": "atom"
         },
         {
           "type": "SYMBOL",
-          "name": "atom"
+          "name": "negation"
         },
         {
           "type": "SYMBOL",
@@ -741,12 +741,7 @@
     }
   },
   "extras": [],
-  "conflicts": [
-    [
-      "interval",
-      "elements"
-    ]
-  ],
+  "conflicts": [],
   "precedences": [],
   "externals": [],
   "inline": [],

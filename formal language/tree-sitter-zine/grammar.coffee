@@ -6,9 +6,6 @@ export default grammar desugar unthisify
 	name: 'zine'
 	extras: -> [] # Whitespace-sensitive language
 	word: -> @.identifier
-	conflicts: -> [
-		[@.interval, @.elements]
-	]
 	rules:
 		text: -> seq @.token, repeat seq ' ', @.token
 		punctuation: -> /[.!?:;,]/
@@ -56,7 +53,7 @@ export default grammar desugar unthisify
 			projection: -> prec 1, seq '<', @.expression, '|', @.expression, '>'
 			interval: -> seq(
 				field 'start', choice '(', '['
-				@.expression, ',', @.expression
+				@.expression, '..', @.expression
 				field 'end', choice ')', ']'
 			)
 			parens: -> seq '(', @.expression, ')'
