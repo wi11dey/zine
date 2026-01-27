@@ -1,0 +1,25 @@
+=========
+Subscript
+=========
+{2_2}
+---
+
+(text
+  (inline
+    (subscript
+      (integer)
+      (integer))))
+
+================
+Double Subscript
+================
+{2_2_2}
+---
+
+(text
+  (inline
+    (subscript
+      (integer)
+      (subscript
+        (integer)
+        (integer)))))
