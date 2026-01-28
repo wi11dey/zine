@@ -4,3 +4,6 @@
 [submodule "operating system/chez"]
 	path = operating system/chez
 	url = https://github.com/cisco/ChezScheme.git
+[submodule "browser"]
+	path = browser
+	url = https://github.com/mozilla-firefox/firefox.git
