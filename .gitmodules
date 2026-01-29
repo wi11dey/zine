@@ -5,5 +5,5 @@
 	path = operating system/chez
 	url = https://github.com/cisco/ChezScheme.git
 [submodule "browser"]
-	path = browser
+	path = browser/firefox
 	url = https://github.com/mozilla-firefox/firefox.git
