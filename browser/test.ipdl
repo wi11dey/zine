@@ -1,0 +1,14 @@
+namespace test {
+
+protocol TestProtocol {
+parent:
+    async Hello(nsString message);
+    sync GetValue(int32_t id) returns (nsString value);
+    async UpdateData(int32_t id, nsString data);
+
+child:
+    async Welcome(nsString greeting);
+    async DataChanged(int32_t id, nsString newValue);
+};
+
+} // namespace test
