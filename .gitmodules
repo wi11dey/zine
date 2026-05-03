@@ -1,9 +1,3 @@
-[submodule "operating system/linux"]
-	path = operating system/linux
-	url = https://github.com/torvalds/linux.git
-[submodule "operating system/chez"]
-	path = operating system/chez
-	url = https://github.com/cisco/ChezScheme.git
 [submodule "browser"]
 	path = browser/firefox
 	url = https://github.com/mozilla-firefox/firefox.git

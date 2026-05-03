@@ -1,0 +1,27 @@
+enum Keyword
+| forall
+| exists
+| none
+| neg
+| open
+| theorem
+
+interface UDParser:
+  method parse(text :: Text, model :: UDModel) :: UDTree
+
+interface Language:
+  method model() :: UDModel
+  method classify_keyword(word :: Token) :: Keyword
+
+Parameter.def language :: Language = English()
+Parameter.def ud_parser :: UDParser = UDPipe1()
+
+fun tag_keywords(tree :: UDTree) :: TaggedUDTree
+
+
+
+fun parse(text :: String):
+  text
+  |> ud_parser().parse(_, language().model())
+  |> tag_keywords
+  |> drs
