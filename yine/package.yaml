@@ -1,4 +1,18 @@
 name:                yine
+dependencies:
+  - base >=4.8 && <5
+  - yi-core
+  - yi-dynamic-configuration
+  - yi-keymap-emacs
+  - yi-frontend-vty
+  - yi-mode-haskell
+  - yi-mode-javascript
+  - yi-misc-modes
+  - yi-rope
+  - oo-prototypes
+  - microlens-platform
+library:
+  source-dirs: src
 executables:
   yine:
     main: Main.hs
@@ -6,15 +20,3 @@ executables:
     ghc-options:
       - -O2
       - -threaded
-    dependencies:
-      - base >=4.8 && <5
-      - yi-core
-      - yi-dynamic-configuration
-      - yi-keymap-emacs
-      - yi-frontend-vty
-      - yi-mode-haskell
-      - yi-mode-javascript
-      - yi-misc-modes
-      - yi-rope
-      - oo-prototypes
-      - microlens-platform

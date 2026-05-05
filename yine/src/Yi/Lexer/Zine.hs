@@ -21,7 +21,7 @@
 -- The `_expression` helper from the original grammar (which allowed an
 -- optional leading space) is folded into the call sites.
 
-module Zine.Parser
+module Yi.Lexer.Zine
   ( -- * AST
     Text(..)
   , Token(..)
@@ -380,7 +380,7 @@ pCommutative = do
       op  <- (str " + ") <|> (str " - ")
       rhs <- pExprNoBinop
          <|> pNoncommNoCommut
-         <|> (EAtom AIdent <$ recoverWith (pure ()))   -- placeholder; see below
+         <|> (EAtom (AIdent "...") <$ recoverWith (pure ()))   -- placeholder; see below
                                                        -- (only used if a real RHS fails)
       pure (op, rhs)
                                                        -- ^ Note: recoverWith pulls
