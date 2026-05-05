@@ -31,7 +31,7 @@ should be removed before `cargo-cabal` stable release.
 >   defaultMainWithHooks
 >     simpleUserHooks
 >       { confHook = rustConfHook
-> --    , buildHook = rustBuildHook
+>       , buildHook = rustBuildHook
 >       }
 
 This hook could be remove if at some point, likely if this issue is resolved
