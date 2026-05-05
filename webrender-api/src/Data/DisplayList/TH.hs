@@ -32,7 +32,7 @@ generateFFIBindings header = do
   types <- generateTypesFromTU translUnit
   let funDecls = extractFunctionDecls translUnit
   bindings <- mapM generateFFIBinding funDecls
-  return $ types ++ concat bindings
+  return []
 
 -- | Generate type declarations from translation unit
 generateTypesFromTU :: C.CTranslUnit -> Q [Dec]

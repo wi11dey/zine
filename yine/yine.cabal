@@ -1,0 +1,30 @@
+cabal-version: 1.12
+
+-- This file has been generated from package.yaml by hpack version 0.39.1.
+--
+-- see: https://github.com/sol/hpack
+
+name:           yine
+version:        0.0.0
+build-type:     Simple
+
+executable yine
+  main-is: Main.hs
+  other-modules:
+      Paths_yine
+  hs-source-dirs:
+      app
+  ghc-options: -O2 -threaded
+  build-depends:
+      base >=4.8 && <5
+    , microlens-platform
+    , oo-prototypes
+    , yi-core
+    , yi-dynamic-configuration
+    , yi-frontend-vty
+    , yi-keymap-emacs
+    , yi-misc-modes
+    , yi-mode-haskell
+    , yi-mode-javascript
+    , yi-rope
+  default-language: Haskell2010

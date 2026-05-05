@@ -56,17 +56,6 @@ default-extensions:
 library:
   source-dirs: src
 
-executables:
-  webrender-api-exe:
-    main:                Main.hs
-    source-dirs:         app
-    ghc-options:
-    - -threaded
-    - -rtsopts
-    - -with-rtsopts=-N
-    dependencies:
-    - webrender-api
-
 tests:
   webrender-api-test:
     main:                Spec.hs
