@@ -57,7 +57,6 @@ test-suite yine-test
   type: exitcode-stdio-1.0
   main-is: Spec.hs
   other-modules:
-      TestDebug
       Paths_yine
   hs-source-dirs:
       test
