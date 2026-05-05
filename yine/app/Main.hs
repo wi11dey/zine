@@ -1,3 +1,5 @@
+{-# LANGUAGE OverloadedStrings #-}
+
 import           Lens.Micro.Platform ((.=))
 import           Data.Prototype (override)
 import           Yi.Boot (configMain)
@@ -10,6 +12,20 @@ import           Yi.Config.Simple
 import           Yi.Keymap.Emacs as Emacs
 import qualified Yi.Rope as R
 import           Yi.String           (mapLines)
+import           Yi.Mode.Common
+import           Yi.Syntax            (ExtHL (ExtHL), Scanner, mkHighlighter)
+import           Yi.Style             (StyleName)
+import qualified Yi.IncrementalParse  as IncrParser (scanner)
+import qualified Yi.Lexer.Zine as Zine (pText)
+import Yi.Mode.Latex
+import           Yi.Syntax.OnlineTree (Tree, manyToks)
+
+zineMode = fundamentalMode
+ {
+   modeName = "zine",
+   modeApplies = anyExtension ["z"],
+   modeHL = ExtHL $ mkHighlighter (IncrParser.scanner Zine.pText)
+ }
 
 main :: IO ()
 main = configMain defaultConfig $ do
@@ -18,6 +34,8 @@ main = configMain defaultConfig $ do
          configureHaskellMode
          configureJavaScriptMode
          configureMiscModes
+         addMode latexMode2
+         addMode zineMode
 
 myEmacsConfig :: ConfigM ()
 myEmacsConfig = do
