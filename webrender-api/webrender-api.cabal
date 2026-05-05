@@ -1,6 +1,6 @@
 cabal-version: 2.2
 
--- This file has been generated from package.yaml by hpack version 0.36.0.
+-- This file has been generated from package.yaml by hpack version 0.39.1.
 --
 -- see: https://github.com/sol/hpack
 
@@ -26,6 +26,7 @@ source-repository head
 library
   exposed-modules:
       Data.DisplayList
+      Data.DisplayList.TH
       Lib
   other-modules:
       Paths_webrender_api
@@ -40,7 +41,11 @@ library
   ghc-options: -Wall -Wcompat -Widentities -Wincomplete-record-updates -Wincomplete-uni-patterns -Wmissing-export-lists -Wmissing-home-modules -Wpartial-fields -Wredundant-constraints
   build-depends:
       base >=4.7 && <5
+    , filepath
+    , language-c
     , mtl
+    , process
+    , template-haskell
   default-language: Haskell2010
 
 executable webrender-api-exe
@@ -58,7 +63,11 @@ executable webrender-api-exe
   ghc-options: -Wall -Wcompat -Widentities -Wincomplete-record-updates -Wincomplete-uni-patterns -Wmissing-export-lists -Wmissing-home-modules -Wpartial-fields -Wredundant-constraints -threaded -rtsopts -with-rtsopts=-N
   build-depends:
       base >=4.7 && <5
+    , filepath
+    , language-c
     , mtl
+    , process
+    , template-haskell
     , webrender-api
   default-language: Haskell2010
 
@@ -78,6 +87,10 @@ test-suite webrender-api-test
   ghc-options: -Wall -Wcompat -Widentities -Wincomplete-record-updates -Wincomplete-uni-patterns -Wmissing-export-lists -Wmissing-home-modules -Wpartial-fields -Wredundant-constraints -threaded -rtsopts -with-rtsopts=-N
   build-depends:
       base >=4.7 && <5
+    , filepath
+    , language-c
     , mtl
+    , process
+    , template-haskell
     , webrender-api
   default-language: Haskell2010

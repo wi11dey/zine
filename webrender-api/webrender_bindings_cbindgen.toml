@@ -1,0 +1,12 @@
+language = "C"
+no_includes = true
+style = "tag"
+sys_includes = ["stdint.h"]
+
+[parse]
+parse_deps = true
+include = ["euclid", "webrender_api", "webrender_bindings", "thin-vec"]
+extra_bindings = ["euclid", "webrender_api", "webrender_bindings", "thin-vec"]
+
+[macro_expansion]
+bitflags = true

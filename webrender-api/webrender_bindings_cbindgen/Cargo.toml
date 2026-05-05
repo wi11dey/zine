@@ -1,0 +1,15 @@
+[package]
+name = "webrender_bindings_cbindgen"
+version = "0.1.0"
+edition = "2024"
+
+[dependencies]
+thin-vec = "0.2.18"
+
+[dependencies.webrender_bindings]
+path = "../../firefox/gfx/webrender_bindings"
+version = "0.1.0"
+
+[dependencies.webrender_api]
+path = "../../firefox/gfx/wr/webrender_api"
+version = "0.62.0"

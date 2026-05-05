@@ -1,9 +1,25 @@
-module Data.DisplayList (DisplayListM, runDisplayListM, rect, stackingContext) where
+{-# LANGUAGE TemplateHaskell #-}
+{-# LANGUAGE ForeignFunctionInterface #-}
+module Data.DisplayList 
+  ( DisplayListM
+  , runDisplayListM
+  , rect
+  , stackingContext
+  ) where
 
 import Control.Monad.Reader
 import Foreign.Ptr (Ptr, FunPtr)
 import Foreign.ForeignPtr (ForeignPtr, newForeignPtr)
+import Foreign.C.Types
+import Foreign.Storable
+import Data.Word
+import Data.Int
 
+-- Import Template Haskell module
+import Data.DisplayList.TH (generateFFIBindings)
+$(generateFFIBindings "webrender_bindings_cbindgen.h")
+
+-- Display list builder types (these are opaque and not in the header)
 data DisplayListBuilder
 data DisplayListPayload
 
