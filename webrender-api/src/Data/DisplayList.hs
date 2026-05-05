@@ -1,11 +1,8 @@
-{-# LANGUAGE BlockArguments #-}
-{-# LANGUAGE GeneralizedNewtypeDeriving #-}
-{-# LANGUAGE NamedFieldPuns #-}
-
-module Data.DisplayList where
+module Data.DisplayList (DisplayListM, runDisplayListM, rect, stackingContext) where
 
 import Control.Monad.Reader
-import Foreign.Ptr (Ptr)
+import Foreign.Ptr (Ptr, FunPtr)
+import Foreign.ForeignPtr (ForeignPtr, newForeignPtr)
 
 data DisplayListBuilder
 data DisplayListPayload
@@ -27,15 +24,29 @@ runDisplayListM (DisplayListM { buildDisplayList }) = do
   payloadPtr <- cDlbEnd dlb
   newForeignPtr cDlpDestroy payloadPtr
 
+data CommonItemProperties
+data LayoutRect
+data ColorF
+data LayoutPoint
+
+cDlbPushRect :: Ptr DisplayListBuilder -> CommonItemProperties -> LayoutRect -> ColorF -> IO ()
+cDlbPushRect = undefined
+
+cDlbPushStackingContext :: Ptr DisplayListBuilder -> LayoutPoint -> IO ()
+cDlbPushStackingContext = undefined
+
+cDlbPopStackingContext :: Ptr DisplayListBuilder -> IO ()
+cDlbPopStackingContext = undefined
+
 rect :: CommonItemProperties -> LayoutRect -> ColorF -> DisplayListM ()
-rect props layout color = do
+rect props layout color = DisplayListM do
   ptr <- ask
   liftIO (cDlbPushRect ptr props layout color)
 
 stackingContext :: LayoutPoint -> DisplayListM a -> DisplayListM a
-stackingContext origin context = do
+stackingContext origin context = DisplayListM do
   ptr <- ask
   liftIO (cDlbPushStackingContext ptr origin)
-  returnValue <- context
+  returnValue <- buildDisplayList context
   liftIO (cDlbPopStackingContext ptr)
   return $ returnValue
