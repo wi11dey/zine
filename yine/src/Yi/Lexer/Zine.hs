@@ -33,6 +33,7 @@ module Yi.Lexer.Zine
   , Element(..)
     -- * Parsers
   , pText
+  , pTextEof
   , pToken
   , pExpression
   ) where
@@ -40,7 +41,7 @@ module Yi.Lexer.Zine
 import           Control.Applicative (many, optional, some, (<|>))
 import           Data.Char           (isAlpha, isDigit, isLower)
 
-import           Parser.Incremental  (Parser, recoverWith, symbol)
+import           Parser.Incremental  (Parser, eof, recoverWith, symbol)
 
 --------------------------------------------------------------------------------
 -- AST
@@ -134,6 +135,10 @@ some1 p = some (satisfy p)
 pText :: Parser Char Text
 pText = (\t ts -> Text (t : ts)) <$> pToken <*> many (space *> pToken)
 
+-- | Parse text and ensure we've consumed all input
+pTextEof :: Parser Char Text
+pTextEof = pText <* eof
+
 -- | token := span | word | math
 --
 -- We try `span` and `math` before `word` because `word` is greedy on any
@@ -190,17 +195,21 @@ pExprSp = (space *> pExprSp) <|> pExpression
 -- search shallow.
 pExpression :: Parser Char Expression
 pExpression =
-      pCommutative                -- a +/- b   (binary, left-assoc)
-  <|> pNoncomm                    -- a b       (juxtaposition)
-  <|> pProjection                 -- < a | b >
-  <|> pBra                        -- < a |
-  <|> pKet                        -- | a >
-  <|> pNorm                       -- | a |
-  <|> pSet                        -- [ ... ]
-  <|> pInterval                   -- (a..b)  [a..b)  ...
-  <|> pParens                     -- ( a )
-  <|> pNegation                   -- - a
-  <|> (EAtom <$> pAtom)           -- atom
+      pCommutative                -- a +/- b   (binary, left-assoc, precedence 1)
+  <|> pNoncommutative             -- a b       (juxtaposition, precedence 3)
+  where
+    -- Parse noncommutative with higher precedence
+    pNoncommutative = 
+          pNoncomm
+      <|> pProjection             -- < a | b >
+      <|> pBra                    -- < a |
+      <|> pKet                    -- | a >
+      <|> pNorm                   -- | a |
+      <|> pSet                    -- [ ... ]
+      <|> pInterval               -- (a..b)  [a..b)  ...
+      <|> pParens                 -- ( a )
+      <|> pNegation               -- - a
+      <|> (EAtom <$> pAtom)       -- atom
 
 -- | atom := identifier | integer | script | postfix
 --
@@ -330,24 +339,36 @@ pInterval = do
 --   := _expression ' ' _expression     (precedence 3, left-assoc)
 --    | parens parens                   (no separator)
 --
--- We parse one head expression and then try to extend with a juxtaposed
--- partner. Recovery uses `recoverWith` so that an isolated expression still
--- parses if no partner follows.
+-- Single spaces create left-associative grouping
+-- Multiple spaces allow the right side to parse with higher precedence
 pNoncomm :: Parser Char Expression
-pNoncomm =
-      pParensJuxt
-  <|> pSpacedJuxt
+pNoncomm = do
+  -- Parse first expression
+  first_ <- pExprNoBinop
+  -- Look for juxtaposed expressions
+  rest <- some pNoncommTail
+  pure (buildNoncomm first_ rest)
   where
-    pParensJuxt = do
-      l <- pParens
-      r <- pParens
-      pure (ENoncomm l r)
-
-    pSpacedJuxt = do
-      l <- pExprNoBinop
-      _ <- space
-      r <- pExprNoBinop
-      pure (ENoncomm l r)
+    -- Parse a tail element: either space(s) + expr or direct parens
+    pNoncommTail = 
+          (Right <$> pParens)  -- direct juxtaposition with parens
+      <|> do
+            _ <- space
+            extraSpaces <- many space
+            expr <- pExprNoBinop
+            pure (Left (length extraSpaces, expr))
+    
+    -- Build the expression tree based on spacing
+    buildNoncomm :: Expression -> [Either (Int, Expression) Expression] -> Expression
+    buildNoncomm acc [] = acc
+    buildNoncomm acc (Right expr : rest) = 
+      buildNoncomm (ENoncomm acc expr) rest
+    buildNoncomm acc (Left (0, expr) : rest) = 
+      -- Single space: continue left-associative
+      buildNoncomm (ENoncomm acc expr) rest
+    buildNoncomm acc (Left (_, expr) : rest) = 
+      -- Multiple spaces: group the rest
+      ENoncomm acc (buildNoncomm expr rest)
 
 -- | An expression that doesn't itself start by re-entering pCommutative or
 -- pNoncomm at the top -- used as the operands of those rules to avoid
@@ -368,31 +389,27 @@ pExprNoBinop =
 -- | commutative := _expression (' + ' | ' - ') (_expression | ellipsis)
 --
 -- The original grammar uses prec.left 1 so this is left-associative.
--- We implement it iteratively over a non-binop seed.
+-- We need to parse higher-precedence noncommutative expressions as operands
 pCommutative :: Parser Char Expression
 pCommutative = do
-  first_ <- pExprNoBinop <|> pNoncommNoCommut
+  -- First operand can be any noncommutative expression
+  first_ <- pNoncommutativeExpr
+  -- Look for at least one +/- operator
   rest   <- some pCommTail
   pure (foldl (\acc (op, e) -> ECommutative acc op e) first_ rest)
   where
     pCommTail :: Parser Char (String, Expression)
     pCommTail = do
       op  <- (str " + ") <|> (str " - ")
-      rhs <- pExprNoBinop
-         <|> pNoncommNoCommut
-         <|> (EAtom (AIdent "...") <$ recoverWith (pure ()))   -- placeholder; see below
-                                                       -- (only used if a real RHS fails)
+      rhs <- (EAtom (AIdent "...") <$ str "...")  -- ellipsis as literal
+         <|> pNoncommutativeExpr
       pure (op, rhs)
+    
+    -- Parse expressions that can appear in commutative operations
+    pNoncommutativeExpr = 
+          pNoncomm
+      <|> pExprNoBinop
                                                        -- ^ Note: recoverWith pulls
                                                        -- a "yucky" but valid parse so
                                                        -- the disjunction terminates.
 
--- | A noncommutative juxtaposition that doesn't itself start with a
--- commutative chain. Used inside pCommutative as an operand option.
-pNoncommNoCommut :: Parser Char Expression
-pNoncommNoCommut =
-      (do l <- pParens; r <- pParens; pure (ENoncomm l r))
-  <|> (do l <- pExprNoBinop
-          _ <- space
-          r <- pExprNoBinop
-          pure (ENoncomm l r))
