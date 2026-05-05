@@ -26,6 +26,8 @@ custom-setup:
   - Cabal
   - directory
   - process
+  - regex-tdfa
+  - containers
 
 dependencies:
 - base >= 4.7 && < 5

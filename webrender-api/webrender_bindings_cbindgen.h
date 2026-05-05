@@ -1,4 +1,5 @@
 #include <stdint.h>
+#include "cbindgen_stubs.h"
 
 #define MAX_CAP ~0
 

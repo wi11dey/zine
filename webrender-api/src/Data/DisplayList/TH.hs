@@ -27,15 +27,12 @@ generateFFIBindings header = do
   loc <- location
   let packageRoot = takeDirectory $ takeDirectory $ takeDirectory $ loc_filename loc
   let headerPath = packageRoot </> header
-  Left err <- runIO $ C.parseCFile (newGCC "gcc") Nothing [] headerPath
-  runIO $ putStrLn $ show err
-  return []
-  -- Right translUnit <- runIO $ C.parseCFile (newGCC "gcc") Nothing [] headerPath
-  -- -- Generate types and bindings
-  -- types <- generateTypesFromTU translUnit
-  -- let funDecls = extractFunctionDecls translUnit
-  -- bindings <- mapM generateFFIBinding funDecls
-  -- return $ types ++ concat bindings
+  Right translUnit <- runIO $ C.parseCFile (newGCC "gcc") Nothing [] headerPath
+  -- LLM code from here below
+  types <- generateTypesFromTU translUnit
+  let funDecls = extractFunctionDecls translUnit
+  bindings <- mapM generateFFIBinding funDecls
+  return $ types ++ concat bindings
 
 -- | Generate type declarations from translation unit
 generateTypesFromTU :: C.CTranslUnit -> Q [Dec]

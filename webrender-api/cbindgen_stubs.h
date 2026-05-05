@@ -1,0 +1,16 @@
+typedef void AsyncScreenshotHandle;
+typedef void ClipRadius;
+typedef void CompositorCapabilities;
+typedef void CompositorSurfaceTransform;
+typedef void Device;
+typedef void MemoryReport;
+typedef void NativeSurfaceId;
+typedef void NativeTileId;
+typedef void RecordedFrameHandle;
+typedef void Renderer;
+typedef void RendererStats;
+typedef void SWGLCompositeSurfaceInfo;
+typedef void Transaction;
+typedef void WindowProperties;
+typedef void WindowVisibility;
+typedef void nsAString;

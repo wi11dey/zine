@@ -2,6 +2,7 @@ language = "C"
 no_includes = true
 style = "tag"
 sys_includes = ["stdint.h"]
+includes = ["cbindgen_stubs.h"]
 
 [parse]
 parse_deps = true
