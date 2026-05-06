@@ -30,6 +30,7 @@ resolver:
 #   - auto-update
 #   - wai
 packages:
+- math-tex-engine-hs
 - webrender-api
 - yine
 # Dependency packages to be pulled from upstream that are not in the resolver.

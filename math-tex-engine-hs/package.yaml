@@ -1,0 +1,77 @@
+name:                math-tex-engine
+version:             0.6.7
+github:              "yourusername/math-tex-engine-hs"
+license:             BSD-3-Clause
+author:              "Your Name"
+maintainer:          "your.email@example.com"
+copyright:           "2024 Your Name"
+
+extra-source-files:
+- README.md
+
+description:         Please see the README on GitHub at <https://github.com/yourusername/math-tex-engine-hs#readme>
+
+dependencies:
+- base >= 4.7 && < 5
+- text
+- containers
+- unordered-containers
+- vector
+- megaparsec
+- parser-combinators
+- diagrams
+- diagrams-lib
+- diagrams-core
+- diagrams-svg
+- linear
+- mtl
+- transformers
+- filepath
+- directory
+- bytestring
+- JuicyPixels
+- colour
+- lens
+- data-default
+- scientific
+- hashable
+
+library:
+  source-dirs: src
+  ghc-options:
+  - -Wall
+  - -Wcompat
+  - -Widentities
+  - -Wincomplete-record-updates
+  - -Wincomplete-uni-patterns
+  - -Wmissing-export-lists
+  - -Wmissing-home-modules
+  - -Wpartial-fields
+  - -Wredundant-constraints
+
+executables:
+  math-tex-engine-exe:
+    main:                Main.hs
+    source-dirs:         app
+    ghc-options:
+    - -Wall
+    - -threaded
+    - -rtsopts
+    - -with-rtsopts=-N
+    dependencies:
+    - math-tex-engine
+
+tests:
+  math-tex-engine-test:
+    main:                Spec.hs
+    source-dirs:         test
+    ghc-options:
+    - -Wall
+    - -threaded
+    - -rtsopts
+    - -with-rtsopts=-N
+    dependencies:
+    - math-tex-engine
+    - hspec
+    - hspec-discover
+    - QuickCheck
