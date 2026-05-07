@@ -49,18 +49,6 @@ library:
   - -Wpartial-fields
   - -Wredundant-constraints
 
-executables:
-  math-tex-engine-exe:
-    main:                Main.hs
-    source-dirs:         app
-    ghc-options:
-    - -Wall
-    - -threaded
-    - -rtsopts
-    - -with-rtsopts=-N
-    dependencies:
-    - math-tex-engine
-
 tests:
   math-tex-engine-test:
     main:                Spec.hs
