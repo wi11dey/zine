@@ -40,8 +40,9 @@ import qualified Graphics.UI.Gtk as Gtk
 import           Graphics.UI.Gtk hiding (Region, Window, Action , Point,
                                          Style, Modifier, on)
 import qualified Graphics.UI.Gtk.Gdk.EventM as EventM
-import qualified Graphics.UI.Gtk.Gdk.GC as Gtk
-import           Graphics.UI.Gtk.Gdk.GC hiding (foreground)
+-- GTK3 no longer has GC module, use Cairo for drawing
+import qualified Graphics.Rendering.Cairo as Cairo
+import Graphics.Rendering.Pango.Cairo as PC
 import           Prelude hiding (error, elem, mapM_, foldl, concat, mapM)
 import           System.Glib.GError
 import           Yi.Buffer
@@ -224,7 +225,7 @@ startNoMsgGtkHook userHook cfg ch outCh ed = do
   let actionCh = outCh . return
   tc <- newIORef =<< newCache ed actionCh
 
-  let watchFont = (fontDescriptionFromString ("Monospace 10" :: T.Text) >>=)
+  let watchFont = (fontDescriptionFromString ("NewComputerModern10 16" :: T.Text) >>=)
   watchFont $ updateFont (configUI cfg) fontRef tc status
 
   -- I think this is the correct place to put it...
@@ -323,7 +324,7 @@ setWindowFocus e ui t w = do
   update (modeline w) labelText ml
   writeIORef (fullTitle t) bufferName
   writeIORef (abbrevTitle t) (tabAbbrevTitle bufferName)
-  drawW <- catch (fmap Just $ widgetGetDrawWindow $ textview w)
+  drawW <- catch (widgetGetWindow $ textview w)
                  (\(_ :: SomeException) -> return Nothing)
   imContextSetClientWindow im drawW
   imContextFocusIn im
@@ -451,7 +452,7 @@ newWindow e ui w = do
     v `on` configureEvent     $ handleConfigure     ui
 
     v `on` motionNotifyEvent  $ handleMove          ui win
-    void $ v `onExpose` render ui win
+    void $ Gtk.on v Gtk.draw $ render ui win
     -- also redraw when the window receives/loses focus
     uiWindow ui `on` focusInEvent $ io (widgetQueueDraw v) >> return False
     uiWindow ui `on` focusOutEvent $ io (widgetQueueDraw v) >> return False
@@ -486,47 +487,57 @@ updateWinInfoForRendering e _ui w = modifyMVar_ (winLayoutInfo w) $ \wli -> do
 
 -- | Tell the 'PangoLayout' what colours to draw, and draw the 'PangoLayout'
 -- and the cursor onto the screen
-render :: UI -> WinInfo -> t -> IO Bool
-render ui w _event =
-  withMVar (winLayoutInfo w) $
-  \WinLayoutInfo{winLayout=layout,tos,bos,cur,buffer=b,regex} -> do
-    -- read the information
-    win <- readIORef (coreWin w)
+render :: UI -> WinInfo -> Cairo.Render ()
+render ui w = do
+  (layout, cur, im, curX, curY, curW, curH, chx, chy, chw, chh) <- Cairo.liftIO $
+    withMVar (winLayoutInfo w) $
+    \WinLayoutInfo{winLayout=layout,tos,bos,cur,buffer=b,regex} -> do
+      -- read the information
+      win <- readIORef (coreWin w)
 
-    -- add color attributes.
-    let picture = askBuffer win b $ attributesPictureAndSelB sty regex
-                  (mkRegion tos bos)
-        sty = configStyle $ uiConfig ui
+      -- add color attributes.
+      let picture = askBuffer win b $ attributesPictureAndSelB sty regex
+                    (mkRegion tos bos)
+          sty = configStyle $ uiConfig ui
 
-        picZip = zip picture $ drop 1 (fst <$> picture) <> [bos]
-        strokes = [ (start',s,end') | ((start', s), end') <- picZip
-                                    , s /= emptyAttributes ]
+          picZip = zip picture $ drop 1 (fst <$> picture) <> [bos]
+          strokes = [ (start',s,end') | ((start', s), end') <- picZip
+                                      , s /= emptyAttributes ]
 
-        rel p = fromIntegral (p - tos)
-        allAttrs = concat $ do
-          (p1, Attributes fg bg _rv bd itlc udrl, p2) <- strokes
-          let atr x = x (rel p1) (rel p2)
-              if' p x y = if p then x else y
-          return [ atr AttrForeground $ mkCol True fg
-                 , atr AttrBackground $ mkCol False bg
-                 , atr AttrStyle $ if' itlc StyleItalic StyleNormal
-                 , atr AttrUnderline $ if' udrl UnderlineSingle UnderlineNone
-                 , atr AttrWeight $ if' bd WeightBold WeightNormal
-                 ]
+          rel p = fromIntegral (p - tos)
+          allAttrs = concat $ do
+            (p1, Attributes fg bg _rv bd itlc udrl, p2) <- strokes
+            let atr x = x (rel p1) (rel p2)
+                if' p x y = if p then x else y
+            return [ atr AttrForeground $ mkCol True fg
+                   , atr AttrBackground $ mkCol False bg
+                   , atr AttrStyle $ if' itlc StyleItalic StyleNormal
+                   , atr AttrUnderline $ if' udrl UnderlineSingle UnderlineNone
+                   , atr AttrWeight $ if' bd WeightBold WeightNormal
+                   ]
 
-    layoutSetAttributes layout allAttrs
+      layoutSetAttributes layout allAttrs
+      
+      -- calculate the cursor position
+      im <- readIORef (insertingMode w)
+      (PangoRectangle (succ -> curX) curY curW curH, _) <-
+        layoutGetCursorPos layout (rel cur)
+      PangoRectangle (succ -> chx) chy chw chh <- layoutIndexToPos
+                                                  layout (rel cur)
+      
+      return (layout, cur, im, curX, curY, curW, curH, chx, chy, chw, chh)
+  
+  -- Clear background
+  Cairo.setSourceRGB 1 1 1  -- white background
+  Cairo.paint
+  
+  -- Draw the layout
+  Cairo.setSourceRGB 0 0 0  -- black text
+  Cairo.moveTo 1 0
+  PC.showLayout layout
 
-    drawWindow <- widgetGetDrawWindow $ textview w
-    gc <- gcNew drawWindow
-
-    -- see Note [PangoLayout width]
-    -- draw the layout
-    drawLayout drawWindow gc 1 0 layout
-
-    -- calculate the cursor position
-    im <- readIORef (insertingMode w)
-
-    -- check focus, and decide whether we want a wide cursor
+  -- Draw the cursor
+  Cairo.liftIO $ do
     bufferFocused <- readIORef (inFocus w)
     uiFocused <- Gtk.windowHasToplevelFocus (uiWindow ui)
     let focused = bufferFocused && uiFocused
@@ -536,34 +547,30 @@ render ui w _event =
            NeverFat -> False
            FatWhenFocused -> focused
            FatWhenFocusedAndInserting -> focused && im
-
-
-    (PangoRectangle (succ -> curX) curY curW curH, _) <-
-      layoutGetCursorPos layout (rel cur)
     -- tell the input method
     imContextSetCursorLocation (uiInput ui) $
       Rectangle (round curX) (round curY) (round curW) (round curH)
-    -- paint the cursor
-    gcSetValues gc
-      (newGCValues { Gtk.foreground = mkCol True . Yi.Style.foreground
-                                      . baseAttributes . configStyle $
-                                      uiConfig ui
-                   , Gtk.lineWidth = if wideCursor then 2 else 1 })
-
-    -- tell the renderer
-    if im
-      then  -- if we are inserting, we just want a line
-      drawLine drawWindow gc (round curX, round curY)
-      (round $ curX + curW, round $ curY + curH)
-
-      -- we aren't inserting, we want a rectangle around the current character
-      else do
-      PangoRectangle (succ -> chx) chy chw chh <- layoutIndexToPos
-                                                  layout (rel cur)
-      drawRectangle drawWindow gc False (round chx) (round chy)
-        (if chw > 0 then round chw else 8) (round chh)
-
-    return True
+    return ()
+    
+  -- Set cursor color
+  let Color r g b = mkCol True . Yi.Style.foreground
+                      . baseAttributes . configStyle $
+                      uiConfig ui
+  Cairo.setSourceRGB (fromIntegral r / 65535)
+                     (fromIntegral g / 65535)
+                     (fromIntegral b / 65535)
+  
+  if im
+    then do -- if we are inserting, we just want a line
+      Cairo.moveTo (fromIntegral $ round curX) (fromIntegral $ round curY)
+      Cairo.lineTo (fromIntegral $ round $ curX + curW) (fromIntegral $ round $ curY + curH)
+      Cairo.stroke
+    else do -- we aren't inserting, we want a rectangle around the current character
+      Cairo.rectangle (fromIntegral $ round chx)
+                      (fromIntegral $ round chy)
+                      (fromIntegral $ if chw > 0 then round chw else 8)
+                      (fromIntegral $ round chh)
+      Cairo.stroke
 
 doLayout :: UI -> Editor -> IO Editor
 doLayout ui e = do
@@ -586,7 +593,8 @@ getDimensionsInTab :: UI -> FontDescription -> Editor
 getDimensionsInTab ui f e tab = do
   wCache <- readIORef (windowCache tab)
   forM wCache $ \wi -> do
-    (wid, h) <- widgetGetSize $ textview wi
+    wid <- Gtk.widgetGetAllocatedWidth $ textview wi
+    h <- Gtk.widgetGetAllocatedHeight $ textview wi
     win <- readIORef (coreWin wi)
     let metrics = winMetrics wi
         lineHeight = ascent metrics + descent metrics
@@ -630,8 +638,10 @@ Reiner
 updatePango :: UI -> FontDescription -> WinInfo -> FBuffer
             -> PangoLayout -> IO (Point, Point, Point, Point)
 updatePango ui font w b layout = do
-  (width_', height') <- widgetGetSize $ textview w
+  width_' <- Gtk.widgetGetAllocatedWidth $ textview w
+  height_' <- Gtk.widgetGetAllocatedHeight $ textview w
   let width' = max 0 (width_' - 1) -- see Note [PangoLayout width]
+      height' = height_'
       fontDescriptionToStringT :: FontDescription -> IO Text
       fontDescriptionToStringT = fontDescriptionToString
 

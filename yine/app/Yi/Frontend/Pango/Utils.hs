@@ -6,14 +6,14 @@ module Yi.Frontend.Pango.Utils where
 import Control.Exception (catch, throw)
 
 import Data.Text (append)
-import Paths_yi_frontend_pango
+import Paths_yine
 import System.FilePath
 import Graphics.UI.Gtk
 import System.Glib.GError
 
 loadIcon :: FilePath -> IO Pixbuf
 loadIcon fpath = do
-  iconfile <- getDataFileName $ "art" </> fpath
+  let iconfile = "/Users/wdey/yi/yi-frontend-pango/art" </> fpath
   icoProject <-
     catch (pixbufNewFromFile iconfile)
     (\(GError dom code msg) ->
