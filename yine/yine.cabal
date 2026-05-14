@@ -33,14 +33,28 @@ library
 executable yine
   main-is: Main.hs
   other-modules:
+      Yi.Frontend.Pango
+      Yi.Frontend.Pango.Control
+      Yi.Frontend.Pango.Layouts
+      Yi.Frontend.Pango.Utils
       Paths_yine
   hs-source-dirs:
       app
   ghc-options: -O2 -threaded
   build-depends:
       base >=4.8 && <5
+    , cairo
+    , containers
+    , filepath
+    , glib
+    , gtk3
     , microlens-platform
+    , mtl
     , oo-prototypes
+    , pango
+    , pointedlist
+    , text
+    , transformers-base
     , yi-core
     , yi-dynamic-configuration
     , yi-frontend-vty

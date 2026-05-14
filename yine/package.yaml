@@ -20,6 +20,16 @@ executables:
     source-dirs: app
     dependencies:
       - yine
+      - glib
+      - gtk3
+      - cairo
+      - pango
+      - filepath
+      - text
+      - mtl
+      - containers
+      - pointedlist
+      - transformers-base
     ghc-options:
       - -O2
       - -threaded

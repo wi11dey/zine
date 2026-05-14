@@ -1,5 +1,9 @@
 {-# LANGUAGE OverloadedStrings #-}
 
+import Lens.Micro.Platform ((.=))
+import Yi.Frontend.Pango   (start)
+import Yi.Config.Lens      (startFrontEndA)
+import Yi.Config.Simple    (ConfigM)
 import Data.Prototype (override)
 import Lens.Micro.Platform ((.=))
 import Yi.Boot (configMain)
@@ -29,7 +33,8 @@ zineMode =
 
 main :: IO ()
 main = configMain defaultConfig $ do
-    configureVty
+    -- configureVty
+    startFrontEndA .= start
     myEmacsConfig
     configureHaskellMode
     configureJavaScriptMode
