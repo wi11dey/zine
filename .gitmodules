@@ -1,4 +1,0 @@
-[submodule "firefox"]
-	path = firefox
-	url = https://github.com/mozilla-firefox/firefox.git
-	ignore = dirty

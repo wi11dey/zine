@@ -1,9 +1,0 @@
-=========
-Integrals
-=========
-{int}
----
-
-(text
-  (inline
-    (identifier)))

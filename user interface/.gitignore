@@ -1,6 +1,0 @@
-build/
-debug/
-target/
-
-# Executable
-Cargo.lock
