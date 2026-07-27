@@ -1,6 +1,0 @@
-/build/
-*.fasl
-*.dx64fsl
-*.lx64fsl
-*.x86f
-*.lib
