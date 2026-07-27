@@ -24,6 +24,8 @@ fn ecl() -> Result<(), Box<dyn Error>> {
         .allowlist_function("ecl_.*")
         .allowlist_function("si_.*")
         .allowlist_type("cl_.*")
+        .opaque_type("ecl_clfloat")
+        .opaque_type("ecl_ffi_values")
         .clang_args(
             pkg_config::Config::new()
                 .cargo_metadata(false)
