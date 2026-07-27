@@ -12,4 +12,3 @@ webrender = "0.70.0"
 
 [build-dependencies]
 bindgen = "0.72"
-pkg-config = "0.3"
