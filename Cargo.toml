@@ -4,7 +4,6 @@ version = "0.1.0"
 edition = "2024"
 
 [dependencies]
-pdfium = "0.10.4"
 ropey = "1.6.1"
 typst-syntax = "0.15.1"
 udpipe-rs = { git = "https://github.com/ccostello97/udpipe-rs", tag = "v1.0.0" }
