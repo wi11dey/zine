@@ -19,7 +19,7 @@ fn ecl() -> Result<(), Box<dyn Error>> {
     }
 
     Ok(bindgen::Builder::default()
-        .header_contents("ecl-wrapper.h", "#include <ecl/ecl.h>")
+        .header_contents("ecl-include.h", "#include <ecl/ecl.h>")
         .allowlist_function("cl_.*")
         .allowlist_function("ecl_.*")
         .allowlist_function("si_.*")
