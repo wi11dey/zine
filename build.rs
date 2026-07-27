@@ -39,7 +39,7 @@ fn ecl() -> Result<(), Box<dyn Error>> {
                 .split_whitespace(),
         )
         .generate()?
-        .write_to_file(PathBuf::from(std::env::var("OUT_DIR").unwrap()).join("ecl.rs"))?)
+        .write_to_file(PathBuf::from(std::env::var("OUT_DIR").unwrap()).join("ecl_bindings.rs"))?)
 }
 
 fn main() -> Result<(), Box<dyn Error>> {
