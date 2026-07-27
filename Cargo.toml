@@ -9,3 +9,7 @@ ropey = "1.6.1"
 typst-syntax = "0.15.1"
 udpipe-rs = { git = "https://github.com/ccostello97/udpipe-rs", tag = "v1.0.0" }
 webrender = "0.70.0"
+
+[build-dependencies]
+bindgen = "0.72"
+pkg-config = "0.3"
