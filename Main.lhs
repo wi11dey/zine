@@ -12,6 +12,8 @@ This resolves a nominal into a specific noun
 
 > newtype Dependency source target = Dependency (source -> ([Relation], target))
 
+Because Dependency is generic on any source or target, coreference can be handled separately on a PoS layer I bet
+
 > instance Category Dependency where
 >   id = Dependency $ \source -> ([], source)
 >   (Dependency a) . (Dependency b) = Dependency $ \source ->
@@ -90,5 +92,4 @@ ethics: what is just/right/needful?
 probably can't constrain this too much -- maybe it's literally just collections of morphisms between two Hask objects
 > newtype Philosophy a b = [a -> b]
 
-Because Dependency is generic on any source or target, coreference can be handled separately on a PoS layer I bet
-
+ok now we might be getting somewhere, as I can also make morphisms from local semantics via pushouts through a tree root in the dependency parse. I don't necessarily have to ask from whence nouns came from (this is restricted to humans), just the relationships defined between them.
