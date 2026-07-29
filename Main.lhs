@@ -24,7 +24,7 @@ Because Dependency is generic on any source or target, coreference can be handle
 Dependency parsing happens sentence-by-sentence
 > type Syntax = [Sentence]
 
-UDPipe, lazily
+UDPipe (maybe see https://github.com/fpco/inline-c), lazily
 > dependencyParse :: Text -> Syntax
 
 Functor from the tree-category of Dependency to a meaningful category.
@@ -44,7 +44,7 @@ Yi, stuff from EditorM for example
 Custom, using typst-layout, which needs rust FFI or some (??) IPC
 > view :: State -> DisplayList
 
-WebRender ofc, which needs rust FFI or general Rust IPC
+WebRender ofc, which needs rust FFI (see https://github.com/harpocrates/inline-rust) or general Rust IPC
 > webrender :: DisplayList -> GL
 
 > createFrame :: IO GLContext
@@ -97,14 +97,20 @@ ok now we might be getting somewhere, as I can also make morphisms from local se
 
 A DEPENDENCY TREE TOPOS
 
+Topos of local truth constructed in just one sentence. First add necessary pushouts of morphisms through relation words to construct just noun phrases as objects in the category. Objects are nominals that are related to others
+
+Maybe--
 Terminal object: "this"/unrestricted PRON
 Binary products: different sentences, indicates that two independent clauses can be broken up
 Equalizer: CCONJ
 Exponential: linguistic recursion/which
-Sub object classifier: copula
+Omega: "itself" all nouns
+Sub object classifier: X--copula-->"itself"
 
 Existential quantification would use "this", whereas the default is just universal. i.e. Red is bright vs this red is bright.
 
 Now that I have a sheaf topos, I would like to be able to glue it together into a general understanding. The glue will inevitably have a nonzero cohomology in which case we will fail to synthesize a global understanding. But say we have a global understanding; then we can understand how different parts fit together by alternating between natural language representation and the categorical.
 
 Once I have a local topos, I can attempt gluing using some kind of ACL2 combo or H-M unification, or both. I will need to figure this out later, and the exact system by which the local, overfit, understanding gets generalized to the global will determine the cohomology.
+
+Maybe have a two-level sheaf attempting to glue sentences together in one argument, using some natural deduction and coreference (H-M unification there?) in the glue between sentences which are part of a topos. Then, can try a different kind of glue to see how two arguments fit together, and which way the functors go between them. Maybe the higher level isn't even a sheaf and just a topology defined on it.
