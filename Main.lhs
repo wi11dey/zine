@@ -93,3 +93,12 @@ probably can't constrain this too much -- maybe it's literally just collections 
 > newtype Philosophy a b = [a -> b]
 
 ok now we might be getting somewhere, as I can also make morphisms from local semantics via pushouts through a tree root in the dependency parse. I don't necessarily have to ask from whence nouns came from (this is restricted to humans), just the relationships defined between them.
+
+
+A DEPENDENCY TREE TOPOS
+
+Terminal object: "this"/unrestricted PRON
+Binary products: different sentences, indicates that two independent clauses can be broken up
+Equalizer: CCONJ
+Exponential: linguistic recursion/which
+Sub object classifier: copula
