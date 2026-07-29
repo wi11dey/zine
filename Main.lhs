@@ -1,4 +1,4 @@
-Haskell is the glue, so that you can think about the parts in isolation
+Haskell is the glue, so that you can think about the parts in isolation. Category theory style
 
 > import Prelude hiding (id, (.))
 > import Control.Category
@@ -27,10 +27,6 @@ UDPipe, lazily
 
 Functor from the tree-category of Dependency to a meaningful category.
 > understand :: Syntax -> Maybe Semantics
-
-Need to think about the pushout of rooted words, which would connect subjects to objects via some actual relation. Because of the categorical structure of Dependency, only the dependency paths between two different tokens matters. Pushouts can be related to specific wor
-
-Because Dependency is generic on any source or target, coreference can be handled separately on a PoS layer bet
 
 > explain :: Semantics -> Syntax
 
@@ -66,3 +62,33 @@ The main interaction loop
 
 Profane definitions of types
 > newtype GL = GL { display :: GLContext -> IO () }
+
+
+PHILOSOPHY AND SHEAF THEORY
+
+Need to think about the pushout of rooted words, which would connect subjects to objects via some actual relation. Because of the categorical structure of Dependency, only the dependency paths between two different tokens matters. Pushouts can be related to specific morphisms, and will probably be through things like verbs
+
+If I was to use sheaf theory here, then I've broken the problem into:
+- Local semantics
+- gluing, including coreference probably
+- Global semantics
+
+Globally, I want to extract stuff like
+> newtype Epistemology = Epistemology (Set Fact -> Knowledge)
+
+What is true about both the local semantics and the global semantics? Both subcategories of Hask, likely, as they both need to be representable internally by the computer ultimately.
+
+So what is Epistemology? It's a subcategory with only two objects and it goes unidirectionally. pushouts are what two epistemic systems have in common and pullbacks are the dual
+
+what about hegel
+> dialectic :: (Thesis * Thesis) -> Maybe Thesis
+
+metaphysics: what is?
+epistemology: what is knowledge?
+ethics: what is just/right/needful?
+
+probably can't constrain this too much -- maybe it's literally just collections of morphisms between two Hask objects
+> newtype Philosophy a b = [a -> b]
+
+Because Dependency is generic on any source or target, coreference can be handled separately on a PoS layer I bet
+
