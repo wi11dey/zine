@@ -170,22 +170,20 @@ Maybe have a two-level sheaf attempting to glue sentences together in one argume
 
 = Category theory
 
+Haskell categories
+
 > class ConstrainedCategory (k ∷ Type → Type → Type) where
 >   type Object k (a ∷ Type) ∷ Constraint
 > 
 >   id ∷ Object k a ⇒ k a a
 > 
->   (.) ∷
->     (Object k a, Object k b, Object k c) ⇒
->     k b c → k a b → k a c
+>   (.) ∷ (Object k a, Object k b, Object k c) ⇒ k b c → k a b → k a c
 > 
 > infixr 9 .
 >
 > instance ConstrainedCategory (→) where
 >   type Object (→) a = ()
-> 
 >   id x = x
-> 
 >   (g . f) x = g (f x)
 
  #counter(heading).update(0)
