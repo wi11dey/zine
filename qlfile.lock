@@ -1,8 +1,0 @@
-("quicklisp" .
- (:class qlot/source/dist:source-dist
-  :initargs (:distribution "https://beta.quicklisp.org/dist/quicklisp.txt" :%version :latest)
-  :version "2026-01-01"))
-("lem" .
- (:class qlot/source/git:source-git
-  :initargs (:remote-url "https://github.com/lem-project/lem.git")
-  :version "git-492312e47ba6e46a327ea3e074ccbf5cc39666a3"))
