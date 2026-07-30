@@ -110,7 +110,6 @@ maybe prolog translates directly into lispy things
 
 haskell -> prolog -> lisp
 
-
 = Philosophy and Sheaf Theory
 
 Need to think about the pushout of rooted words, which would connect subjects to objects via some actual relation. Because of the categorical structure of Dependency, only the dependency paths between two different tokens matters. Pushouts can be related to specific morphisms, and will probably be through things like verbs
@@ -144,7 +143,6 @@ type Philosophy a b = [a -> b]
 
 ok now we might be getting somewhere, as I can also make morphisms from local semantics via pushouts through a tree root in the dependency parse. I don't necessarily have to ask from whence nouns came from (this is restricted to humans), just the relationships defined between them.
 
-
 = A Dependency Tree Topos
 
 Topos of local truth constructed in just one sentence. First add necessary pushouts of morphisms through relation words to construct just noun phrases as objects in the category. Objects are nominals that are related to others
@@ -203,3 +201,7 @@ Placeholder implementations and types
 > data Fact = Fact
 > data Knowledge = Knowledge
 > data Thesis = Thesis
+
+// Local Variables:
+// outline-regexp: "^=+"
+// End:
