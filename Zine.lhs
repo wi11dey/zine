@@ -2,7 +2,7 @@
  #import "@preview/xarrow:0.4.0": xarrow
 
  #set text(lang: "en")
- #set par(justify: true)
+ #set par(justify: true, first-line-indent: 1.5em)
  #show title: set align(center)
 
  #title[#image("zine.svg", width: 3in)]
