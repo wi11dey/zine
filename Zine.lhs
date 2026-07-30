@@ -1,4 +1,5 @@
- #import "@preview/syntree:0.3.1": syntree
+ #import "@preview/unidep:0.1.4": dependency-tree
+ #import "@preview/xarrow:0.4.0": xarrow
 
  #set text(lang: "en")
  #set par(justify: true)
@@ -152,11 +153,22 @@ ok now we might be getting somewhere, as I can also make morphisms from local se
 
 = A Dependency Tree Topos
 
-Consider
+Consider a dependency tree
+
+ #align(center)[#dependency-tree(```
+1	They	they	PRON	PRP	_	2	nsubj	_	_
+2	buy	buy	VERB	VBP	_	0	root	_	_
+3	and	and	CCONJ	CC	_	4	cc	_	_
+4	sell	sell	VERB	VBP	_	2	conj	_	_
+5	books	book	NOUN	NNS	_	2	obj	_	_
+6	.	.	PUNCT	.	_	2	punct	_	_
+```.text)]
+
+To any dependency parse, we can associate a category, say $cal(D)$, by considering the objects as words (and their indices) and the morphisms as dependencies. To be precise, $"obj"(cal(D))={("They", 1),("buy", 2),...}$ and $"mor"(cal(D))={(("buy", 2), [italic("nsubj")], ("They", 1)),...}$. I'll use $"buy"_2 xarrow("nsubj") "They"_2$ as notation for ${(("buy", 2), italic("nsubj"), ("They", 1))} in "mor"(cal(D))$ from here forward.
 
 Topos of local truth constructed in just one sentence. First add necessary pushouts of morphisms through relation words to construct just noun phrases as objects in the category. Objects are nominals that are related to
 
-The category of elementary topoi $bold("Top")$
+The category of elementary topoi $bold("Top")$ is a $2$-subcategory of the $2$-category $bold("Cat")$
 
 Maybe--
 Terminal object: "this"/unrestricted PRON
