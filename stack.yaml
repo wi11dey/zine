@@ -1,3 +1,1 @@
-resolver: lts-24.39
-packages:
-  - .
+snapshot: lts-24.39
