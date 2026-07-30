@@ -7,4 +7,3 @@ executable:
     - ConstraintKinds
     - KindSignatures
     - TypeFamilies
-    - TypeOperators
