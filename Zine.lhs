@@ -1,3 +1,5 @@
+ #import "@preview/syntree:0.3.1": syntree
+
  #set text(lang: "en")
  #set par(justify: true)
  #show title: set align(center)
@@ -150,7 +152,11 @@ ok now we might be getting somewhere, as I can also make morphisms from local se
 
 = A Dependency Tree Topos
 
-Topos of local truth constructed in just one sentence. First add necessary pushouts of morphisms through relation words to construct just noun phrases as objects in the category. Objects are nominals that are related to others
+Consider
+
+Topos of local truth constructed in just one sentence. First add necessary pushouts of morphisms through relation words to construct just noun phrases as objects in the category. Objects are nominals that are related to
+
+The category of elementary topoi $bold("Top")$
 
 Maybe--
 Terminal object: "this"/unrestricted PRON

@@ -1,7 +1,7 @@
 /^>/ {
     if (!code) {
-	print "```haskell"
-	code = 1
+        print "```haskell"
+        code = 1
     }
     sub(/^> ?/, "")
     print
@@ -9,13 +9,13 @@
 }
 {
     if (code) {
-	print "```"
-	code = 0
+        print "```"
+        code = 0
     }
     print
 }
 END {
     if (code) {
-	print "```"
+        print "```"
     }
 }
