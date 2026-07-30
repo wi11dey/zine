@@ -1,2 +1,4 @@
 /target
 /.qlot/
+/.stack-work/
+/zine.cabal
