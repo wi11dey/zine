@@ -9,8 +9,14 @@ Haskell is the glue, so that you can think about the parts in isolation. Categor
 
  #let imports = [
 
+> {-# LANGUAGE ConstraintKinds #-}
+> {-# LANGUAGE FlexibleInstances #-}
+> {-# LANGUAGE KindSignatures #-}
+> {-# LANGUAGE TypeFamilies #-}
+> {-# LANGUAGE TypeOperators #-}
+> 
+> import Data.Kind (Constraint, Type)
 > import Prelude hiding (id, (.), read)
-> import Control.Category
 
 ]
 
@@ -29,12 +35,12 @@ These are all the thirty-seven relations in the Universal Dependencies grammar
 
 Because Dependency is generic on any source or target, coreference can be handled separately on a PoS layer I bet
 
-> instance Category Dependency where
->   id = Dependency $ \source -> ([], source)
->   (Dependency a) . (Dependency b) = Dependency $ \source ->
->     let (relations, intermediate) = b source
->         (relations', target) = a intermediate
->     in (relations ++ relations', target)
+> --instance Category Dependency where
+> --  id = Dependency $ \source -> ([], source)
+> --  (Dependency a) . (Dependency b) = Dependency $ \source ->
+> --    let (relations, intermediate) = b source
+> --        (relations', target) = a intermediate
+> --    in (relations ++ relations', target)
 
 Dependency parsing happens sentence-by-sentence
 
@@ -162,6 +168,27 @@ Now that I have a sheaf topos, I would like to be able to glue it together into 
 Once I have a local topos, I can attempt gluing using some kind of ACL2 combo or H-M unification, or both. I will need to figure this out later, and the exact system by which the local, overfit, understanding gets generalized to the global will determine the cohomology.
 
 Maybe have a two-level sheaf attempting to glue sentences together in one argument, using some natural deduction and coreference (H-M unification there?) in the glue between sentences which are part of a topos. Then, can try a different kind of glue to see how two arguments fit together, and which way the functors go between them. Maybe the higher level isn't even a sheaf and just a topology defined on it.
+
+= Category theory
+
+> 
+> class ConstrainedCategory (k :: Type -> Type -> Type) where
+>   type Object k (a :: Type) :: Constraint
+> 
+>   id :: Object k a => k a a
+> 
+>   (.) ::
+>     (Object k a, Object k b, Object k c) =>
+>     k b c -> k a b -> k a c
+> 
+> infixr 9 .
+>
+> instance ConstrainedCategory (->) where
+>   type Object (->) a = ()
+> 
+>   id x = x
+> 
+>   (g . f) x = g (f x)
 
  #pagebreak()
  #set heading(numbering: "A.")
