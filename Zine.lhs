@@ -20,13 +20,24 @@
       <key>scope</key><string>keyword, storage.type</string>
       <key>settings</key>
       <dict>
-        <key>foreground</key><string>#000000</string>
         <key>fontStyle</key><string>bold</string>
       </dict>
     </dict>
+    <dict>
+      <key>scope</key><string>entity</string>
+      <key>settings</key>
+      <dict>
+        <key>fontStyle</key><string>italic</string>
+      </dict>
+    </dict>
+    <dict>
+      <key>scope</key><string>comment</string>
+      <key>settings</key>
+      <dict>
+        <key>foreground</key><string>#666666</string>
+      </dict>
+    </dict>
   </array>
-  <key>uuid</key>
-  <string>2b040f94-fc71-4e29-8558-4515b16e79f3</string>
 </dict>
 </plist>
 ```.text))
@@ -119,10 +130,10 @@ The main interaction loop
 
 > main ∷ IO ()
 > main = do
->   frame <- createFrame
+>   frame ← createFrame
 >   let interactionLoop state = do
 >         display ((webrender . view) state) frame
->         input <- read
+>         input ← read
 >         let state' = (execute . interpret) input state
 >         interactionLoop state'
 >   interactionLoop initialState
