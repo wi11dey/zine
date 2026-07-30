@@ -17,7 +17,7 @@
       </dict>
     </dict>
     <dict>
-      <key>scope</key><string>keyword, storage.type</string>
+      <key>scope</key><string>keyword, storage.type, entity.other.inherited-class</string>
       <key>settings</key>
       <dict>
         <key>fontStyle</key><string>bold</string>
@@ -49,15 +49,15 @@
  #set par(justify: true, first-line-indent: 1.5em)
  #show title: set align(center)
 
- #title[#image("zine.svg", width: 3in)]
+ #title[#image("zine.svg", width: 3in) _source_]
 
  #v(0.25in)
 
- #outline(title: none)
+ #pad(x: 0.75in, outline(title: none))
 
  #set heading(numbering: "1.")
 
-Haskell is the glue, so that you can think about the parts in isolation. Category theory style
+Haskell is the glue, so that you can think about the parts in isolation. Category theory style #lorem(50)
 
  #let imports = [
 
@@ -70,7 +70,7 @@ This resolves a nominal into a specific noun
 
 > resolve ∷ Nominal → Noun
 
-These are all the thirty-seven relations in the Universal Dependencies grammar @ud
+These are all the thirty-seven relations in the Universal Dependencies grammar @ud.
 
 > data Relation = Nsubj
 >               | Obj
@@ -195,7 +195,27 @@ type Philosophy a b = [a → b]
 
 ok now we might be getting somewhere, as I can also make morphisms from local semantics via pushouts through a tree root in the dependency parse. I don't necessarily have to ask from whence nouns came from (this is restricted to humans), just the relationships defined between them.
 
-= A Dependency Tree Topos
+= Category Theory
+
+== Definitions
+
+If you're already familiar with categories and their representation in Haskell, you can skip this section. (There is already `Control.Category`, but it is necessarily a _wide_ category, where its objects are always $"Ob"(bold("Hask"))$.)
+
+Haskell categories
+
+> class Category (k ∷ Type → Type → Type) where
+>   type Object k (a ∷ Type) ∷ Constraint
+> 
+>   id ∷ Object k a ⇒ k a a
+> 
+>   (.) ∷ (Object k a, Object k b, Object k c) ⇒ k b c → k a b → k a c
+> 
+> instance Category (→) where
+>   type Object (→) a = ()
+>   id x = x
+>   (g . f) x = g (f x)
+
+== A Dependency Tree Topos
 
 Consider a dependency tree
 
@@ -208,7 +228,7 @@ Consider a dependency tree
 6	.	.	PUNCT	.	_	2	punct	_	_
 ```.text)]
 
-To any dependency parse, we can associate a category, say $cal(D)$, by considering the objects as words (and their indices) and the morphisms as dependencies. To be precise, $"obj"(cal(D))={("They", 1),("buy", 2),...}$ and $"mor"(cal(D))={(("buy", 2), [italic("nsubj")], ("They", 1)),...}$. I'll use $"buy"_2 xarrow("nsubj") "They"_2$ as notation for ${(("buy", 2), italic("nsubj"), ("They", 1))} in "mor"(cal(D))$ from here forward.
+To any dependency parse, we can associate a category, say $cal(D)$, by considering the objects as words (and their indices) and the morphisms as dependencies. To be precise, $"Ob"(cal(D))={("They", 1),("buy", 2),...}$ and $"mor"(cal(D))={(("buy", 2), [italic("nsubj")], ("They", 1)),...}$. I'll use $"buy"_2 xarrow("nsubj") "They"_2$ as notation for ${(("buy", 2), italic("nsubj"), ("They", 1))} in "mor"(cal(D))$ from here forward.
 
 Topos of local truth constructed in just one sentence. First add necessary pushouts of morphisms through relation words to construct just noun phrases as objects in the category. Objects are nominals that are related to
 
@@ -230,32 +250,21 @@ Once I have a local topos, I can attempt gluing using some kind of ACL2 combo or
 
 Maybe have a two-level sheaf attempting to glue sentences together in one argument, using some natural deduction and coreference (H-M unification there?) in the glue between sentences which are part of a topos. Then, can try a different kind of glue to see how two arguments fit together, and which way the functors go between them. Maybe the higher level isn't even a sheaf and just a topology defined on it.
 
-= Category theory
+= Diagrams
 
-== Definitions
+== 3D
 
-
-
-Haskell categories
-
-> class ConstrainedCategory (k ∷ Type → Type → Type) where
->   type Object k (a ∷ Type) ∷ Constraint
-> 
->   id ∷ Object k a ⇒ k a a
-> 
->   (.) ∷ (Object k a, Object k b, Object k c) ⇒ k b c → k a b → k a c
-> 
-> infixr 9 .
->
-> instance ConstrainedCategory (→) where
->   type Object (→) a = ()
->   id x = x
->   (g . f) x = g (f x)
-
+////// APPENDICES //////
  #counter(heading).update(0)
- #set heading(numbering: (..nums) => [
-  Appendix #numbering("A.", ..nums)
-])
+ #set heading(numbering: "A.")
+ #show heading.where(level: 1): it => block(
+  above: 1.8em,
+  below: 1em,
+  sticky: true,
+  text(size: 1.4em, weight: "bold")[
+    Appendix #counter(heading).display("A.") #it.body
+  ],
+)
 
 = Referenced packages
 
