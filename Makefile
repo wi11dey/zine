@@ -1,7 +1,10 @@
 AWK ?= awk
 TYPST ?= typst
 
-.PHONY: doc
+.PHONY: all doc
+
+all:
+	stack build
 
 doc: $(patsubst %.lhs,%.pdf,$(wildcard *.lhs))
 
