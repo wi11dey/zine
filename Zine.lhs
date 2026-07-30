@@ -3,18 +3,14 @@
 
  #title[Zine]
 
+ #outline(title: none)
+
  #set heading(numbering: "1.")
 
 Haskell is the glue, so that you can think about the parts in isolation. Category theory style
 
  #let imports = [
 
-> {-# LANGUAGE ConstraintKinds #-}
-> {-# LANGUAGE FlexibleInstances #-}
-> {-# LANGUAGE KindSignatures #-}
-> {-# LANGUAGE TypeFamilies #-}
-> {-# LANGUAGE TypeOperators #-}
-> 
 > import Data.Kind (Constraint, Type)
 > import Prelude hiding (id, (.), read)
 
@@ -171,7 +167,6 @@ Maybe have a two-level sheaf attempting to glue sentences together in one argume
 
 = Category theory
 
-> 
 > class ConstrainedCategory (k :: Type -> Type -> Type) where
 >   type Object k (a :: Type) :: Constraint
 > 
@@ -190,14 +185,16 @@ Maybe have a two-level sheaf attempting to glue sentences together in one argume
 > 
 >   (g . f) x = g (f x)
 
- #pagebreak()
- #set heading(numbering: "A.")
+ #counter(heading).update(0)
+ #set heading(numbering: (..nums) => [
+  Appendix #numbering("A.", ..nums)
+])
 
 = Referenced packages
 
  #imports
 
-Placeholder implementations and types
+= Stubs
 
 > resolve = undefined
 > dependencyParse = undefined
