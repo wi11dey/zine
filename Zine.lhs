@@ -1,6 +1,39 @@
  #import "@preview/unidep:0.1.4": dependency-tree
  #import "@preview/xarrow:0.4.0": xarrow
 
+ #set raw(theme: bytes(```xml
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+  <key>name</key>
+  <string>Haskell Black</string>
+  <key>settings</key>
+  <array>
+    <dict>
+      <key>settings</key>
+      <dict>
+        <key>foreground</key><string>#000000</string>
+      </dict>
+    </dict>
+    <dict>
+      <key>scope</key><string>keyword</string>
+      <key>settings</key>
+      <dict>
+        <key>foreground</key><string>#000000</string>
+        <key>fontStyle</key><string>bold</string>
+      </dict>
+    </dict>
+  </array>
+  <key>uuid</key>
+  <string>2b040f94-fc71-4e29-8558-4515b16e79f3</string>
+</dict>
+</plist>
+```.text))
+ #show raw: set text(font: "New Computer Modern", size: 1.2em)
+
+ #show raw.where(block: true): it => pad(x: 3em, it)
+
  #set text(lang: "en")
  #set par(justify: true, first-line-indent: 1.5em)
  #show title: set align(center)
@@ -26,7 +59,7 @@ This resolves a nominal into a specific noun
 
 > resolve ∷ Nominal → Noun
 
-These are all the thirty-seven relations in the Universal Dependencies grammar
+These are all the thirty-seven relations in the Universal Dependencies grammar @ud
 
 > data Relation = Nsubj
 >               | Obj
@@ -188,6 +221,10 @@ Maybe have a two-level sheaf attempting to glue sentences together in one argume
 
 = Category theory
 
+== Definitions
+
+
+
 Haskell categories
 
 > class ConstrainedCategory (k ∷ Type → Type → Type) where
@@ -244,6 +281,18 @@ Haskell categories
 > data Fact = Fact
 > data Knowledge = Knowledge
 > data Thesis = Thesis
+
+ #bibliography(bytes(```bib
+@article{ud,
+  title={Universal dependencies},
+  author={De Marneffe, Marie-Catherine and Manning, Christopher D and Nivre, Joakim and Zeman, Daniel},
+  journal={Computational linguistics},
+  volume={47},
+  number={2},
+  pages={255--308},
+  year={2021}
+}
+```.text), title: [References])
 
 // Local Variables:
 // outline-regexp: "^=+"
