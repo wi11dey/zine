@@ -17,5 +17,5 @@ Zine.pdf: zine.svg
 %.typ: lhs2typ.awk %.lhs
 	$(AWK) -f $^ > $@
 
-%.pdf: %.typ
-	$(TYPST) compile $< $@
+%.pdf %.html: %.typ
+	$(TYPST) compile --features html $< $@

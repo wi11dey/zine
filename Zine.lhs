@@ -49,7 +49,7 @@
  #set par(justify: true, first-line-indent: 1.5em)
  #show title: set align(center)
 
- #title[#image("zine.svg", width: 3in) _source_]
+ #title[#image("zine.svg", width: 3in, alt: "zine") _source_]
 
  #v(0.25in)
 
@@ -96,7 +96,7 @@ UDPipe (maybe see https://github.com/fpco/inline-c), lazily
 
 > dependencyParse ∷ Text → Syntax
 
-Functor from the tree-category of Dependency to a meaningful category. See below A DEPENDENCY TREE TOPOS -- use Prolog
+Functor from the tree-category of Dependency to a meaningful category. See below @dependency-tree-topos -- use Prolog
 
 > understand ∷ Syntax → Maybe Semantics
 
@@ -215,7 +215,7 @@ Haskell categories
 >   id x = x
 >   (g . f) x = g (f x)
 
-== A Dependency Tree Topos
+== A Dependency Tree Topos <dependency-tree-topos>
 
 Consider a dependency tree
 
@@ -257,16 +257,11 @@ Maybe have a two-level sheaf attempting to glue sentences together in one argume
 ////// APPENDICES //////
  #counter(heading).update(0)
  #set heading(numbering: "A.")
- #show heading.where(level: 1): it => block(
-  above: 1.8em,
-  below: 1em,
-  sticky: true,
-  text(size: 1.4em, weight: "bold")[
-    Appendix #counter(heading).display("A.") #it.body
-  ],
-)
+ #show heading.where(level: 1): it => [Appendix #counter(heading).display("A.") #it.body]
 
 = Referenced packages
+
+The following imports were used in this Literate Haskell source file.
 
  #imports
 
