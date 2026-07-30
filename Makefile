@@ -5,8 +5,10 @@ MPOST ?= mpost
 
 .PHONY: all
 
-all: Zine.pdf zine.svg
+all: Zine.pdf
 	$(STACK) build
+
+Zine.pdf: zine.svg
 
 %.svg: %.mp
 	$(MPOST) $<

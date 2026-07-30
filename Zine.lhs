@@ -1,7 +1,10 @@
- #set text(font: "New Computer Modern")
+ #set text(lang: "en")
+ #set par(justify: true)
  #show title: set align(center)
 
- #title[Zine]
+ #title[#image("zine.svg", width: 3in)]
+
+ #v(0.25in)
 
  #outline(title: none)
 
@@ -18,7 +21,7 @@ Haskell is the glue, so that you can think about the parts in isolation. Categor
 
 This resolves a nominal into a specific noun
 
-> resolve :: Nominal -> Noun
+> resolve ∷ Nominal → Noun
 
 These are all the thirty-seven relations in the Universal Dependencies grammar
 
@@ -27,13 +30,13 @@ These are all the thirty-seven relations in the Universal Dependencies grammar
 >               | Iobj
 >               deriving (Eq, Ord, Enum)
 
-> newtype Dependency source target = Dependency (source -> ([Relation], target))
+> newtype Dependency source target = Dependency (source → ([Relation], target))
 
 Because Dependency is generic on any source or target, coreference can be handled separately on a PoS layer I bet
 
 > --instance Category Dependency where
-> --  id = Dependency $ \source -> ([], source)
-> --  (Dependency a) . (Dependency b) = Dependency $ \source ->
+> --  id = Dependency $ \source → ([], source)
+> --  (Dependency a) . (Dependency b) = Dependency $ \source →
 > --    let (relations, intermediate) = b source
 > --        (relations', target) = a intermediate
 > --    in (relations ++ relations', target)
@@ -44,41 +47,41 @@ Dependency parsing happens sentence-by-sentence
 
 UDPipe (maybe see https://github.com/fpco/inline-c), lazily
 
-> dependencyParse :: Text -> Syntax
+> dependencyParse ∷ Text → Syntax
 
 Functor from the tree-category of Dependency to a meaningful category. See below A DEPENDENCY TREE TOPOS -- use Prolog
 
-> understand :: Syntax -> Maybe Semantics
+> understand ∷ Syntax → Maybe Semantics
 
-> explain :: Semantics -> Syntax
+> explain ∷ Semantics → Syntax
 
 Maxima here, which needs a ECL FFI or general Lisp IPC
 
-> simplify :: Math -> Math -- Maxima
+> simplify ∷ Math → Math -- Maxima
 
 Yi, The keybindings part
 
-> interpret :: Input -> Command
+> interpret ∷ Input → Command
 
 Yi, stuff from EditorM for example
 
-> execute :: Command -> State -> State
+> execute ∷ Command → State → State
 
 Custom, using typst-layout, which needs rust FFI or some (??) IPC
 
-> view :: State -> DisplayList
+> view ∷ State → DisplayList
 
 WebRender ofc, which needs rust FFI (see https://github.com/harpocrates/inline-rust) or general Rust IPC
 
-> webrender :: DisplayList -> GL
+> webrender ∷ DisplayList → GL
 
-> createFrame :: IO GLContext
+> createFrame ∷ IO GLContext
 
-> read :: IO Input
+> read ∷ IO Input
 
 The main interaction loop
 
-> main :: IO ()
+> main ∷ IO ()
 > main = do
 >   frame <- createFrame
 >   let interactionLoop state = do
@@ -90,7 +93,7 @@ The main interaction loop
 
 Profane definitions of types
 
-> newtype GL = GL { display :: GLContext -> IO () }
+> newtype GL = GL { display ∷ GLContext → IO () }
 
 Haskell default and glue:
 - Prolog (NLP <-> Topos <-> FOL).
@@ -123,7 +126,7 @@ If I was to use sheaf theory here, then I've broken the problem into:
 
 Globally, I want to extract stuff like
 
-> newtype Epistemology = Epistemology (Set Fact -> Knowledge)
+> newtype Epistemology = Epistemology (Set Fact → Knowledge)
 
 What is true about both the local semantics and the global semantics? Both subcategories of Hask, likely, as they both need to be representable internally by the computer ultimately.
 
@@ -131,7 +134,7 @@ So what is Epistemology? It's a subcategory with only two objects and it goes un
 
 what about hegel
 
-> dialectic :: (Thesis, Thesis) -> Maybe Thesis
+> dialectic ∷ (Thesis, Thesis) → Maybe Thesis
 
 metaphysics: what is?
 epistemology: what is knowledge?
@@ -140,7 +143,7 @@ ethics: what is just/right/needful?
 probably can't constrain this too much -- maybe it's literally just collections of morphisms between two Hask objects
 
 ```haskell
-type Philosophy a b = [a -> b]
+type Philosophy a b = [a → b]
 ```
 
 ok now we might be getting somewhere, as I can also make morphisms from local semantics via pushouts through a tree root in the dependency parse. I don't necessarily have to ask from whence nouns came from (this is restricted to humans), just the relationships defined between them.
@@ -167,19 +170,19 @@ Maybe have a two-level sheaf attempting to glue sentences together in one argume
 
 = Category theory
 
-> class ConstrainedCategory (k :: Type -> Type -> Type) where
->   type Object k (a :: Type) :: Constraint
+> class ConstrainedCategory (k ∷ Type → Type → Type) where
+>   type Object k (a ∷ Type) ∷ Constraint
 > 
->   id :: Object k a => k a a
+>   id ∷ Object k a ⇒ k a a
 > 
->   (.) ::
->     (Object k a, Object k b, Object k c) =>
->     k b c -> k a b -> k a c
+>   (.) ∷
+>     (Object k a, Object k b, Object k c) ⇒
+>     k b c → k a b → k a c
 > 
 > infixr 9 .
 >
-> instance ConstrainedCategory (->) where
->   type Object (->) a = ()
+> instance ConstrainedCategory (→) where
+>   type Object (→) a = ()
 > 
 >   id x = x
 > 
