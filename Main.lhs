@@ -27,7 +27,7 @@ Dependency parsing happens sentence-by-sentence
 UDPipe (maybe see https://github.com/fpco/inline-c), lazily
 > dependencyParse :: Text -> Syntax
 
-Functor from the tree-category of Dependency to a meaningful category.
+Functor from the tree-category of Dependency to a meaningful category. See below A DEPENDENCY TREE TOPOS -- use Prolog
 > understand :: Syntax -> Maybe Semantics
 
 > explain :: Semantics -> Syntax
@@ -64,6 +64,26 @@ The main interaction loop
 
 Profane definitions of types
 > newtype GL = GL { display :: GLContext -> IO () }
+
+Haskell default and glue:
+- Prolog (NLP <-> Topos <-> FOL).
+    Maybe this can be in native Haskell or scheme
+- Lisp (CAS)
+    Better interop with scheme
+- Rust (rendering)
+- C++ (text tagging, Firefox IPDL)
+    Can be done with udpipe-rs
+
+lol maybe idris instead of haskell -> scheme
+  -> rust marwood or other scheme implementation for display list, udpipe-rs
+  -> prolog with call/cc
+  -> lisp direct interop with scheme lists but embedded via ecl2
+
+if they're all separate, you could get a prolog repl, an ECL repl, and a GHCI repl
+
+maybe prolog translates directly into lispy things
+
+haskell -> prolog -> lisp
 
 
 PHILOSOPHY AND SHEAF THEORY
@@ -102,10 +122,15 @@ Topos of local truth constructed in just one sentence. First add necessary pusho
 Maybe--
 Terminal object: "this"/unrestricted PRON
 Binary products: different sentences, indicates that two independent clauses can be broken up
-Equalizer: CCONJ
+Equalizer: CCONJ/union
 Exponential: linguistic recursion/which
 Omega: "itself" all nouns
 Sub object classifier: X--copula-->"itself"
+
+> class (Category c) => Topos c obj where
+>   terminal :: obj
+>   omega :: obj
+>   exponential :: (c obj obj) -> obj
 
 Existential quantification would use "this", whereas the default is just universal. i.e. Red is bright vs this red is bright.
 
