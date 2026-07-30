@@ -17,7 +17,7 @@
       </dict>
     </dict>
     <dict>
-      <key>scope</key><string>keyword</string>
+      <key>scope</key><string>keyword, storage.type</string>
       <key>settings</key>
       <dict>
         <key>foreground</key><string>#000000</string>
