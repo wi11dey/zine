@@ -3,14 +3,14 @@ AWK ?= awk
 TYPST ?= typst
 MPOST ?= mpost
 
-.PHONY: all doc
+.PHONY: all
 
 all: Zine.pdf zine.svg
 	$(STACK) build
 
 %.svg: %.mp
 	$(MPOST) $<
-	$(RM) $(basename $<).log
+	$(RM) $*.log
 
 %.typ: lhs2typ.awk %.lhs
 	$(AWK) -f $^ > $@
