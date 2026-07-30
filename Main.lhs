@@ -1,14 +1,29 @@
+ #set text(font: "New Computer Modern")
+ #show title: set align(center)
+
+ #title[Zine]
+
+ #set heading(numbering: "1.")
+
 Haskell is the glue, so that you can think about the parts in isolation. Category theory style
 
-> import Prelude hiding (id, (.))
+ #let imports = [
+
+> import Prelude hiding (id, (.), read)
 > import Control.Category
 
+]
+
 This resolves a nominal into a specific noun
+
 > resolve :: Nominal -> Noun
+
+These are all the thirty-seven relations in the Universal Dependencies grammar
 
 > data Relation = Nsubj
 >               | Obj
 >               | Iobj
+>               deriving (Eq, Ord, Enum)
 
 > newtype Dependency source target = Dependency (source -> ([Relation], target))
 
@@ -17,34 +32,42 @@ Because Dependency is generic on any source or target, coreference can be handle
 > instance Category Dependency where
 >   id = Dependency $ \source -> ([], source)
 >   (Dependency a) . (Dependency b) = Dependency $ \source ->
->     let (relations, intermediate) = a source
->         (relations', target) = b intermediate
+>     let (relations, intermediate) = b source
+>         (relations', target) = a intermediate
 >     in (relations ++ relations', target)
 
 Dependency parsing happens sentence-by-sentence
+
 > type Syntax = [Sentence]
 
 UDPipe (maybe see https://github.com/fpco/inline-c), lazily
+
 > dependencyParse :: Text -> Syntax
 
 Functor from the tree-category of Dependency to a meaningful category. See below A DEPENDENCY TREE TOPOS -- use Prolog
+
 > understand :: Syntax -> Maybe Semantics
 
 > explain :: Semantics -> Syntax
 
 Maxima here, which needs a ECL FFI or general Lisp IPC
+
 > simplify :: Math -> Math -- Maxima
 
 Yi, The keybindings part
+
 > interpret :: Input -> Command
 
 Yi, stuff from EditorM for example
+
 > execute :: Command -> State -> State
 
 Custom, using typst-layout, which needs rust FFI or some (??) IPC
+
 > view :: State -> DisplayList
 
 WebRender ofc, which needs rust FFI (see https://github.com/harpocrates/inline-rust) or general Rust IPC
+
 > webrender :: DisplayList -> GL
 
 > createFrame :: IO GLContext
@@ -52,6 +75,7 @@ WebRender ofc, which needs rust FFI (see https://github.com/harpocrates/inline-r
 > read :: IO Input
 
 The main interaction loop
+
 > main :: IO ()
 > main = do
 >   frame <- createFrame
@@ -63,6 +87,7 @@ The main interaction loop
 >   interactionLoop initialState
 
 Profane definitions of types
+
 > newtype GL = GL { display :: GLContext -> IO () }
 
 Haskell default and glue:
@@ -86,7 +111,7 @@ maybe prolog translates directly into lispy things
 haskell -> prolog -> lisp
 
 
-PHILOSOPHY AND SHEAF THEORY
+= Philosophy and Sheaf Theory
 
 Need to think about the pushout of rooted words, which would connect subjects to objects via some actual relation. Because of the categorical structure of Dependency, only the dependency paths between two different tokens matters. Pushouts can be related to specific morphisms, and will probably be through things like verbs
 
@@ -96,6 +121,7 @@ If I was to use sheaf theory here, then I've broken the problem into:
 - Global semantics
 
 Globally, I want to extract stuff like
+
 > newtype Epistemology = Epistemology (Set Fact -> Knowledge)
 
 What is true about both the local semantics and the global semantics? Both subcategories of Hask, likely, as they both need to be representable internally by the computer ultimately.
@@ -103,19 +129,23 @@ What is true about both the local semantics and the global semantics? Both subca
 So what is Epistemology? It's a subcategory with only two objects and it goes unidirectionally. pushouts are what two epistemic systems have in common and pullbacks are the dual
 
 what about hegel
-> dialectic :: (Thesis * Thesis) -> Maybe Thesis
+
+> dialectic :: (Thesis, Thesis) -> Maybe Thesis
 
 metaphysics: what is?
 epistemology: what is knowledge?
 ethics: what is just/right/needful?
 
 probably can't constrain this too much -- maybe it's literally just collections of morphisms between two Hask objects
-> newtype Philosophy a b = [a -> b]
+
+```haskell
+type Philosophy a b = [a -> b]
+```
 
 ok now we might be getting somewhere, as I can also make morphisms from local semantics via pushouts through a tree root in the dependency parse. I don't necessarily have to ask from whence nouns came from (this is restricted to humans), just the relationships defined between them.
 
 
-A DEPENDENCY TREE TOPOS
+= A Dependency Tree Topos
 
 Topos of local truth constructed in just one sentence. First add necessary pushouts of morphisms through relation words to construct just noun phrases as objects in the category. Objects are nominals that are related to others
 
@@ -127,11 +157,6 @@ Exponential: linguistic recursion/which
 Omega: "itself" all nouns
 Sub object classifier: X--copula-->"itself"
 
-> class (Category c) => Topos c obj where
->   terminal :: obj
->   omega :: obj
->   exponential :: (c obj obj) -> obj
-
 Existential quantification would use "this", whereas the default is just universal. i.e. Red is bright vs this red is bright.
 
 Now that I have a sheaf topos, I would like to be able to glue it together into a general understanding. The glue will inevitably have a nonzero cohomology in which case we will fail to synthesize a global understanding. But say we have a global understanding; then we can understand how different parts fit together by alternating between natural language representation and the categorical.
@@ -139,3 +164,42 @@ Now that I have a sheaf topos, I would like to be able to glue it together into 
 Once I have a local topos, I can attempt gluing using some kind of ACL2 combo or H-M unification, or both. I will need to figure this out later, and the exact system by which the local, overfit, understanding gets generalized to the global will determine the cohomology.
 
 Maybe have a two-level sheaf attempting to glue sentences together in one argument, using some natural deduction and coreference (H-M unification there?) in the glue between sentences which are part of a topos. Then, can try a different kind of glue to see how two arguments fit together, and which way the functors go between them. Maybe the higher level isn't even a sheaf and just a topology defined on it.
+
+ #pagebreak()
+ #set heading(numbering: "A.")
+
+= Referenced packages
+
+ #imports
+
+Placeholder implementations and types
+
+> resolve = undefined
+> dependencyParse = undefined
+> understand = undefined
+> explain = undefined
+> simplify = undefined
+> interpret = undefined
+> execute = undefined
+> view = undefined
+> webrender = undefined
+> createFrame = undefined
+> read = undefined
+> initialState = undefined
+> dialectic = undefined
+>
+> data Nominal = Nominal
+> data Noun = Noun
+> data Sentence = Sentence
+> data Text = Text
+> data Semantics = Semantics
+> data Math = Math
+> data Input = Input
+> data Command = Command
+> data State = State
+> data DisplayList = DisplayList
+> data GLContext = GLContext
+> data Set a = Set
+> data Fact = Fact
+> data Knowledge = Knowledge
+> data Thesis = Thesis

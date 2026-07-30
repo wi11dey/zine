@@ -1,6 +1,10 @@
 AWK ?= awk
 TYPST ?= typst
 
+.PHONY: doc
+
+doc: $(patsubst %.lhs,%.pdf,$(wildcard *.lhs))
+
 %.typ: lhs2typ.awk %.lhs
 	$(AWK) -f $^ > $@
 
