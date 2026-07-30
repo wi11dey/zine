@@ -1,4 +1,4 @@
-[[./logo/zine.svg]]
+[[./zine.svg]]
 
 /A place for creativity./
 
