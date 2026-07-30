@@ -3,7 +3,7 @@ TYPST ?= typst
 
 .PHONY: all doc
 
-all:
+all: doc
 	stack build
 
 doc: $(patsubst %.lhs,%.pdf,$(wildcard *.lhs))
