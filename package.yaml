@@ -4,6 +4,7 @@ dependencies: base
 executable:
   main: Zine.lhs
   default-extensions:
+    - DeriveFunctor
     - ConstraintKinds
     - KindSignatures
     - TypeFamilies

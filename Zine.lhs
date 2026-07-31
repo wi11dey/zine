@@ -248,6 +248,10 @@ Consider a dependency tree
 6	.	.	PUNCT	.	_	2	punct	_	_
 ```.text, show-upos: true, level-height: 0.6))
 
+Let's define the type of dependency trees.
+
+> data DependencyTree a = DependencyTree { word :: a, children :: [(Relation, DependencyTree a)] } deriving (Functor)
+
 To any dependency parse, we can associate a category, say $cal(D)$, by considering the objects as words (and their indices) and the morphisms as dependencies. To be precise, $"Ob"(cal(D))={("They", 1),("buy", 2),...}$ and $"mor"(cal(D))={(("buy", 2), [italic("nsubj")], ("They", 1)),...}$. I'll use $"buy"_2 xarrow("nsubj") "They"_2$ as notation for ${(("buy", 2), italic("nsubj"), ("They", 1))} in "mor"(cal(D))$ from here forward.
 
 Topos of local truth constructed in just one sentence. First add necessary pushouts of morphisms through relation words to construct just noun phrases as objects in the category. Objects are nominals that are related to
