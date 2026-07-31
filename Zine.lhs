@@ -47,12 +47,21 @@
  #set text(lang: "en")
  #set par(justify: true, first-line-indent: 1.5em)
  #show title: set align(center)
+ #show figure.caption: set text(style: "italic")
 
  #title[#image("zine.svg", width: 3in, alt: "zine") _source_]
 
- #pad(x: 0.75in, outline(title: none))
+ #pad(x: 0.75in, bottom: 1em, outline(title: none))
 
-Zine was born(e?) out of a desire
+Zine is a language for doing philosophy. It is interesting in that its syntax is natural people language; in fact, most human languages can be used. Nevertheless, it is precise.
+
+ #pad(
+    y: 1em,
+    figure(
+        image("zines.jpg", width: 100% + 2em, height: 2in, fit: "cover"),
+        caption: [Zines from the seventies @zines]
+    )
+)
 
 In this age of LLMs, the bullshit machine is running at full steam, and all of nuance is swept under probabalism.
 
@@ -324,7 +333,15 @@ The following imports were used in this Literate Haskell source file.
   pages={255--308},
   year={2021}
 }
-```.text), title: [References])
+@misc{zines,
+  author={Jake},
+  title={Fanzines from the 1970s},
+  howpublished={\url{https://www.flickr.com/photos/stillunusual/21224199545}},
+  note={Licensed under CC BY 2.0 (\url{https://creativecommons.org/licenses/by/2.0/deed.en})},
+  year={2015},
+  month=sep
+}
+```.text), title: [References], style: "nature")
 
 // Local Variables:
 // outline-regexp: "^=+"
