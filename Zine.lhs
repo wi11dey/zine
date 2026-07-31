@@ -79,6 +79,7 @@ Haskell is the glue, so that you can think about the parts in isolation. Categor
 
 > import Data.Kind (Constraint, Type)
 > import Prelude hiding (id, (.), read)
+> import qualified Typst.Syntax
 
 ]
 
@@ -137,6 +138,8 @@ Custom, using typst-layout, which needs rust FFI or some (??) IPC
 WebRender ofc, which needs rust FFI (see https://github.com/harpocrates/inline-rust) or general Rust IPC
 
 > webrender ∷ DisplayList → GL
+
+> typstLayout ∷ Typst.Syntax.Markup → DisplayList
 
 > createFrame ∷ IO GLContext
 
@@ -310,6 +313,7 @@ The following imports were used in this Literate Haskell source file.
 > read = undefined
 > initialState = undefined
 > dialectic = undefined
+> typstLayout = undefined
 >
 > data Nominal = Nominal
 > data Noun = Noun
