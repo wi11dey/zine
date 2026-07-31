@@ -3,6 +3,7 @@ version: 0.1.0.0
 dependencies:
   - base
   - typst
+  - yi-core
 executable:
   main: Zine.lhs
   default-extensions:

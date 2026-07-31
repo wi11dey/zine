@@ -59,7 +59,7 @@ Zine is a human-computer interaction language for philosophy. It is interesting 
 
  #figure(image("zines.jpg", width: 100% + 2em, height: 2in, fit: "cover"), caption: [Zines from the seventies @zines.
 
-Zine can also mean Zine Is Not Emacs, which has been my daily driver since at least 2019.])
+Zine can also mean Zine Is Not Emacs, which I wrote this in.])
 
 Zine is also a very good editor for the Typst scientific computer language @typst.
 
@@ -79,6 +79,9 @@ Haskell is the glue, so that you can think about the parts in isolation. Categor
 
 > import Data.Kind (Constraint, Type)
 > import Prelude hiding (id, (.), read)
+
+Typst is used for parsing
+
 > import qualified Typst.Syntax
 
 ]
@@ -242,7 +245,7 @@ Haskell categories
 
 == A Dependency Tree Topos <dependency-tree-topos>
 
- #block(sticky: true)[Consider a dependency tree]
+ #block(sticky: true)[Consider the dependency tree parse of the following sentence]
 
  #figure(dependency-tree(```
 1	They	they	PRON	PRP	_	2	nsubj	_	_
@@ -251,7 +254,7 @@ Haskell categories
 4	sell	sell	VERB	VBP	_	2	conj	_	_
 5	books	book	NOUN	NNS	_	2	obj	_	_
 6	.	.	PUNCT	.	_	2	punct	_	_
-```.text, show-upos: true, level-height: 0.6))
+```.text, level-height: 0.6, show-root: false))
 
  #block(sticky: true)[Let's define the type of dependency trees.]
 
@@ -259,6 +262,10 @@ Haskell categories
 >   word :: a,
 >   children :: [(Relation, DependencyTree a)]
 > } deriving Functor
+
+From this, you could construct the free category $cal(D)$ with paths as morphisms. We get the following morphisms in $bold("Cat")$:
+
+ #figure(diagram($cal(D) edge(T, "hook->") & cal(T)$))
 
 To any dependency parse, we can associate a category, say $cal(D)$, by considering the objects as words (and their indices) and the morphisms as dependencies. To be precise, $"Ob"(cal(D))={("They", 1),("buy", 2),...}$ and $"mor"(cal(D))={(("buy", 2), [italic("nsubj")], ("They", 1)),...}$. I'll use $"buy"_2 xarrow("nsubj") "They"_2$ as notation for ${(("buy", 2), italic("nsubj"), ("They", 1))} in "mor"(cal(D))$ from here forward.
 
@@ -324,7 +331,8 @@ The following imports were used in this Literate Haskell source file.
 > data Input = Input
 > data Command = Command
 > data State = State
-> data DisplayList = DisplayList
+> data DisplayListItem = DisplayListItem
+> type DisplayList = [DisplayListItem]
 > data GLContext = GLContext
 > data Set a = Set
 > data Fact = Fact
