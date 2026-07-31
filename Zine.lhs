@@ -55,11 +55,13 @@
 
  #pad(x: 0.75in, bottom: 1em, outline(title: none))
 
-Zine is a language for doing philosophy. It is interesting in that its syntax is natural people language; in fact, most human languages can be used. Nevertheless, it is precise.
+Zine is a human-computer interaction language for philosophy. It is interesting in that its syntax is natural people language; in fact, most human languages can be used. Nevertheless, it is precise.
 
  #figure(image("zines.jpg", width: 100% + 2em, height: 2in, fit: "cover"), caption: [Zines from the seventies @zines.
 
 Zine can also mean Zine Is Not Emacs, which has been my daily driver since at least 2019.])
+
+Zine is also a very good editor for the Typst scientific computer language @typst.
 
 With the widespread usage of LLMs the bullshit machine is running at full steam, and nuance is swept under probabalism.
 
@@ -237,7 +239,7 @@ Haskell categories
 
 == A Dependency Tree Topos <dependency-tree-topos>
 
-Consider a dependency tree
+ #block(sticky: true)[Consider a dependency tree]
 
  #figure(dependency-tree(```
 1	They	they	PRON	PRP	_	2	nsubj	_	_
@@ -248,9 +250,12 @@ Consider a dependency tree
 6	.	.	PUNCT	.	_	2	punct	_	_
 ```.text, show-upos: true, level-height: 0.6))
 
-Let's define the type of dependency trees.
+ #block(sticky: true)[Let's define the type of dependency trees.]
 
-> data DependencyTree a = DependencyTree { word :: a, children :: [(Relation, DependencyTree a)] } deriving (Functor)
+> data DependencyTree a = DependencyTree {
+>   word :: a,
+>   children :: [(Relation, DependencyTree a)]
+> } deriving Functor
 
 To any dependency parse, we can associate a category, say $cal(D)$, by considering the objects as words (and their indices) and the morphisms as dependencies. To be precise, $"Ob"(cal(D))={("They", 1),("buy", 2),...}$ and $"mor"(cal(D))={(("buy", 2), [italic("nsubj")], ("They", 1)),...}$. I'll use $"buy"_2 xarrow("nsubj") "They"_2$ as notation for ${(("buy", 2), italic("nsubj"), ("They", 1))} in "mor"(cal(D))$ from here forward.
 
@@ -342,6 +347,12 @@ The following imports were used in this Literate Haskell source file.
   note={Licensed under CC BY 2.0 (\url{https://creativecommons.org/licenses/by/2.0/deed.en})},
   year={2015},
   month=sep
+}
+@article{typst,
+  title={Typst: A Modern Typesetting Engine for Science},
+  author={Voynov, Andrey and Corbi, Alberto and L{\'o}pez-Oliver, Pau and Gil Oliva, David},
+  year={2026},
+  publisher={Universidad Internacional de La Rioja}
 }
 ```.text), title: [References], style: "nature")
 
