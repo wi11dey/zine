@@ -57,11 +57,11 @@
 
 Zine is a human-computer interaction language for philosophy. It is interesting in that its syntax is natural people language; in fact, most human languages can be used. Nevertheless, it is precise.
 
- #figure(image("zines.jpg", width: 100% + 2em, height: 2in, fit: "cover"), caption: [Zines from the seventies @zines.
+ #figure(image("zines.jpg", width: 100% + 2em, height: 2in, fit: "cover"), caption: [Zines from the seventies. @zines
 
 Zine can also mean Zine Is Not Emacs, which I wrote this in.])
 
-Zine is also a very good editor for the Typst scientific computer language @typst.
+Zine is also a very good what-you-see-is-what-you-get editor for Typst @typst technical writing.
 
 With the widespread usage of LLMs the bullshit machine is running at full steam, and nuance is swept under probabalism.
 
