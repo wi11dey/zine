@@ -47,7 +47,9 @@
  #set text(lang: "en")
  #set par(justify: true, first-line-indent: 1.5em)
  #show title: set align(center)
- #show figure.caption: set text(style: "italic")
+ #show figure: it => pad(y: 8pt, it)
+ #set figure.caption(separator: [. ])
+ #show figure.caption: set text(style: "italic") // it => align(center, block(width: 60%)[#emph(it)])
 
  #title[#image("zine.svg", width: 3in, alt: "zine") _source_]
 
@@ -55,13 +57,9 @@
 
 Zine is a language for doing philosophy. It is interesting in that its syntax is natural people language; in fact, most human languages can be used. Nevertheless, it is precise.
 
- #pad(
-    y: 1em,
-    figure(
-        image("zines.jpg", width: 100% + 2em, height: 2in, fit: "cover"),
-        caption: [Zines from the seventies @zines]
-    )
-)
+ #figure(image("zines.jpg", width: 100% + 2em, height: 2in, fit: "cover"), caption: [Zines from the seventies @zines.
+
+Zine can also mean Zine Is Not Emacs, which has been my daily driver since at least 2019.])
 
 With the widespread usage of LLMs the bullshit machine is running at full steam, and nuance is swept under probabalism.
 
@@ -248,7 +246,7 @@ Consider a dependency tree
 4	sell	sell	VERB	VBP	_	2	conj	_	_
 5	books	book	NOUN	NNS	_	2	obj	_	_
 6	.	.	PUNCT	.	_	2	punct	_	_
-```.text))
+```.text, show-upos: true, level-height: 0.6))
 
 To any dependency parse, we can associate a category, say $cal(D)$, by considering the objects as words (and their indices) and the morphisms as dependencies. To be precise, $"Ob"(cal(D))={("They", 1),("buy", 2),...}$ and $"mor"(cal(D))={(("buy", 2), [italic("nsubj")], ("They", 1)),...}$. I'll use $"buy"_2 xarrow("nsubj") "They"_2$ as notation for ${(("buy", 2), italic("nsubj"), ("They", 1))} in "mor"(cal(D))$ from here forward.
 
