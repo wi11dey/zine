@@ -1,13 +1,12 @@
  #import "@preview/unidep:0.1.4": dependency-tree
  #import "@preview/xarrow:0.4.0": xarrow
+ #import "@preview/fletcher:0.5.8" as fletcher: diagram, node, edge
 
  #set raw(theme: bytes(```xml
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
 <dict>
-  <key>name</key>
-  <string>Haskell Black</string>
   <key>settings</key>
   <array>
     <dict>
@@ -51,11 +50,19 @@
 
  #title[#image("zine.svg", width: 3in, alt: "zine") _source_]
 
- #v(0.25in)
-
  #pad(x: 0.75in, outline(title: none))
 
- #set heading(numbering: "1.")
+Zine was born(e?) out of a desire
+
+In this age of LLMs, the bullshit machine is running at full steam, and all of nuance is swept under probabalism.
+
+If we contrapose the continental traditions with the analytical tradition, broadly taken to include mathematics all the natural sciences. In the analytical tradition, the rejection of accepting all statements as true is so strong that there is .
+
+Even a mediocre engineer can contribute, while philosophy still takes enough discipline of the mind that prevention of falsehood is accomplished in the field through massive exclusion.
+
+In physics, the tenth grade student can understand the Rutherford model of the atom and accept it as a fact upon which to build without
+
+Science requires fixing a model first
 
 Haskell is the glue, so that you can think about the parts in isolation. Category theory style #lorem(50)
 
@@ -162,7 +169,13 @@ maybe prolog translates directly into lispy things
 
 haskell -> prolog -> lisp
 
-= Philosophy and Sheaf Theory
+ #set heading(numbering: "1.")
+
+= Philosophy and sheaf theory
+
+For example, epistemology, at its most basic, can be considered
+
+ #figure(diagram($"Fact" edge(->) & "Knowledge"$))
 
 Need to think about the pushout of rooted words, which would connect subjects to objects via some actual relation. Because of the categorical structure of Dependency, only the dependency paths between two different tokens matters. Pushouts can be related to specific morphisms, and will probably be through things like verbs
 
@@ -195,7 +208,7 @@ type Philosophy a b = [a → b]
 
 ok now we might be getting somewhere, as I can also make morphisms from local semantics via pushouts through a tree root in the dependency parse. I don't necessarily have to ask from whence nouns came from (this is restricted to humans), just the relationships defined between them.
 
-= Category Theory
+= Category theory
 
 == Definitions
 
@@ -219,14 +232,14 @@ Haskell categories
 
 Consider a dependency tree
 
- #align(center)[#dependency-tree(```
+ #figure(dependency-tree(```
 1	They	they	PRON	PRP	_	2	nsubj	_	_
 2	buy	buy	VERB	VBP	_	0	root	_	_
 3	and	and	CCONJ	CC	_	4	cc	_	_
 4	sell	sell	VERB	VBP	_	2	conj	_	_
 5	books	book	NOUN	NNS	_	2	obj	_	_
 6	.	.	PUNCT	.	_	2	punct	_	_
-```.text)]
+```.text))
 
 To any dependency parse, we can associate a category, say $cal(D)$, by considering the objects as words (and their indices) and the morphisms as dependencies. To be precise, $"Ob"(cal(D))={("They", 1),("buy", 2),...}$ and $"mor"(cal(D))={(("buy", 2), [italic("nsubj")], ("They", 1)),...}$. I'll use $"buy"_2 xarrow("nsubj") "They"_2$ as notation for ${(("buy", 2), italic("nsubj"), ("They", 1))} in "mor"(cal(D))$ from here forward.
 
@@ -255,9 +268,10 @@ Maybe have a two-level sheaf attempting to glue sentences together in one argume
 == 3D
 
 ////// APPENDICES //////
+ #[
  #counter(heading).update(0)
  #set heading(numbering: "A.")
- #show heading.where(level: 1): it => [Appendix #counter(heading).display("A.") #it.body]
+ #show heading.where(level: 1): it => [#pagebreak() Appendix #counter(heading).display("A.") #it.body]
 
 = Referenced packages
 
@@ -297,6 +311,9 @@ The following imports were used in this Literate Haskell source file.
 > data Knowledge = Knowledge
 > data Thesis = Thesis
 
+]
+
+ #pagebreak()
  #bibliography(bytes(```bib
 @article{ud,
   title={Universal dependencies},
