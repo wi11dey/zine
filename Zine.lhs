@@ -63,7 +63,7 @@ Zine is a language for doing philosophy. It is interesting in that its syntax is
     )
 )
 
-In this age of LLMs, the bullshit machine is running at full steam, and all of nuance is swept under probabalism.
+With the widespread usage of LLMs the bullshit machine is running at full steam, and nuance is swept under probabalism.
 
 If we contrapose the continental traditions with the analytical tradition, broadly taken to include mathematics all the natural sciences. In the analytical tradition, the rejection of accepting all statements as true is so strong that there is .
 
