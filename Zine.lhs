@@ -88,6 +88,8 @@ Typst is used for parsing
 
 This resolves a nominal into a specific noun
 
+| 1 + 23
+
 > resolve ∷ Nominal → Noun
 
 These are all the thirty-seven relations in the Universal Dependencies grammar @ud.
@@ -365,6 +367,13 @@ The following imports were used in this Literate Haskell source file.
   author={Voynov, Andrey and Corbi, Alberto and L{\'o}pez-Oliver, Pau and Gil Oliva, David},
   year={2026},
   publisher={Universidad Internacional de La Rioja}
+}
+@inproceedings{udeplambda,
+  title={Universal semantic parsing},
+  author={Reddy, Siva and T{\"a}ckstr{\"o}m, Oscar and Petrov, Slav and Steedman, Mark and Lapata, Mirella},
+  booktitle={Proceedings of the 2017 Conference on Empirical Methods in Natural Language Processing},
+  pages={89--101},
+  year={2017}
 }
 ```.text), title: [References], style: "nature")
 
