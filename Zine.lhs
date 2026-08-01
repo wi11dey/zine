@@ -88,8 +88,6 @@ Typst is used for parsing
 
 This resolves a nominal into a specific noun
 
-| 1 + 23
-
 > resolve ∷ Nominal → Noun
 
 These are all the thirty-seven relations in the Universal Dependencies grammar @ud.
