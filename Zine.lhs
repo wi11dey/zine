@@ -429,6 +429,16 @@ The following imports were used in this Literate Haskell source file.
   pages={89--101},
   year={2017}
 }
+@inproceedings{heinecke2019,
+  author = {Heinecke, Johannes and Tyers, Francis M.},
+  title = {{Development of a Universal Dependencies treebank for Welsh}},
+  year = {2019},
+  booktitle = {{Proceedings of the Celtic Language Technology Workshop}},
+  publisher = {European Association for Machine Translation},
+  address = {Dublin},
+  pages = {21--31},
+  url = {https://www.aclweb.org/anthology/W19-6904},
+}
 ```.text), title: [References], style: "nature")
 
 // Local Variables:
