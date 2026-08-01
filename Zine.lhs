@@ -370,6 +370,17 @@ The following imports were used in this Literate Haskell source file.
   year={2026},
   publisher={Universidad Internacional de La Rioja}
 }
+@InProceedings{udpipe,
+  author    = {Straka, Milan  and  Strakov\'{a}, Jana},
+  title     = {Tokenizing, POS Tagging, Lemmatizing and Parsing UD 2.0 with UDPipe},
+  booktitle = {Proceedings of the CoNLL 2017 Shared Task: Multilingual Parsing from Raw Text to Universal Dependencies},
+  month     = {August},
+  year      = {2017},
+  address   = {Vancouver, Canada},
+  publisher = {Association for Computational Linguistics},
+  pages     = {88--99},
+  url       = {http://www.aclweb.org/anthology/K/K17/K17-3009.pdf}
+}
 @inproceedings{udeplambda,
   title={Universal semantic parsing},
   author={Reddy, Siva and T{\"a}ckstr{\"o}m, Oscar and Petrov, Slav and Steedman, Mark and Lapata, Mirella},
