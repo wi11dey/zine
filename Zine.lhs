@@ -350,6 +350,8 @@ The following imports were used in this Literate Haskell source file.
 >       delete m;
 >     } |]
 
+= Feeling the elephant
+
 = Stubs
 
 > resolve = undefined
