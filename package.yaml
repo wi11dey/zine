@@ -4,11 +4,18 @@ dependencies:
   - base
   - typst
   - yi-core
+  - inline-c-cpp
 executable:
   main: Zine.lhs
   default-extensions:
     - DeriveFunctor
     - ConstraintKinds
     - KindSignatures
+    - QuasiQuotes
+    - TemplateHaskell
     - TypeFamilies
     - UnicodeSyntax
+  include-dirs:
+    - udpipe/src_lib_only
+  cxx-sources:
+    - udpipe/src_lib_only/udpipe.cpp

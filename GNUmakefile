@@ -13,3 +13,6 @@ Zine.pdf: zine.svg
 
 %.pdf %.html: %.typ
 	$(TYPST) compile --features html $< $@
+
+udpipe/src_lib_only/udpipe.cpp:
+	$(MAKE) -C $(@D) $(@F) CXX=/usr/bin/clang++

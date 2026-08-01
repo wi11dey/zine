@@ -79,10 +79,14 @@ Haskell is the glue, so that you can think about the parts in isolation. Categor
 
 > import Data.Kind (Constraint, Type)
 > import Prelude hiding (id, (.), read)
+> import qualified Language.C.Inline.Cpp as Cpp
 
 Typst is used for parsing
 
 > import qualified Typst.Syntax
+
+> Cpp.context Cpp.cppCtx
+> Cpp.include "<udpipe.h>"
 
 ]
 
