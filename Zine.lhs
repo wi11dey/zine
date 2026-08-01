@@ -299,6 +299,8 @@ Once I have a local topos, I can attempt gluing using some kind of ACL2 combo or
 
 Maybe have a two-level sheaf attempting to glue sentences together in one argument, using some natural deduction and coreference (H-M unification there?) in the glue between sentences which are part of a topos. Then, can try a different kind of glue to see how two arguments fit together, and which way the functors go between them. Maybe the higher level isn't even a sheaf and just a topology defined on it.
 
+= Feeling the elephant
+
 = Diagrams
 
 == 3D
@@ -349,8 +351,6 @@ The following imports were used in this Literate Haskell source file.
 >
 >       delete m;
 >     } |]
-
-= Feeling the elephant
 
 = Stubs
 
