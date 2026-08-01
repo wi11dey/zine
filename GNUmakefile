@@ -1,6 +1,12 @@
+STACK ?= stack
 AWK ?= awk
 TYPST ?= typst
 MPOST ?= mpost
+
+.PHONY: all
+
+all: Zine.pdf Zine.lhs udpipe/src_lib_only/udpipe.cpp
+	$(STACK) build
 
 Zine.pdf: zine.svg
 
