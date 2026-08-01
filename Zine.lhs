@@ -85,7 +85,11 @@ Typst is used for parsing
 
 > import qualified Typst.Syntax
 
+> import Foreign.C.String (withCString)
+
 > Cpp.context Cpp.cppCtx
+> Cpp.include "<iostream>"
+> Cpp.include "<sstream>"
 > Cpp.include "<udpipe.h>"
 
 ]
@@ -308,6 +312,41 @@ Maybe have a two-level sheaf attempting to glue sentences together in one argume
 The following imports were used in this Literate Haskell source file.
 
  #imports
+
+= Testing UDPipe
+
+> parseOnce ∷ FilePath → String → IO ()
+> parseOnce modelPath sentence =
+>   withCString modelPath $ \cModel →
+>   withCString sentence  $ \cSentence →
+>     [Cpp.block| void {
+>       using namespace ufal::udpipe;
+>
+>       model* m = model::load($(char* cModel));
+>       if (!m) {
+>         std::cerr << "Could not load UDPipe model\n";
+>         return;
+>       }
+>
+>       pipeline p(
+>         m,
+>         "tokenize",
+>         pipeline::DEFAULT,
+>         pipeline::DEFAULT,
+>         "conllu"
+>       );
+>
+>       std::istringstream input($(char* cSentence));
+>       std::ostringstream output;
+>       std::string error;
+>
+>       if (p.process(input, output, error))
+>         std::cout << output.str();
+>       else
+>         std::cerr << error << '\n';
+>
+>       delete m;
+>     } |]
 
 = Stubs
 
