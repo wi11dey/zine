@@ -8,6 +8,7 @@ dependencies:
 executable:
   main: Zine.lhs
   default-extensions:
+    - BlockArguments
     - DeriveFunctor
     - ConstraintKinds
     - KindSignatures
@@ -17,5 +18,5 @@ executable:
     - UnicodeSyntax
   include-dirs:
     - udpipe/src_lib_only
-  cxx-sources:
-    - udpipe/src_lib_only/udpipe.cpp
+  ghc-options:
+    - -fobject-code

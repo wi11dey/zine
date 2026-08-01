@@ -77,6 +77,8 @@ Haskell is the glue, so that you can think about the parts in isolation. Categor
 
  #let imports = [
 
+> module Main where
+>
 > import Data.Kind (Constraint, Type)
 > import Prelude hiding (id, (.), read)
 > import qualified Language.C.Inline.Cpp as Cpp
@@ -90,7 +92,7 @@ Typst is used for parsing
 > Cpp.context Cpp.cppCtx
 > Cpp.include "<iostream>"
 > Cpp.include "<sstream>"
-> Cpp.include "<udpipe.h>"
+> Cpp.include "<udpipe.cpp>"
 
 ]
 
@@ -317,8 +319,8 @@ The following imports were used in this Literate Haskell source file.
 
 > parseOnce ∷ FilePath → String → IO ()
 > parseOnce modelPath sentence =
->   withCString modelPath $ \cModel →
->   withCString sentence  $ \cSentence →
+>   withCString modelPath \cModel →
+>   withCString sentence \cSentence →
 >     [Cpp.block| void {
 >       using namespace ufal::udpipe;
 >
