@@ -87,7 +87,10 @@ Typst is used for parsing
 
 > import qualified Typst.Syntax
 
-> import Foreign.C.String (withCString)
+> import Foreign.C.String (peekCString, withCString)
+> import Foreign.Marshal.Alloc (free)
+> import Conllu.Parse (parseConllu)
+> import Conllu.Type (Doc)
 
 > Cpp.context Cpp.cppCtx
 > Cpp.include "<iostream>"
@@ -274,8 +277,8 @@ This is the core (Hegelian and category-theoretic) claim: *every noun is a verb-
  #block(sticky: true)[Let's define the type of dependency trees.]
 
 > data DependencyTree a = DependencyTree {
->   word :: a,
->   children :: [(Relation, DependencyTree a)]
+>   word ∷ a,
+>   children ∷ [(Relation, DependencyTree a)]
 > } deriving Functor
 
 From this, you could construct the free category $cal(D)$ with paths as morphisms. We get the following morphisms in $bold("Cat")$:
@@ -324,17 +327,17 @@ The following imports were used in this Literate Haskell source file.
 
 = Testing UDPipe
 
-> parseOnce ∷ FilePath → String → IO ()
+> parseOnce ∷ FilePath → String → IO String
 > parseOnce modelPath sentence =
 >   withCString modelPath \cModel →
 >   withCString sentence \cSentence →
->     [Cpp.block| void {
+>     do
+>       output ← [Cpp.exp| char* { [&]() -> char* {
 >       using namespace ufal::udpipe;
 >
 >       model* m = model::load($(char* cModel));
 >       if (!m) {
->         std::cerr << "Could not load UDPipe model\n";
->         return;
+>         return strdup("");
 >       }
 >
 >       pipeline p(
@@ -349,13 +352,17 @@ The following imports were used in this Literate Haskell source file.
 >       std::ostringstream output;
 >       std::string error;
 >
->       if (p.process(input, output, error))
->         std::cout << output.str();
->       else
->         std::cerr << error << '\n';
+>       bool succeeded = p.process(input, output, error);
 >
 >       delete m;
->     } |]
+>       return strdup(succeeded ? output.str().c_str() : "");
+>     }() } |]
+>       result ← peekCString output
+>       free output
+>       pure result
+>
+> parseDoc ∷ FilePath → String → IO (Either String Doc)
+> parseDoc modelPath = fmap (parseConllu "") . parseOnce modelPath
 
 = Stubs
 

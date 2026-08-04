@@ -1,1 +1,5 @@
 snapshot: lts-24.39
+extra-deps:
+  - hs-conllu-0.1.5@sha256:29f53236e1e9d1020a7690747f49695fa5dda4b7a06236447633757b789a1661,2789
+allow-newer-deps:
+  - hs-conllu

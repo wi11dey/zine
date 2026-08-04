@@ -1,7 +1,14 @@
 name: zine
 version: 0.1.0.0
+build-type: Custom
+custom-setup:
+  dependencies:
+    - base
+    - Cabal
+    - process
 dependencies:
   - base
+  - hs-conllu
   - typst
   - yi-core
   - inline-c-cpp
