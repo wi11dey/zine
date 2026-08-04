@@ -77,7 +77,7 @@ Haskell is the glue, so that you can think about the parts in isolation. Categor
 
  #let imports = [
 
-> module Main where
+> module Main(main, parseOnce, parseConllu, Doc) where
 >
 > import Data.Kind (Constraint, Type)
 > import Prelude hiding (id, (.), read)
@@ -360,9 +360,6 @@ The following imports were used in this Literate Haskell source file.
 >       result ← peekCString output
 >       free output
 >       pure result
->
-> parseDoc ∷ FilePath → String → IO (Either String Doc)
-> parseDoc modelPath = fmap (parseConllu "") . parseOnce modelPath
 
 = Stubs
 

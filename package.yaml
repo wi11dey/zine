@@ -12,6 +12,7 @@ dependencies:
   - typst
   - yi-core
   - inline-c-cpp
+  - pretty-simple
 executable:
   main: Zine.lhs
   default-extensions:
