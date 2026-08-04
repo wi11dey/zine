@@ -255,16 +255,21 @@ Haskell categories
 
 == A Dependency Tree Topos <dependency-tree-topos>
 
+This is the core (Hegelian and category-theoretic) claim: *every noun is a verb-morphism between two other nouns*. For example, $"Nothing" xarrow("Knowledge") "Something"$.
+
  #block(sticky: true)[Consider the dependency tree parse of the following sentence]
 
  #figure(dependency-tree(```
-1	They	they	PRON	PRP	_	2	nsubj	_	_
-2	buy	buy	VERB	VBP	_	0	root	_	_
-3	and	and	CCONJ	CC	_	4	cc	_	_
-4	sell	sell	VERB	VBP	_	2	conj	_	_
-5	books	book	NOUN	NNS	_	2	obj	_	_
-6	.	.	PUNCT	.	_	2	punct	_	_
-```.text, level-height: 0.6, show-root: false))
+1	Wyt	bod	VERB	verb	Mood=Ind|Number=Sing|Person=2|Tense=Pres|VerbForm=Fin	0	root	_	TokenRange=0:3
+2	ti	ti	PRON	indep	Number=Sing|Person=2|PronType=Prs	1	nsubj	_	SpaceAfter=No|TokenRange=4:6
+3	'n	yn	AUX	impf	_	4	aux	_	TokenRange=6:8
+4	nofio	nofio	NOUN	verbnoun	Number=Sing|VerbForm=Vnoun	1	xcomp	_	TokenRange=9:14
+5	gyda	gyda	ADP	prep	_	7	case	_	TokenRange=15:19
+6	dy	ti	PRON	dep	Number=Sing|Person=2|Poss=Yes|PronType=Prs	7	nmod:poss	_	TokenRange=20:22
+7	ffrindiau	ffrind	NOUN	noun	Gender=Fem|Number=Plur	4	nmod	_	TokenRange=23:32
+8	yfory	yfory	ADV	adv	_	7	advmod	_	SpaceAfter=No|TokenRange=33:38
+9	?	?	PUNCT	punct	_	1	punct	_	SpaceAfter=No|TokenRange=38:39
+```.text, level-height: 0.6, show-upos: true, show-root: false))
 
  #block(sticky: true)[Let's define the type of dependency trees.]
 
