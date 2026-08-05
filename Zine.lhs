@@ -257,8 +257,8 @@ Haskell categories
 >   (g . f) x = g (f x)
 
 ```prolog
-mor(A, A).
-mor(A, C) :- mor(A, B), mor(B, C).
+mor(Category, A, A) :- id(Category, A).
+mor(Category, A, C) :- mor(Category, A, B), mor(Category, B, C).
 ```
 
 == A Dependency Tree Topos <dependency-tree-topos>
@@ -314,8 +314,8 @@ link(Noun1, [Verb], Noun2) :-
 %% Category axioms
 link(Noun, [], Noun) :- upos(Noun, noun). % identity
 link(A, Path, C) :- % composition
-    dep(A, Subpath1, B),
-    dep(B, Subpath2, C),
+    link(A, Subpath1, B),
+    link(B, Subpath2, C),
     append(Subpath1, Subpath2, Path).
 ```
 
