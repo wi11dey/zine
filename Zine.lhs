@@ -262,8 +262,8 @@ Haskell categories
 
 Using CoNLL-U
 
-> newtype UD (source :: Nat) (target :: Nat) =
->   UD { dependencyPath :: [D.EP] }
+> newtype UD (source ∷ Nat) (target ∷ Nat) =
+>   UD { dependencyPath ∷ [D.EP] }
 >   deriving (Eq, Show)
 >
 > instance Category UD where
