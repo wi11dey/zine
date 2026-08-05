@@ -256,11 +256,42 @@ Haskell categories
 >   id x = x
 >   (g . f) x = g (f x)
 
+```prolog
+mor(A, A).
+mor(A, C) :- mor(A, B), mor(B, C).
+```
+
 == A Dependency Tree Topos <dependency-tree-topos>
 
 This is the core (Hegelian and category-theoretic) claim: *every noun is a verb-morphism between two other nouns*. For example, $"Nothing" xarrow("Knowledge") "Something"$.
 
  #block(sticky: true)[Consider the dependency tree parse of the following sentence]
+
+ #figure(dependency-tree(```
+1	They	they	PRON	PRP	Case=Nom|Number=Plur|Person=3|PronType=Prs	2	nsubj	_	TokenRange=0:4
+2	buy	buy	VERB	VBP	Mood=Ind|Tense=Pres|VerbForm=Fin	0	root	_	TokenRange=5:8
+3	and	and	CCONJ	CC	_	4	cc	_	TokenRange=9:12
+4	sell	sell	VERB	VBP	Mood=Ind|Tense=Pres|VerbForm=Fin	2	conj	_	TokenRange=13:17
+5	books	book	NOUN	NNS	Number=Plur	2	obj	_	SpaceAfter=No|TokenRange=18:23
+```.text, level-height: 0.6, show-upos: true, show-root: false))
+
+In prolog
+
+```prolog
+upos(word("They",  1), pron).
+upos(word("buy",   2), verb).
+upos(word("and",   3), cconj).
+upos(word("sell",  4), verb).
+upos(word("books", 5), noun).
+
+dep(word("buy", 2), nsubj, word("They", 1)).
+dep(word("buy", 2), conj, word("sell", 4)).
+dep(word("buy", 2), obj, word("books", 5)).
+dep(word("sell", 4), cc, word("and", 3)).
+
+% Category definition
+mor(word(String1, Index1), word(String2, Index2)) :- dep(word(String1, Index1), _, word(String2, Index2)).
+```
 
  #figure(dependency-tree(```
 1	Wyt	bod	VERB	verb	Mood=Ind|Number=Sing|Person=2|Tense=Pres|VerbForm=Fin	0	root	_	TokenRange=0:3
@@ -327,11 +358,16 @@ The following imports were used in this Literate Haskell source file.
 
 = Testing UDPipe
 
-> parseOnce ∷ FilePath → String → IO String
-> parseOnce modelPath sentence =
->   withCString modelPath \cModel →
->   withCString sentence \cSentence →
->     do
+This version keeps reloading the model, which is slow, and also uses UDPipe 1 which is quite bad at languages like Welsh. UDPipe 2 is better, but it
+- relies on UDPipe 1 for tokenization
+- runs bert-base-multilingual-uncased to extract embeddings
+- runs TensorFlow 1 for UD parsing
+
+I'm currently just considering the input as CoNLL-U, wherever it comes from. For English and other well-resourc, UDPipe 1 is probably suff
+
+> parseOnce ∷ FilePath → String → String
+> parseOnce modelPath sentence = unsafePerformIO do
+>   withCString modelPath \cModel → withCString sentence \cSentence → do
 >       output ← [Cpp.exp| char* { [&]() -> char* {
 >       using namespace ufal::udpipe;
 >
@@ -360,6 +396,8 @@ The following imports were used in this Literate Haskell source file.
 >       result ← peekCString output
 >       free output
 >       pure result
+>
+> {-# NOINLINE parseOnce #-}
 
 = Stubs
 
