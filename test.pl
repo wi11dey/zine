@@ -1,5 +1,8 @@
 mor(Category, A, A) :- id(Category, A).
-mor(Category, A, C) :- mor(Category, A, B), mor(Category, B, C).
+mor(Category, A, Morphism, C) :-
+    mor(Category, A, Factor1, B),
+    mor(Category, B, Factor2, C),
+    compose(Factor1, Factor2, Morphism).
 
 upos(word("They",  1), pron).
 upos(word("buy",   2), verb).
