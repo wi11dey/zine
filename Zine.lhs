@@ -262,16 +262,16 @@ Haskell categories
 
 Using CoNLL-U
 
-> data UD (source ∷ Nat) (target ∷ Nat) where
->   Self ∷ UD a a
->   Dependncy ∷ D.EP → UD a b
->   Transitive ∷ UD b c → UD a b → UD a c
+> newtype UD (source :: Nat) (target :: Nat) =
+>   UD { dependencyPath :: [D.EP] }
+>   deriving (Eq, Show)
 >
 > instance Category UD where
 >   type Object UD a = KnownNat a
 >
->   id  = Self
->   (.) = Transitive
+>   id = UD []
+>
+>   UD pathG . UD pathF = UD (pathF <> pathG)
 
 ```prolog
 mor(Category, A, A) :- id(Category, A).

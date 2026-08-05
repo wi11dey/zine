@@ -10,5 +10,13 @@ main = defaultMainWithHooks simpleUserHooks {preBuild = buildUDPipe}
 
 buildUDPipe ∷ Args → BuildFlags → IO HookedBuildInfo
 buildUDPipe _ _ = do
-  callProcess "make" ["-C", "udpipe/src_lib_only", "udpipe.cpp" , "CXX=/usr/bin/clang++"]
+  callProcess
+    "make"
+    [ "-C",
+      "udpipe/src_lib_only",
+      "-o",
+      "force", -- disable forcing
+      "udpipe.cpp",
+      "CXX=/usr/bin/clang++"
+    ]
   pure emptyHookedBuildInfo
