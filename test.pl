@@ -1,10 +1,14 @@
+:- discontiguous mor/4.
+:- discontiguous id/3.
+:- discontiguous compose/4.
+
 :- table mor/4.
 
 mor(Category, A, Id, A) :- id(Category, Id, A).
 mor(Category, A, Morphism, C) :-
     mor(Category, A, Factor1, B),
     mor(Category, B, Factor2, C),
-    compose(Factor1, Factor2, Morphism).
+    compose(Category, Factor1, Factor2, Morphism).
 
 upos(word("They",  1), pron).
 upos(word("buy",   2), verb).
@@ -12,44 +16,30 @@ upos(word("and",   3), cconj).
 upos(word("sell",  4), verb).
 upos(word("books", 5), noun).
 
-:- table udep/3.
-:- table dep/3.
+% Category ud
+id(ud, [], word(_, _)).
+compose(ud, Subpath1, Subpath2, Path) :- append(Subpath1, Subpath2, Path).
+mor(ud, word("buy", 2), [nsubj], word("They", 1)).
+mor(ud, word("buy", 2), [conj], word("sell", 4)).
+mor(ud, word("buy", 2), [obj], word("books", 5)).
+mor(ud, word("sell", 4), [cc], word("and", 3)).
 
-udep(word("buy", 2), [nsubj], word("They", 1)).
-udep(word("buy", 2), [conj], word("sell", 4)).
-udep(word("buy", 2), [obj], word("books", 5)).
-udep(word("sell", 4), [cc], word("and", 3)).
-
-%% Category axioms
-udep(Word, [], Word) :- Word = word(_, _). % identity
-udep(A, Path, C) :- % composition
-    udep(A, Subpath1, B),
-    udep(B, Subpath2, C),
-    append(Subpath1, Subpath2, Path).
-
-dep(A, Path, B) :- udep(A, Path, B).
-
-%% Symmetric over conj
-dep(Word1, [conj], Word2) :- udep(Word2, [conj], Word1).
-
-%% Semantic meaning of conj
-dep(A, Path, Destination) :- dep(A, [conj], B), udep(B, Path, Destination).
+% Category dep
+mor(dep, A, Path, B) :- mor(ud, A, Path, B).
+mor(dep, Word1, [conj], Word2) :- mor(ud, Word2, [conj], Word1). % conj is syntactically symmetric
+mor(dep, A, Path, Destination) :- % conj semantics
+    mor(dep, A, [conj], B),
+    mor(ud, B, Path, Destination).
 
 nominal(Word) :- upos(Word, noun).
 nominal(Word) :- upos(Word, pron).
 
-:- table link/3.
-
-link(Noun1, [Verb], Noun2) :-
+% Category link
+id(link, [], Noun) :- nominal(Noun).
+compose(link, Subpath1, Subpath2, Path) :- append(Subpath1, Subpath2, Path).
+mor(link, Noun1, [Verb], Noun2) :-
     nominal(Noun1),
     nominal(Noun2),
-    dep(Verb, [nsubj], Noun1),
-    dep(Verb, [obj], Noun2),
+    mor(dep, Verb, [nsubj], Noun1),
+    mor(dep, Verb, [obj], Noun2),
     upos(Verb, verb).
-
-%% Category axioms
-link(Noun, [], Noun) :- nominal(Noun). % identity
-link(A, Path, C) :- % composition
-    link(A, Subpath1, B),
-    link(B, Subpath2, C),
-    append(Subpath1, Subpath2, Path).
