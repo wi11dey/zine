@@ -244,17 +244,17 @@ If you're already familiar with categories and their representation in Haskell, 
 
 Haskell categories
 
-> class Category (k ∷ Type → Type → Type) where
->   type Object k (a ∷ Type) ∷ Constraint
+> class Category (k :: objectKind -> objectKind -> Type) where
+>   type Object k (a :: objectKind) :: Constraint
 > 
->   id ∷ Object k a ⇒ k a a
+>   id  :: Object k a => k a a
+>   (.) :: (Object k a, Object k b, Object k c)
+>       => k b c -> k a b -> k a c
 > 
->   (.) ∷ (Object k a, Object k b, Object k c) ⇒ k b c → k a b → k a c
-> 
-> instance Category (→) where
->   type Object (→) a = ()
->   id x = x
->   (g . f) x = g (f x)
+> instance Category (->) where
+>   type Object (->) a = ()
+>   id  = Prelude.id
+>   (.) = (Prelude..)
 
 ```prolog
 mor(Category, A, A) :- id(Category, A).
