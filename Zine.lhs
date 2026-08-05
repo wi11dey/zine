@@ -81,6 +81,8 @@ Haskell is the glue, so that you can think about the parts in isolation. Categor
 >
 > import Data.Kind (Constraint, Type)
 > import Prelude hiding (id, (.), read)
+> import qualified Prelude
+> import System.IO.Unsafe
 > import qualified Language.C.Inline.Cpp as Cpp
 
 Typst is used for parsing
@@ -244,15 +246,15 @@ If you're already familiar with categories and their representation in Haskell, 
 
 Haskell categories
 
-> class Category (k :: objectKind -> objectKind -> Type) where
->   type Object k (a :: objectKind) :: Constraint
+> class Category (k ∷ objectKind → objectKind → Type) where
+>   type Object k (a ∷ objectKind) ∷ Constraint
 > 
->   id  :: Object k a => k a a
->   (.) :: (Object k a, Object k b, Object k c)
->       => k b c -> k a b -> k a c
+>   id  ∷ Object k a ⇒ k a a
+>   (.) ∷ (Object k a, Object k b, Object k c)
+>       ⇒ k b c → k a b → k a c
 > 
-> instance Category (->) where
->   type Object (->) a = ()
+> instance Category (→) where
+>   type Object (→) a = ()
 >   id  = Prelude.id
 >   (.) = (Prelude..)
 
