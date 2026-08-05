@@ -56,28 +56,13 @@ mor(Category, A, Morphism, C) :-
 ob(Category, Objects) :- findall(A, mor(Category, A, _, A), Objects).
 hom(Category, A, B, Morphisms) :- setof(Morphism, mor(Category, A, Morphism, B), Morphisms).
 
-% Example
-%% upos(word("They",  1), pron).
-%% upos(word("buy",   2), verb).
-%% upos(word("and",   3), cconj).
-%% upos(word("sell",  4), verb).
-%% upos(word("books", 5), noun).
-
 % Category ud
 id(ud, [], Word) :- upos(Word, _).
 compose(ud, Subpath1, Subpath2, Path) :- append(Subpath1, Subpath2, Path).
-% Example
-%% mor(ud, word("buy", 2), [nsubj], word("They", 1)).
-%% mor(ud, word("buy", 2), [conj], word("sell", 4)).
-%% mor(ud, word("buy", 2), [obj], word("books", 5)).
-%% mor(ud, word("sell", 4), [cc], word("and", 3)).
 
 % Derived category dep
 mor(dep, A, Path, B) :- mor(ud, A, Path, B).
-mor(dep, Conjunct, [conj], Head) :-
-    mor(ud, Head, [conj], Conjunct),
-    mor(ud, Conjunct, [cc], _).
-%% mor(dep, Word1, [conj], Word2) :- mor(ud, Word2, [conj], Word1). % conj is syntactically symmetric
+mor(dep, Word1, [conj], Word2) :- mor(ud, Word2, [conj], Word1). % conj is syntactically symmetric
 mor(dep, A, Path, Destination) :- % conj semantics
     mor(dep, A, [conj], B),
     mor(ud, B, Path, Destination).
