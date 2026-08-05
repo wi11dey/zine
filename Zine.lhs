@@ -284,13 +284,39 @@ upos(word("and",   3), cconj).
 upos(word("sell",  4), verb).
 upos(word("books", 5), noun).
 
-dep(word("buy", 2), nsubj, word("They", 1)).
-dep(word("buy", 2), conj, word("sell", 4)).
-dep(word("buy", 2), obj, word("books", 5)).
-dep(word("sell", 4), cc, word("and", 3)).
+:- table dep/3.
 
-% Category definition
-mor(word(String1, Index1), word(String2, Index2)) :- dep(word(String1, Index1), _, word(String2, Index2)).
+dep(word("buy", 2), [nsubj], word("They", 1)).
+dep(word("buy", 2), [conj], word("sell", 4)).
+dep(word("buy", 2), [obj], word("books", 5)).
+dep(word("sell", 4), [cc], word("and", 3)).
+
+%% Symmetric over conj
+dep(Word1, [conj], Word2) :- dep(Word2, [conj], Word1).
+
+%% Semantic meaning of conj
+dep(A, Path, Destination) :- dep(A, [conj], B), dep(B, Path, Destination).
+
+%% Category axioms
+dep(Word, [], Word) :- Word = word(_, _). % identity
+dep(A, Path, C) :- % composition
+    dep(A, Subpath1, B),
+    dep(B, Subpath2, C),
+    append(Subpath1, Subpath2, Path).
+
+link(Noun1, [Verb], Noun2) :-
+    upos(Noun1, noun),
+    upos(Noun2, noun),
+    dep(Verb, [nsubj], Noun1),
+    dep(Verb, [obj], Noun2),
+    upos(Verb, verb).
+
+%% Category axioms
+link(Noun, [], Noun) :- upos(Noun, noun). % identity
+link(A, Path, C) :- % composition
+    dep(A, Subpath1, B),
+    dep(B, Subpath2, C),
+    append(Subpath1, Subpath2, Path).
 ```
 
  #figure(dependency-tree(```
