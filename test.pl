@@ -1,4 +1,6 @@
-mor(Category, A, A) :- id(Category, A).
+:- table mor/4.
+
+mor(Category, A, Id, A) :- id(Category, Id, A).
 mor(Category, A, Morphism, C) :-
     mor(Category, A, Factor1, B),
     mor(Category, B, Factor2, C),
