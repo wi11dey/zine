@@ -84,6 +84,7 @@ Haskell is the glue, so that you can think about the parts in isolation. Categor
 > import qualified Prelude
 > import System.IO.Unsafe
 > import qualified Language.C.Inline.Cpp as Cpp
+> import GHC.TypeNats (Nat, KnownNat)
 
 Typst is used for parsing
 
@@ -92,6 +93,7 @@ Typst is used for parsing
 > import Foreign.C.String (peekCString, withCString)
 > import Foreign.Marshal.Alloc (free)
 > import Conllu.Parse (parseConllu)
+> import qualified Conllu.DeprelTagset as D
 > import Conllu.Type (Doc)
 
 > Cpp.context Cpp.cppCtx
@@ -257,6 +259,19 @@ Haskell categories
 >   type Object (→) a = ()
 >   id  = Prelude.id
 >   (.) = (Prelude..)
+
+Using CoNLL-U
+
+> data UD (source ∷ Nat) (target ∷ Nat) where
+>   Self ∷ UD a a
+>   Dependncy ∷ D.EP → UD a b
+>   Transitive ∷ UD b c → UD a b → UD a c
+>
+> instance Category UD where
+>   type Object UD a = KnownNat a
+>
+>   id  = Self
+>   (.) = Transitive
 
 ```prolog
 mor(Category, A, A) :- id(Category, A).
