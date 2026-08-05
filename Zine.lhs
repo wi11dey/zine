@@ -249,14 +249,14 @@ If you're already familiar with categories and their representation in Haskell, 
 Haskell categories
 
 > class Category (k ∷ objectKind → objectKind → Type) where
->   type Object k (a ∷ objectKind) ∷ Constraint
+>   type Ob k (a ∷ objectKind) ∷ Constraint
 > 
->   id  ∷ Object k a ⇒ k a a
->   (.) ∷ (Object k a, Object k b, Object k c)
+>   id  ∷ Ob k a ⇒ k a a
+>   (.) ∷ (Ob k a, Ob k b, Ob k c)
 >       ⇒ k b c → k a b → k a c
 > 
 > instance Category (→) where
->   type Object (→) a = ()
+>   type Ob (→) a = ()
 >   id  = Prelude.id
 >   (.) = (Prelude..)
 
@@ -267,7 +267,7 @@ Using CoNLL-U
 >   deriving (Eq, Show)
 >
 > instance Category UD where
->   type Object UD a = KnownNat a
+>   type Ob UD a = KnownNat a
 >
 >   id = UD []
 >
