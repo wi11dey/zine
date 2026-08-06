@@ -13,6 +13,7 @@ dependencies:
   - yi-core
   - inline-c-cpp
   - pretty-simple
+  - nanopass
 executable:
   main: Zine.lhs
   default-extensions:
