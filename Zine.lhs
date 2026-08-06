@@ -425,15 +425,10 @@ The following imports were used in this Literate Haskell source file.
 
 = Testing UDPipe
 
-This version keeps reloading the model, which is slow, and also uses UDPipe 1 which is quite bad at languages like Welsh. UDPipe 2 is better, but it
-- relies on UDPipe 1 for tokenization
-- runs bert-base-multilingual-uncased to extract embeddings
-- runs TensorFlow 1 for UD parsing
+I'm currently just considering the input as CoNLL-U, wherever it comes from. For English and other well-resourc, UDPipe 1 is probably sufficient.
 
-I'm currently just considering the input as CoNLL-U, wherever it comes from. For English and other well-resourc, UDPipe 1 is probably suff
-
-> parseOnce ∷ FilePath → String → Either String Doc
-> parseOnce modelPath sentence = parseConllu "" $ unsafePerformIO do
+> parse ∷ FilePath → String → Either String Doc
+> parse modelPath sentence = parseConllu "" $ unsafePerformIO do
 >   withCString modelPath \cModel → withCString sentence \cSentence → do
 >       output ← [Cpp.exp| char* { [&]() -> char* {
 >       using namespace ufal::udpipe;
@@ -464,7 +459,7 @@ I'm currently just considering the input as CoNLL-U, wherever it comes from. For
 >       free output
 >       pure result
 >
-> {-# NOINLINE parseOnce #-}
+> {-# NOINLINE parse #-}
 
 = Stubs
 

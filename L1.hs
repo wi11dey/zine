@@ -24,7 +24,8 @@ compile = runIdentity . descendExpr xlate
         body' ← descendExpr xlate body
         pure $ foldr unlet body' binds'
     -- the `onExpr` member allows us to optionally override the default translation when necessary
-    , onExpr = const Nothing -- we don't need to override anything
+    , onExpr = const Nothing
+    , onDep = const Nothing
     }
   descendBinding (x, e) = do
     e' ← descendExpr xlate e
