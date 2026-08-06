@@ -1,15 +1,65 @@
 module L0 where
 
 import Language.Nanopass
-import qualified Conllu.DeprelTagset as D
 
 [deflang|
-(Lambda
-  (Expr
-    (Var String)
-    (Lam String Expr)
-    (App Expr Expr)
-    (Word Dep))
-  (Dep
-    (Punct)
-    (Nsubj)))|]
+((UD w)
+  (DependencyTree
+    (Word UPOS w (* (& UDEP DependencyTree))))
+  (UDEP
+    (REF)
+    (ACL)
+    (ADVCL)
+    (ADVMOD)
+    (AMOD)
+    (APPOS)
+    (AUX)
+    (CASE)
+    (CCOMP)
+    (CC)
+    (CLF)
+    (COMPOUND)
+    (CONJ)
+    (COP)
+    (CSUBJ)
+    (DEP)
+    (DET)
+    (DISCOURSE)
+    (DISLOCATED)
+    (EXPL)
+    (FIXED)
+    (FLAT)
+    (GOESWITH)
+    (IOBJ)
+    (LIST)
+    (MARK)
+    (NMOD)
+    (NSUBJ)
+    (NUMMOD)
+    (OBJ)
+    (OBL)
+    (ORPHAN)
+    (PARATAXIS)
+    (PUNCT)
+    (REPARANDUM)
+    (ROOT)
+    (VOCATIVE)
+    (XCOMP))
+  (UPOS
+    (ADJ)
+    (ADP)
+    (ADV)
+    (AUX)
+    (CCONJ)
+    (DET)
+    (INTJ)
+    (NOUN)
+    (NUM)
+    (PART)
+    (PRON)
+    (PROPN)
+    (PUNCT)
+    (SCONJ)
+    (SYM)
+    (VERB)
+    (X)))|]

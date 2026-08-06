@@ -22,10 +22,12 @@ executable:
     - ConstraintKinds
     - DataKinds
     - DeriveFunctor
+    - DeriveGeneric
     - GADTs
     - KindSignatures
     - PolyKinds
     - QuasiQuotes
+    - StandaloneDeriving
     - TemplateHaskell
     - TypeFamilies
     - UnicodeSyntax
