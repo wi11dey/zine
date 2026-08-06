@@ -1,6 +1,5 @@
 module L1 where
 
-import Data.Functor.Identity
 import Language.Nanopass
 import qualified L0
 
@@ -14,20 +13,14 @@ $(pure [])
 
 [defpass|(from LambdaLet to L0:Lambda)|]
 
-compile ∷ Expr → L0.Expr
-compile = runIdentity . descendExpr xlate
+lower ∷ Expr → L0.Expr
+lower = descendExprI xlate
   where
-  xlate = Xlate
-    -- the onExprLet is required because nanopass couldn't find an automatic translation
-    { onExprLet = \binds body → do
-        binds' ← traverse descendBinding binds
-        body' ← descendExpr xlate body
-        pure $ foldr unlet body' binds'
-    -- the `onExpr` member allows us to optionally override the default translation when necessary
-    , onExpr = const Nothing
-    , onDep = const Nothing
+  xlate = XlateI
+    { onExprLetI = \binds body →
+        foldr unlet (descendExprI xlate body) (fmap descendBinding binds)
+    , onExprI = const Nothing
+    , onDepI = const Nothing
     }
-  descendBinding (x, e) = do
-    e' ← descendExpr xlate e
-    pure (x, e')
+  descendBinding (x, e) = (x, descendExprI xlate e)
   unlet (x, e) body = (L0.Lam x body) `L0.App` e
