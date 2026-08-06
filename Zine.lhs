@@ -84,6 +84,7 @@ Haskell is the glue, so that you can think about the parts in isolation. Categor
 > import qualified Prelude
 > import System.IO.Unsafe
 > import qualified Language.C.Inline.Cpp as Cpp
+> import Language.Nanopass (deflang)
 > import GHC.TypeNats (Nat, KnownNat)
 
 Typst is used for parsing
@@ -239,6 +240,17 @@ type Philosophy a b = [a → b]
 ```
 
 ok now we might be getting somewhere, as I can also make morphisms from local semantics via pushouts through a tree root in the dependency parse. I don't necessarily have to ask from whence nouns came from (this is restricted to humans), just the relationships defined between them.
+
+= Nanopass
+
+Preprocessing the dependency parse
+
+> [deflang|
+> (Lambda
+>   (Expr
+>     (Var String)
+>     (Lam String Expr)
+>     (App Expr Expr)))|]
 
 = Category theory
 
