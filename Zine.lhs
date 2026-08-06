@@ -2,7 +2,17 @@
  #import "@preview/xarrow:0.4.0": xarrow
  #import "@preview/fletcher:0.5.8" as fletcher: diagram, node, edge
 
- #let hs(module) = raw(read(module + ".hs"), lang: "haskell", block: true)
+ #let hs(module) = {
+    let source = read(module + ".hs")
+    source = source
+        .split("\n")
+        .filter(line => line != "$(pure [])")
+        .filter(line => line.trim() != "")
+        .filter(line => not line.starts-with("module "))
+        .filter(line => not line.starts-with("import "))
+        .join("\n")
+    raw(source, lang: "haskell", block: true)
+}
 
  #set raw(theme: bytes(```xml
 <?xml version="1.0" encoding="UTF-8"?>
@@ -79,7 +89,7 @@ Haskell is the glue, so that you can think about the parts in isolation. Categor
 
  #let imports = [
 
-> module Main(main, parseOnce, parseConllu, Doc) where
+> module Main where
 >
 > import Data.Kind (Constraint, Type)
 > import Prelude hiding (id, (.), read)
@@ -97,7 +107,7 @@ Typst is used for parsing
 > import Conllu.Parse (parseConllu)
 > import qualified Conllu.DeprelTagset as D
 > import Conllu.Type (Doc)
-> import qualified L0
+> import qualified L1
 
 > Cpp.context Cpp.cppCtx
 > Cpp.include "<iostream>"
@@ -245,9 +255,15 @@ ok now we might be getting somewhere, as I can also make morphisms from local se
 
 = Nanopass
 
+Kent Dyvbig's _nanopass_ framework @nanopass
+
 Preprocessing the dependency parse
 
  #hs("L0")
+
+Lets remove punctuation
+
+ #hs("L1")
 
 = Category theory
 
@@ -417,8 +433,8 @@ This version keeps reloading the model, which is slow, and also uses UDPipe 1 wh
 
 I'm currently just considering the input as CoNLL-U, wherever it comes from. For English and other well-resourc, UDPipe 1 is probably suff
 
-> parseOnce ∷ FilePath → String → String
-> parseOnce modelPath sentence = unsafePerformIO do
+> parseOnce ∷ FilePath → String → Either String Doc
+> parseOnce modelPath sentence = parseConllu "" $ unsafePerformIO do
 >   withCString modelPath \cModel → withCString sentence \cSentence → do
 >       output ← [Cpp.exp| char* { [&]() -> char* {
 >       using namespace ufal::udpipe;
@@ -539,6 +555,13 @@ I'm currently just considering the input as CoNLL-U, wherever it comes from. For
   address = {Dublin},
   pages = {21--31},
   url = {https://www.aclweb.org/anthology/W19-6904},
+}
+@inproceedings{nanopass,
+  title={A nanopass framework for commercial compiler development},
+  author={Keep, Andrew W and Dybvig, R Kent},
+  booktitle={Proceedings of the 18th ACM SIGPLAN international conference on Functional programming},
+  pages={343--350},
+  year={2013}
 }
 ```.text), title: [References], style: "nature")
 

@@ -9,5 +9,4 @@ import qualified Conllu.DeprelTagset as D
     (Var String)
     (Lam String Expr)
     (App Expr Expr)
-    (Word D:EP)
-  ))|]
+    (Word D:EP)))|]
