@@ -18,6 +18,7 @@ executable zine
   main-is: Zine.lhs
   other-modules:
       L0
+      L1
       Paths_zine
   hs-source-dirs:
       ./

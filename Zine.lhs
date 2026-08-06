@@ -7,11 +7,10 @@
     source = source
         .split("\n")
         .filter(line => line != "$(pure [])")
-        .filter(line => line.trim() != "")
         .filter(line => not line.starts-with("module "))
         .filter(line => not line.starts-with("import "))
         .join("\n")
-    raw(source, lang: "haskell", block: true)
+    raw(source.trim(), lang: "haskell", block: true)
 }
 
  #set raw(theme: bytes(```xml
