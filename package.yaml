@@ -14,23 +14,18 @@ dependencies:
   - inline-c-cpp
   - pretty-simple
   - nanopass
-  - syb
 executable:
   source-dirs: .
   main: Zine.lhs
   default-extensions:
     - BlockArguments
-    - DeriveDataTypeable
-    - ScopedTypeVariables
     - ConstraintKinds
     - DataKinds
     - DeriveFunctor
-    - DeriveGeneric
-    - GADTs
+    - LambdaCase
     - KindSignatures
     - PolyKinds
     - QuasiQuotes
-    - StandaloneDeriving
     - TemplateHaskell
     - TypeFamilies
     - UnicodeSyntax

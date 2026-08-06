@@ -24,17 +24,13 @@ executable zine
       ./
   default-extensions:
       BlockArguments
-      DeriveDataTypeable
-      ScopedTypeVariables
       ConstraintKinds
       DataKinds
       DeriveFunctor
-      DeriveGeneric
-      GADTs
+      LambdaCase
       KindSignatures
       PolyKinds
       QuasiQuotes
-      StandaloneDeriving
       TemplateHaskell
       TypeFamilies
       UnicodeSyntax
@@ -47,7 +43,6 @@ executable zine
     , inline-c-cpp
     , nanopass
     , pretty-simple
-    , syb
     , typst
     , yi-core
   default-language: Haskell2010
