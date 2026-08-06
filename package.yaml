@@ -15,6 +15,7 @@ dependencies:
   - pretty-simple
   - nanopass
 executable:
+  source-dirs: .
   main: Zine.lhs
   default-extensions:
     - BlockArguments

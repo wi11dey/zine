@@ -2,6 +2,8 @@
  #import "@preview/xarrow:0.4.0": xarrow
  #import "@preview/fletcher:0.5.8" as fletcher: diagram, node, edge
 
+ #let hs(module) = raw(read(module + ".hs"), lang: "haskell", block: true)
+
  #set raw(theme: bytes(```xml
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
@@ -84,7 +86,6 @@ Haskell is the glue, so that you can think about the parts in isolation. Categor
 > import qualified Prelude
 > import System.IO.Unsafe
 > import qualified Language.C.Inline.Cpp as Cpp
-> import Language.Nanopass (deflang)
 > import GHC.TypeNats (Nat, KnownNat)
 
 Typst is used for parsing
@@ -96,6 +97,7 @@ Typst is used for parsing
 > import Conllu.Parse (parseConllu)
 > import qualified Conllu.DeprelTagset as D
 > import Conllu.Type (Doc)
+> import qualified L0
 
 > Cpp.context Cpp.cppCtx
 > Cpp.include "<iostream>"
@@ -245,12 +247,7 @@ ok now we might be getting somewhere, as I can also make morphisms from local se
 
 Preprocessing the dependency parse
 
-> [deflang|
-> (Lambda
->   (Expr
->     (Var String)
->     (Lam String Expr)
->     (App Expr Expr)))|]
+ #hs("L0")
 
 = Category theory
 

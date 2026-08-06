@@ -1,0 +1,47 @@
+cabal-version: 1.24
+
+-- This file has been generated from package.yaml by hpack version 0.39.1.
+--
+-- see: https://github.com/sol/hpack
+
+name:           zine
+version:        0.1.0.0
+build-type:     Custom
+
+custom-setup
+  setup-depends:
+      Cabal
+    , base
+    , process
+
+executable zine
+  main-is: Zine.lhs
+  other-modules:
+      L0
+      Paths_zine
+  hs-source-dirs:
+      ./
+  default-extensions:
+      BlockArguments
+      ConstraintKinds
+      DataKinds
+      DeriveFunctor
+      GADTs
+      KindSignatures
+      PolyKinds
+      QuasiQuotes
+      TemplateHaskell
+      TypeFamilies
+      UnicodeSyntax
+  ghc-options: -fobject-code
+  include-dirs:
+      udpipe/src_lib_only
+  build-depends:
+      base
+    , hs-conllu
+    , inline-c-cpp
+    , nanopass
+    , pretty-simple
+    , typst
+    , yi-core
+  default-language: Haskell2010
