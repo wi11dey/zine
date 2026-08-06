@@ -33,3 +33,4 @@ executable:
     - udpipe/src_lib_only
   ghc-options:
     - -fobject-code
+    - -dth-dec-file

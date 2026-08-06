@@ -2,7 +2,7 @@ AWK ?= awk
 TYPST ?= typst
 MPOST ?= mpost
 
-Zine.pdf: zine.svg
+Zine.pdf: zine.svg *.hs
 
 %.svg: %.mp
 	$(MPOST) $<

@@ -33,7 +33,7 @@ executable zine
       TemplateHaskell
       TypeFamilies
       UnicodeSyntax
-  ghc-options: -fobject-code
+  ghc-options: -fobject-code -dth-dec-file
   include-dirs:
       udpipe/src_lib_only
   build-depends:
