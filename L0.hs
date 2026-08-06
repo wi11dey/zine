@@ -5,8 +5,8 @@ import Language.Nanopass
 [deflang|
 ((UD w)
   (DependencyTree
-    (Word UPOS w (* (& UDEP DependencyTree))))
-  (UDEP
+    (Word UPOS w (* (& Dependency DependencyTree))))
+  (Dependency
     (Ref)
     (Acl)
     (Advcl)

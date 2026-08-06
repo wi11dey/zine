@@ -1,26 +1,37 @@
 module L1 where
 
+import qualified Prelude
+import Prelude hiding (Word)
+import Data.Data (Data)
+import Data.Generics (everywhere', mkT)
 import Language.Nanopass
 import qualified L0
 
 [deflang|
-(LambdaLet from L0:Lambda
-  (* Expr
-    (+ Let
-      (+ (& String Expr))
-      Expr)))|]
+((Stripped w) from L0:UD
+  (* Dependency
+    (- Punct)))|]
+
 $(pure [])
 
-[defpass|(from LambdaLet to L0:Lambda)|]
+[defpass|(from L0:UD to Stripped)|]
 
-lower ∷ Expr → L0.Expr
-lower = descendExprI xlate
-  where
-  xlate = XlateI
-    { onExprLetI = \binds body →
-        foldr unlet (descendExprI xlate body) (fmap descendBinding binds)
-    , onExprI = const Nothing
-    , onDepI = const Nothing
+deriving instance Data w ⇒ Data (L0.DependencyTree w)
+deriving instance Data w ⇒ Data (L0.Dependency w)
+deriving instance Data w ⇒ Data (L0.UPOS w)
+
+lower ∷ ∀ w. Data w ⇒ L0.DependencyTree w → DependencyTree w
+lower =
+  descendDependencyTreeI XlateI
+    { onDependencyPunctI = undefined
+    , onDependencyI = const Nothing
+    , onDependencyTreeI = const Nothing
+    , onUPOSI = const Nothing
     }
-  descendBinding (x, e) = (x, descendExprI xlate e)
-  unlet (x, e) body = (L0.Lam x body) `L0.App` e
+    . everywhere'
+      (mkT
+        (Prelude.filter
+          (\(dependency, _) → case dependency of
+            L0.Punct → False
+            _ → True)
+        ∷ [(L0.Dependency w, L0.DependencyTree w)] → [(L0.Dependency w, L0.DependencyTree w)]))
