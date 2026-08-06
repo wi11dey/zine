@@ -105,7 +105,9 @@ Typst is used for parsing
 > import Foreign.Marshal.Alloc (free)
 > import Conllu.Parse (parseConllu)
 > import qualified Conllu.DeprelTagset as D
-> import Conllu.Type (Doc)
+> import Conllu.Type (Doc, Sent(..), CW(..), AW, ID(..), Rel(..))
+> import qualified Conllu.UposTagset as U
+> import qualified L0
 > import qualified L1
 
 > Cpp.context Cpp.cppCtx
@@ -300,7 +302,90 @@ This version keeps reloading the model, which is slow. I'm thinking I should kee
 
 = Nanopass
 
-Kent Dyvbig's _nanopass_ framework @nanopass
+Kent Dyvbig's _nanopass_ framework @nanopass. I use Marseille Bouchard Demko's nanopass Haskell implementation here.
+
+> toTree ∷ Doc → L0.DependencyTree (CW AW)
+> toTree [Sent _ words] = root (unique "root" isRoot words)
+>   where
+>     isRoot word = case _rel word of
+>       Just (Rel (SID 0) D.ROOT _ _) → True
+>       _ → False
+>
+>     root word = L0.Root (toUPOS word) word (branches word)
+>
+>     branch word = case _rel word of
+>       Just relation → L0.Branch (toDependency relation) (toUPOS word) word (branches word)
+>       Nothing → error "toTree: a non-root word has no dependency relation"
+>
+>     branches parent =
+>       map branch [word | word ← words, maybe False ((== _id parent) . _head) (_rel word)]
+>
+>     toUPOS word = case _upos word of
+>       Just U.ADJ → L0.ADJ
+>       Just U.ADP → L0.ADP
+>       Just U.ADV → L0.ADV
+>       Just U.AUX → L0.AUX
+>       Just U.CCONJ → L0.CCONJ
+>       Just U.DET → L0.DET
+>       Just U.INTJ → L0.INTJ
+>       Just U.NOUN → L0.NOUN
+>       Just U.NUM → L0.NUM
+>       Just U.PART → L0.PART
+>       Just U.PRON → L0.PRON
+>       Just U.PROPN → L0.PROPN
+>       Just U.PUNCT → L0.PUNCT
+>       Just U.SCONJ → L0.SCONJ
+>       Just U.SYM → L0.SYM
+>       Just U.VERB → L0.VERB
+>       Just U.X → L0.X
+>       Nothing → error "toTree: a word has no UPOS tag"
+>
+>     toDependency relation = case _deprel relation of
+>       D.REF → L0.Ref
+>       D.ACL → L0.Acl
+>       D.ADVCL → L0.Advcl
+>       D.ADVMOD → L0.Advmod
+>       D.AMOD → L0.Amod
+>       D.APPOS → L0.Appos
+>       D.AUX → L0.Aux
+>       D.CASE → L0.Case
+>       D.CCOMP → L0.Ccomp
+>       D.CC → L0.Cc
+>       D.CLF → L0.Clf
+>       D.COMPOUND → L0.Compound
+>       D.CONJ → L0.Conj
+>       D.COP → L0.Cop
+>       D.CSUBJ → L0.Csubj
+>       D.DEP → L0.Dep
+>       D.DET → L0.Det
+>       D.DISCOURSE → L0.Discourse
+>       D.DISLOCATED → L0.Dislocated
+>       D.EXPL → L0.Expl
+>       D.FIXED → L0.Fixed
+>       D.FLAT → L0.Flat
+>       D.GOESWITH → L0.Goeswith
+>       D.IOBJ → L0.Iobj
+>       D.LIST → L0.List
+>       D.MARK → L0.Mark
+>       D.NMOD → L0.Nmod
+>       D.NSUBJ → L0.Nsubj
+>       D.NUMMOD → L0.Nummod
+>       D.OBJ → L0.Obj
+>       D.OBL → L0.Obl
+>       D.ORPHAN → L0.Orphan
+>       D.PARATAXIS → L0.Parataxis
+>       D.PUNCT → L0.Punct
+>       D.REPARANDUM → L0.Reparandum
+>       D.VOCATIVE → L0.Vocative
+>       D.XCOMP → L0.Xcomp
+>       D.ROOT → error "toTree: root relation found below the root"
+>
+>     unique thing matches candidates = case filter matches candidates of
+>       [match] → match
+>       [] → error ("toTree: document has no " <> thing)
+>       _ → error ("toTree: document has more than one " <> thing)
+> toTree [] = error "toTree: document has no sentences"
+> toTree _ = error "toTree: expected a document containing exactly one sentence"
 
  #include("L0.typ")
  #include("L1.typ")

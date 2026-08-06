@@ -1,9 +1,17 @@
+== L1
+
+First, let's get some annoyances out of the way. Since ZINE leaves all conntation to the human, discourse words are
+
 > module L1 where
->
+
+ #let l1imports = [
+
 > import Data.Maybe
 > import Language.Nanopass
 > import qualified L0
->
+
+]
+
 > [deflang|
 > ((Stripped w) from L0:UD
 >   (* Dependency
@@ -12,9 +20,9 @@
 >   (* UPOS
 >     (- PUNCT)
 >     (- X)))|]
->
+
 > $(pure [])
->
+
 > [defpass|(from L0:UD to Stripped)|]
 >
 > lower ∷ L0.DependencyTree w → Maybe (DependencyTree w)
