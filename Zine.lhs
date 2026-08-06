@@ -302,13 +302,8 @@ This version keeps reloading the model, which is slow. I'm thinking I should kee
 
 Kent Dyvbig's _nanopass_ framework @nanopass
 
-Preprocessing the dependency parse
-
- #hs("L0")
-
-Lets remove punctuation
-
- #hs("L1")
+ #include("L0.typ")
+ #include("L1.typ")
 
 = Category theory
 
