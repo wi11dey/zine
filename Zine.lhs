@@ -256,10 +256,10 @@ These are all the thirty-seven relations in the Universal Dependencies grammar @
 
 I'm currently just considering the input as CoNLL-U, wherever it comes from. For English and other well-resourc, UDPipe 1 is probably sufficient.
 
-This version keeps reloading the model, which is slow. I'm thinking I should keep a global cache of the models and never unload them, and manage that from C++.
+This version keeps reloading the model, which is slow. I'm thinking I should keep a global cache of the models and never unload them, and manage that from C++. Also, errors should get propagated up somehow; right now, they just get printed out to the host process' standard error.
 
-> parse ∷ FilePath → String → Either String Doc
-> parse modelPath sentence = parseConllu "" $ unsafePerformIO do
+> udPipe ∷ FilePath → String → String
+> udPipe modelPath sentence = unsafePerformIO do
 >   withCString modelPath \cModel → withCString sentence \cSentence → do
 >       output ← [Cpp.exp| char* { [&]() -> char* {
 >       using namespace ufal::udpipe;
@@ -271,7 +271,7 @@ This version keeps reloading the model, which is slow. I'm thinking I should kee
 >
 >       pipeline p(
 >         m,
->         "tokenize=ranges",
+>         "tokenizer=ranges",
 >         pipeline::DEFAULT,
 >         pipeline::DEFAULT,
 >         "conllu"
@@ -282,6 +282,9 @@ This version keeps reloading the model, which is slow. I'm thinking I should kee
 >       std::string error;
 >
 >       bool succeeded = p.process(input, output, error);
+>       if (!succeeded) {
+>         std::cerr << error << '\n';
+>       }
 >
 >       delete m;
 >       return strdup(succeeded ? output.str().c_str() : "");
@@ -290,7 +293,10 @@ This version keeps reloading the model, which is slow. I'm thinking I should kee
 >       free output
 >       pure result
 >
-> {-# NOINLINE parse #-}
+> {-# NOINLINE udPipe #-}
+>
+> parse ∷ FilePath → String → Either String Doc
+> parse modelPath = parseConllu "" . udPipe modelPath
 
 = Nanopass
 
