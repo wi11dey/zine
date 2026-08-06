@@ -427,6 +427,8 @@ The following imports were used in this Literate Haskell source file.
 
 I'm currently just considering the input as CoNLL-U, wherever it comes from. For English and other well-resourc, UDPipe 1 is probably sufficient.
 
+This version keeps reloading the model, which is slow. I'm thinking I should keep a global cache of the models and never unload them, and manage that from C++.
+
 > parse ∷ FilePath → String → Either String Doc
 > parse modelPath sentence = parseConllu "" $ unsafePerformIO do
 >   withCString modelPath \cModel → withCString sentence \cSentence → do
