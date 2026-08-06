@@ -271,7 +271,7 @@ This version keeps reloading the model, which is slow. I'm thinking I should kee
 >
 >       pipeline p(
 >         m,
->         "tokenize",
+>         "tokenize=ranges",
 >         pipeline::DEFAULT,
 >         pipeline::DEFAULT,
 >         "conllu"
