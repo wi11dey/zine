@@ -119,8 +119,6 @@ This resolves a nominal into a specific noun
 
 > resolve ∷ Nominal → Noun
 
-These are all the thirty-seven relations in the Universal Dependencies grammar @ud.
-
 > data Relation = Nsubj
 >               | Obj
 >               | Iobj
@@ -251,6 +249,48 @@ type Philosophy a b = [a → b]
 ```
 
 ok now we might be getting somewhere, as I can also make morphisms from local semantics via pushouts through a tree root in the dependency parse. I don't necessarily have to ask from whence nouns came from (this is restricted to humans), just the relationships defined between them.
+
+= Universal dependencies
+
+These are all the thirty-seven relations in the Universal Dependencies grammar @ud.
+
+I'm currently just considering the input as CoNLL-U, wherever it comes from. For English and other well-resourc, UDPipe 1 is probably sufficient.
+
+This version keeps reloading the model, which is slow. I'm thinking I should keep a global cache of the models and never unload them, and manage that from C++.
+
+> parse ∷ FilePath → String → Either String Doc
+> parse modelPath sentence = parseConllu "" $ unsafePerformIO do
+>   withCString modelPath \cModel → withCString sentence \cSentence → do
+>       output ← [Cpp.exp| char* { [&]() -> char* {
+>       using namespace ufal::udpipe;
+>
+>       model* m = model::load($(char* cModel));
+>       if (!m) {
+>         return strdup("");
+>       }
+>
+>       pipeline p(
+>         m,
+>         "tokenize",
+>         pipeline::DEFAULT,
+>         pipeline::DEFAULT,
+>         "conllu"
+>       );
+>
+>       std::istringstream input($(char* cSentence));
+>       std::ostringstream output;
+>       std::string error;
+>
+>       bool succeeded = p.process(input, output, error);
+>
+>       delete m;
+>       return strdup(succeeded ? output.str().c_str() : "");
+>     }() } |]
+>       result ← peekCString output
+>       free output
+>       pure result
+>
+> {-# NOINLINE parse #-}
 
 = Nanopass
 
@@ -422,46 +462,6 @@ Maybe have a two-level sheaf attempting to glue sentences together in one argume
 The following imports were used in this Literate Haskell source file.
 
  #imports
-
-= Testing UDPipe
-
-I'm currently just considering the input as CoNLL-U, wherever it comes from. For English and other well-resourc, UDPipe 1 is probably sufficient.
-
-This version keeps reloading the model, which is slow. I'm thinking I should keep a global cache of the models and never unload them, and manage that from C++.
-
-> parse ∷ FilePath → String → Either String Doc
-> parse modelPath sentence = parseConllu "" $ unsafePerformIO do
->   withCString modelPath \cModel → withCString sentence \cSentence → do
->       output ← [Cpp.exp| char* { [&]() -> char* {
->       using namespace ufal::udpipe;
->
->       model* m = model::load($(char* cModel));
->       if (!m) {
->         return strdup("");
->       }
->
->       pipeline p(
->         m,
->         "tokenize",
->         pipeline::DEFAULT,
->         pipeline::DEFAULT,
->         "conllu"
->       );
->
->       std::istringstream input($(char* cSentence));
->       std::ostringstream output;
->       std::string error;
->
->       bool succeeded = p.process(input, output, error);
->
->       delete m;
->       return strdup(succeeded ? output.str().c_str() : "");
->     }() } |]
->       result ← peekCString output
->       free output
->       pure result
->
-> {-# NOINLINE parse #-}
 
 = Stubs
 
