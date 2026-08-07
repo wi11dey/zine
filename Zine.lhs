@@ -309,8 +309,8 @@ Kent Dyvbig's _nanopass_ framework @nanopass. I use Marseille Bouchard Demko's n
 > deriving instance Enum (L0.UPOS w)
 > deriving instance Enum (L0.Dependency w)
 >
-> toL0 ∷ CoNLLU.Sent → [L0.DependencyTree Word]
-> toL0 sentence =
+> sentenceToDependencyForest ∷ CoNLLU.Sent → [L0.DependencyTree Word]
+> sentenceToDependencyForest sentence =
 >   let idToChildren = MultiMap.fromList do
 >         word@(_rel → Just rel) ← _words sentence
 >         return (_head rel, (_deprel rel, word))
