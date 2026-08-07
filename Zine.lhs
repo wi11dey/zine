@@ -313,13 +313,16 @@ Kent Dyvbig's _nanopass_ framework @nanopass. I use Marseille Bouchard Demko's n
 > toL0 sentence =
 >   let idToChildren = MultiMap.fromList do
 >         word@(_rel → Just rel) ← _words sentence
->         return (_head rel, word)
->   in do
->     root ← idToChildren ! CoNLLU.SID 0
->     return $
->       L0.TreeRoot (toEnum $ fromEnum $ fromMaybe U.X $ _upos root) root do
->         child ← idToChildren ! _id root
->         return undefined
+>         return (_head rel, (_deprel rel, word))
+>       toTree rootId = do
+>         (dep, child) ← idToChildren ! rootId
+>         return $
+>           L0.DependencyTree
+>             (toEnum $ fromEnum dep)
+>             (toEnum $ fromEnum $ fromMaybe U.X $ _upos child)
+>             child $
+>             toTree $ _id child
+>   in toTree $ CoNLLU.SID 0
 
  #include("L0.typ")
  #include("L1.typ")

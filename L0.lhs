@@ -8,8 +8,7 @@ Let's begin by defining
 >
 > [deflang|
 > ((UD w)
->   (DependencyTree (TreeRoot            UPOS w (* Node)))
->   (Node           (Node     Dependency UPOS w (* Node)))
+>   (DependencyTree (DependencyTree Dependency UPOS w (* DependencyTree)))
 >   (Dependency
 >     (Ref)
 >     (Acl)

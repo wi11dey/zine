@@ -25,7 +25,6 @@ executable zine
   default-extensions:
       BlockArguments
       DeriveFunctor
-      LambdaCase
       QuasiQuotes
       StandaloneDeriving
       TemplateHaskell
