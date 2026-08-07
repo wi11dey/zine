@@ -124,11 +124,6 @@ This resolves a nominal into a specific noun
 
 > resolve ∷ Nominal → Noun
 
-> data Relation = Nsubj
->               | Obj
->               | Iobj
->               deriving (Eq, Ord, Enum)
-
 > newtype Dependency source target = Dependency (source → ([Relation], target))
 
 Because Dependency is generic on any source or target, coreference can be handled separately on a PoS layer I bet
