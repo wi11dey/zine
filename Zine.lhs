@@ -104,12 +104,14 @@ Typst is used for parsing
 > import Foreign.C.String
 > import Foreign.Marshal.Alloc
 > import Conllu.Parse
-> import Conllu.Type (CW(..), Rel(..))
+> import Conllu.Type (CW(..), Rel(..), AW)
 > import qualified Conllu.Type as CoNLLU
 > import qualified Conllu.DeprelTagset as D
 > import qualified Conllu.UposTagset as U
 > import qualified L0
 > import qualified L1
+
+> Lens.makeLensesFor [("_id", "wordId")] ''CW
 
 > Cpp.context Cpp.cppCtx
 > Cpp.include "<iostream>"
@@ -305,11 +307,11 @@ This version keeps reloading the model, which is slow. I'm thinking I should kee
 
 Kent Dyvbig's _nanopass_ framework @nanopass. I use Marseille Bouchard Demko's nanopass Haskell implementation here.
 
-> toTree ∷ CoNLLU.Doc → L0.DependencyTree (CoNLLU.CW CoNLLU.AW)
+> toTree ∷ CoNLLU.Doc → L0.DependencyTree (CW AW)
 > toTree [CoNLLU.Sent _ words] = root (unique "root" isRoot words)
 >   where
 >     isRoot word = case _rel word of
->       Just (CoNLLU.Rel (CoNLLU.SID 0) D.ROOT _ _) → True
+>       Just (Rel (CoNLLU.SID 0) D.ROOT _ _) → True
 >       _ → False
 >
 >     root word = L0.Root (toUPOS word) word (branches word)
