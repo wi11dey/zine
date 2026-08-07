@@ -22,6 +22,7 @@ executable:
   default-extensions:
     - BlockArguments
     - DeriveFunctor
+    - LambdaCase
     - QuasiQuotes
     - StandaloneDeriving
     - TemplateHaskell
