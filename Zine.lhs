@@ -267,6 +267,7 @@ I'm currently just considering the input as CoNLL-U, wherever it comes from. For
 This version keeps reloading the model, which is slow. I'm thinking I should keep a global cache of the models and never unload them, and manage that from C++. Also, errors should get propagated up somehow; right now, they just get printed out to the host process' standard error.
 
 > {-# NOINLINE udPipe #-}
+>
 > udPipe ∷ FilePath → String → String
 > udPipe modelPath sentence = unsafePerformIO do
 >   withCString modelPath \cModel → withCString sentence \cSentence → do
