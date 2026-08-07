@@ -2,10 +2,10 @@
 
 Let's begin by defining
 
-> module L0 where
-
 /*
 
+> module L0 where
+>
 > import Language.Nanopass
 
 */

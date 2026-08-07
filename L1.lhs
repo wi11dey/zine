@@ -2,10 +2,10 @@
 
 First, let's get some annoyances out of the way. Since we're leaving all conntation to the human, discourse words are
 
-> module L1 where
-
 /*
 
+> module L1 where
+>
 > import Data.Maybe
 > import Language.Nanopass
 > import Language.Haskell.TH

@@ -2,10 +2,10 @@
 
 Now for the first structural change, though still bookeeping: splitting out any roots that may be internal in the tree. This should generally not happen, but will give a good feel for the more progressive enrichments ahead
 
-> module L2 where
-
 /*
 
+> module L2 where
+>
 > import Data.Maybe
 > import Language.Nanopass
 > import Language.Haskell.TH
