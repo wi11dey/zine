@@ -27,9 +27,11 @@ executable zine
       DeriveFunctor
       LambdaCase
       QuasiQuotes
+      StandaloneDeriving
       TemplateHaskell
       TypeFamilies
       UnicodeSyntax
+      ViewPatterns
   ghc-options: -fobject-code -dth-dec-file
   include-dirs:
       udpipe/src_lib_only
@@ -37,9 +39,10 @@ executable zine
       base
     , hs-conllu
     , inline-c-cpp
-    , lens
+    , multimap
     , nanopass
     , pretty-simple
+    , template-haskell
     , typst
     , yi-core
   default-language: Haskell2010

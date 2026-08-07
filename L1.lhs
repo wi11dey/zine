@@ -8,6 +8,7 @@ First, let's get some annoyances out of the way. Since ZINE leaves all conntatio
 
 > import Data.Maybe
 > import Language.Nanopass
+> import Language.Haskell.TH
 > import qualified L0
 
 ]
@@ -20,9 +21,9 @@ First, let's get some annoyances out of the way. Since ZINE leaves all conntatio
 >   (* UPOS
 >     (- PUNCT)
 >     (- X)))|]
-
-> $(pure [])
-
+>
+> $(newDeclarationGroup)
+>
 > [defpass|(from L0:UD to Stripped)|]
 >
 > lower ∷ L0.DependencyTree w → Maybe (DependencyTree w)
@@ -35,9 +36,9 @@ First, let's get some annoyances out of the way. Since ZINE leaves all conntatio
 >       , onUPOSX = Nothing
 >       , onDependency = const Nothing
 >       , onDependencyTree = Just . \case
->           L0.Root pos word children →
->             Root <$> descendUPOS xlate pos <*> pure word <*> pure (mapMaybe lower children)
->           L0.Branch dep pos word children →
->             Branch <$> descendDependency xlate dep <*> descendUPOS xlate pos <*> pure word <*> pure (mapMaybe lower children)
+>           L0.TreeRoot pos word children →
+>             TreeRoot <$> descendUPOS xlate pos <*> pure word <*> pure (mapMaybe lower children)
+>           L0.TreeBranch dep pos word children →
+>             TreeBranch <$> descendDependency xlate dep <*> descendUPOS xlate pos <*> pure word <*> pure (mapMaybe lower children)
 >       , onUPOS = const Nothing
 >       }

@@ -10,9 +10,10 @@ dependencies:
   - base
   - hs-conllu
   - inline-c-cpp
-  - lens
+  - multimap
   - nanopass
   - pretty-simple
+  - template-haskell
   - typst
   - yi-core
 executable:
@@ -23,9 +24,11 @@ executable:
     - DeriveFunctor
     - LambdaCase
     - QuasiQuotes
+    - StandaloneDeriving
     - TemplateHaskell
     - TypeFamilies
     - UnicodeSyntax
+    - ViewPatterns
   include-dirs:
     - udpipe/src_lib_only
   ghc-options:

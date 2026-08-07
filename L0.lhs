@@ -9,8 +9,8 @@ Let's begin by defining
 > [deflang|
 > ((UD w)
 >   (DependencyTree
->     (Root              UPOS w (* DependencyTree))
->     (Branch Dependency UPOS w (* DependencyTree)))
+>     (TreeRoot              UPOS w (* DependencyTree))
+>     (TreeBranch Dependency UPOS w (* DependencyTree)))
 >   (Dependency
 >     (Ref)
 >     (Acl)
@@ -47,6 +47,7 @@ Let's begin by defining
 >     (Parataxis)
 >     (Punct)
 >     (Reparandum)
+>     (Root)
 >     (Vocative)
 >     (Xcomp))
 >   (UPOS

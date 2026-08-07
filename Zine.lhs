@@ -91,11 +91,13 @@ Haskell is the glue, so that you can think about the parts in isolation. Categor
 > module Main where
 >
 > import Data.Kind (Constraint, Type)
-> import Prelude hiding (id, (.), read)
+> import Control.Arrow
+> import Prelude hiding (id, (.), read, Word)
 > import qualified Prelude
 > import System.IO.Unsafe
 > import qualified Language.C.Inline.Cpp as Cpp
-> import qualified Control.Lens as Lens
+> import Data.MultiMap (MultiMap)
+> import qualified Data.MultiMap as MultiMap
 
 Typst is used for parsing
 
@@ -104,14 +106,12 @@ Typst is used for parsing
 > import Foreign.C.String
 > import Foreign.Marshal.Alloc
 > import Conllu.Parse
-> import Conllu.Type (CW(..), Rel(..), AW)
+> import Conllu.Type (CW(..), Rel(..), AW, Sent(..))
 > import qualified Conllu.Type as CoNLLU
 > import qualified Conllu.DeprelTagset as D
 > import qualified Conllu.UposTagset as U
 > import qualified L0
 > import qualified L1
-
-> Lens.makeLensesFor [("_id", "wordId")] ''CW
 
 > Cpp.context Cpp.cppCtx
 > Cpp.include "<iostream>"
@@ -124,7 +124,7 @@ This resolves a nominal into a specific noun
 
 > resolve ∷ Nominal → Noun
 
-> newtype Dependency source target = Dependency (source → ([Relation], target))
+> newtype Dependency source target = Dependency (source → ([Rel], target))
 
 Because Dependency is generic on any source or target, coreference can be handled separately on a PoS layer I bet
 
@@ -302,17 +302,29 @@ This version keeps reloading the model, which is slow. I'm thinking I should kee
 
 Kent Dyvbig's _nanopass_ framework @nanopass. I use Marseille Bouchard Demko's nanopass Haskell implementation here.
 
-> toTree ∷ CoNLLU.Doc → L0.DependencyTree (CW AW)
+> type Word = CW AW
+>
+> deriving instance Enum (L0.UPOS w)
+> deriving instance Enum (L0.Dependency w)
+>
+> toL0 ∷ CoNLLU.Sent → L0.DependencyTree Word
+> toL0 sentence =
+>   let idToChildren = MultiMap.fromList do
+>         word@(_rel → Just rel) ← _words sentence
+>         return (_head rel, word)
+>   in L0.TreeRoot undefined undefined undefined
+>
+> toTree ∷ CoNLLU.Doc → L0.DependencyTree Word
 > toTree [CoNLLU.Sent _ words] = root (unique "root" isRoot words)
 >   where
 >     isRoot word = case _rel word of
 >       Just (Rel (CoNLLU.SID 0) D.ROOT _ _) → True
 >       _ → False
 >
->     root word = L0.Root (toUPOS word) word (branches word)
+>     root word = L0.TreeRoot (toUPOS word) word (branches word)
 >
 >     branch word = case CoNLLU._rel word of
->       Just relation → L0.Branch (toDependency relation) (toUPOS word) word (branches word)
+>       Just relation → L0.TreeBranch (toDependency relation) (toUPOS word) word (branches word)
 >       Nothing → error "toTree: a non-root word has no dependency relation"
 >
 >     branches parent =
@@ -487,7 +499,7 @@ link(A, Path, C) :- % composition
 
 > data DependencyTree a = DependencyTree {
 >   word ∷ a,
->   children ∷ [(Relation, DependencyTree a)]
+>   children ∷ [(Rel, DependencyTree a)]
 > } deriving Functor
 
 From this, you could construct the free category $cal(D)$ with paths as morphisms. We get the following morphisms in $bold("Cat")$:
