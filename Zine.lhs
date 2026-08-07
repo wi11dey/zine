@@ -101,11 +101,12 @@ Typst is used for parsing
 
 > import qualified Typst.Syntax
 
-> import Foreign.C.String (peekCString, withCString)
-> import Foreign.Marshal.Alloc (free)
-> import Conllu.Parse (parseConllu)
+> import Foreign.C.String
+> import Foreign.Marshal.Alloc
+> import Conllu.Parse
+> import Conllu.Type (CW(..), Rel(..))
+> import qualified Conllu.Type as CoNLLU
 > import qualified Conllu.DeprelTagset as D
-> import Conllu.Type (Doc, Sent(..), CW(..), AW, ID(..), Rel(..))
 > import qualified Conllu.UposTagset as U
 > import qualified L0
 > import qualified L1
@@ -297,23 +298,23 @@ This version keeps reloading the model, which is slow. I'm thinking I should kee
 >
 > {-# NOINLINE udPipe #-}
 >
-> parse ∷ FilePath → String → Either String Doc
+> parse ∷ FilePath → String → Either String CoNLLU.Doc
 > parse modelPath = parseConllu "" . udPipe modelPath
 
 = Nanopass
 
 Kent Dyvbig's _nanopass_ framework @nanopass. I use Marseille Bouchard Demko's nanopass Haskell implementation here.
 
-> toTree ∷ Doc → L0.DependencyTree (CW AW)
-> toTree [Sent _ words] = root (unique "root" isRoot words)
+> toTree ∷ CoNLLU.Doc → L0.DependencyTree (CoNLLU.CW CoNLLU.AW)
+> toTree [CoNLLU.Sent _ words] = root (unique "root" isRoot words)
 >   where
 >     isRoot word = case _rel word of
->       Just (Rel (SID 0) D.ROOT _ _) → True
+>       Just (CoNLLU.Rel (CoNLLU.SID 0) D.ROOT _ _) → True
 >       _ → False
 >
 >     root word = L0.Root (toUPOS word) word (branches word)
 >
->     branch word = case _rel word of
+>     branch word = case CoNLLU._rel word of
 >       Just relation → L0.Branch (toDependency relation) (toUPOS word) word (branches word)
 >       Nothing → error "toTree: a non-root word has no dependency relation"
 >

@@ -20,11 +20,8 @@ executable:
   main: Zine.lhs
   default-extensions:
     - BlockArguments
-    - ConstraintKinds
     - DeriveFunctor
-    - KindSignatures
     - LambdaCase
-    - PolyKinds
     - QuasiQuotes
     - TemplateHaskell
     - TypeFamilies

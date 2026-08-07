@@ -24,12 +24,8 @@ executable zine
       ./
   default-extensions:
       BlockArguments
-      ConstraintKinds
-      DataKinds
       DeriveFunctor
-      KindSignatures
       LambdaCase
-      PolyKinds
       QuasiQuotes
       TemplateHaskell
       TypeFamilies
