@@ -1,4 +1,4 @@
-== L1
+== $L_1$
 
 First, let's get some annoyances out of the way. Since we're leaving all conntation to the human, discourse words are
 

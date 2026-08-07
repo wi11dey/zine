@@ -1,4 +1,4 @@
-== L0
+== $L_0$
 
 Let's begin by defining
 

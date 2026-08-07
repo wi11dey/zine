@@ -106,14 +106,20 @@ Typst is used for parsing
 > import qualified Language.C.Inline.Cpp as Cpp
 > import Foreign.C.String
 > import Foreign.Marshal.Alloc
+
 > import Conllu.Parse
 > import Conllu.Type (CW(..), Rel(..), AW, Sent(..))
 > import qualified Conllu.Type as CoNLLU
 > import qualified Conllu.DeprelTagset as D
 > import Conllu.UposTagset ()
 > import qualified Conllu.UposTagset as U
+
+Intermediate representations
+
 > import qualified L0
 > import qualified L1
+
+> type Word = CW AW
 
 > Cpp.context Cpp.cppCtx
 > Cpp.include "<iostream>"
@@ -260,6 +266,7 @@ I'm currently just considering the input as CoNLL-U, wherever it comes from. For
 
 This version keeps reloading the model, which is slow. I'm thinking I should keep a global cache of the models and never unload them, and manage that from C++. Also, errors should get propagated up somehow; right now, they just get printed out to the host process' standard error.
 
+> {-# NOINLINE udPipe #-}
 > udPipe ∷ FilePath → String → String
 > udPipe modelPath sentence = unsafePerformIO do
 >   withCString modelPath \cModel → withCString sentence \cSentence → do
@@ -295,8 +302,6 @@ This version keeps reloading the model, which is slow. I'm thinking I should kee
 >       free output
 >       pure result
 >
-> {-# NOINLINE udPipe #-}
->
 > parse ∷ FilePath → String → Either String CoNLLU.Doc
 > parse modelPath = parseConllu "" . udPipe modelPath
 
@@ -304,11 +309,10 @@ This version keeps reloading the model, which is slow. I'm thinking I should kee
 
 Kent Dyvbig's _nanopass_ framework @nanopass. I use Marseille Bouchard Demko's nanopass Haskell implementation here.
 
-> type Word = CW AW
->
-> deriving instance Enum (L0.UPOS w)
-> deriving instance Enum (L0.Dependency w)
->
+ #include("L0.typ")
+
+This language is a tree, while CoNLL-U is a flat format. Therefore,
+
 > docToL0 ∷ CoNLLU.Doc → [L0.DependencyTree Word]
 > docToL0 = concatMap sentenceToL0
 >   where
@@ -326,7 +330,11 @@ Kent Dyvbig's _nanopass_ framework @nanopass. I use Marseille Bouchard Demko's n
 >                 toTree $ _id child
 >       in toTree $ CoNLLU.SID 0
 
- #include("L0.typ")
+We convert between `hs-conllu`'s and $L_0$'s representations of `UPOS` and dependency relations via the integral `Enum` representation.
+
+> deriving instance Enum (L0.UPOS w)
+> deriving instance Enum (L0.Dependency w)
+
  #include("L1.typ")
 
 = Category theory
