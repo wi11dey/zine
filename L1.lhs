@@ -1,6 +1,6 @@
 == L1
 
-First, let's get some annoyances out of the way. Since ZINE leaves all conntation to the human, discourse words are
+First, let's get some annoyances out of the way. Since we're leaving all conntation to the human, discourse words are
 
 > module L1 where
 
