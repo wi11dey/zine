@@ -4,14 +4,14 @@ First, let's get some annoyances out of the way. Since we're leaving all conntat
 
 > module L1 where
 
- #let l1imports = [
+/*
 
 > import Data.Maybe
 > import Language.Nanopass
 > import Language.Haskell.TH
 > import qualified L0
 
-]
+*/
 
 > [deflang|
 > ((Stripped w) from L0:UD
@@ -34,7 +34,6 @@ First, let's get some annoyances out of the way. Since we're leaving all conntat
 >       , onDependencyPunct = Nothing
 >       , onUPOSPUNCT = Nothing
 >       , onUPOSX = Nothing
->       , onDependency = const Nothing
 >       , onDependencyTree = \(L0.DependencyTree dep pos word children) →
 >           Just $
 >             DependencyTree <$>
@@ -42,5 +41,6 @@ First, let's get some annoyances out of the way. Since we're leaving all conntat
 >               descendUPOS xlate pos <*>
 >               pure word <*>
 >               pure (mapMaybe (descendDependencyTree xlate) children)
+>       , onDependency = const Nothing
 >       , onUPOS = const Nothing
 >       }

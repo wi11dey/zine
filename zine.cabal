@@ -19,6 +19,7 @@ executable zine
   other-modules:
       L0
       L1
+      L2
       Paths_zine
   hs-source-dirs:
       ./

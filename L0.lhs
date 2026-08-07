@@ -3,16 +3,19 @@
 Let's begin by defining
 
 > module L0 where
->
+
+/*
+
 > import Language.Nanopass
->
+
+*/
+
 > [deflang|
 > ((UD w)
 >   (DependencyTree (DependencyTree Dependency UPOS w (* DependencyTree)))
 >   (Dependency
->     (Ref)
->     (Acl) (Advcl) (Advmod) (Amod) (Appos) (Aux)
->     (Case) (Ccomp) (Cc) (Clf) (Compound) (Conj) (Cop) (Csubj)
+>     (Ref) (Acl) (Advcl) (Advmod) (Amod) (Appos) (Aux) (Case) (Ccomp) (Cc) (Clf)
+>     (Compound) (Conj) (Cop) (Csubj)
 >     (Dep) (Det) (Discourse) (Dislocated)
 >     (Expl)
 >     (Fixed) (Flat)

@@ -337,6 +337,7 @@ We convert between `hs-conllu`'s and $L_0$'s representations of `UPOS` and depen
 > deriving instance Enum (L0.Dependency w)
 
  #include("L1.typ")
+ #include("L2.typ")
 
 = Category theory
 
@@ -377,49 +378,7 @@ This is the core (Hegelian and category-theoretic) claim: *every noun is a verb-
 5	books	book	NOUN	NNS	Number=Plur	2	obj	_	SpaceAfter=No|TokenRange=18:23
 ```.text, level-height: 0.6, show-upos: true, show-root: false))
 
-In prolog
-
-```prolog
-upos(word("They",  1), pron).
-upos(word("buy",   2), verb).
-upos(word("and",   3), cconj).
-upos(word("sell",  4), verb).
-upos(word("books", 5), noun).
-
-:- table dep/3.
-
-dep(word("buy", 2), [nsubj], word("They", 1)).
-dep(word("buy", 2), [conj], word("sell", 4)).
-dep(word("buy", 2), [obj], word("books", 5)).
-dep(word("sell", 4), [cc], word("and", 3)).
-
-%% Symmetric over conj
-dep(Word1, [conj], Word2) :- dep(Word2, [conj], Word1).
-
-%% Semantic meaning of conj
-dep(A, Path, Destination) :- dep(A, [conj], B), dep(B, Path, Destination).
-
-%% Category axioms
-dep(Word, [], Word) :- Word = word(_, _). % identity
-dep(A, Path, C) :- % composition
-    dep(A, Subpath1, B),
-    dep(B, Subpath2, C),
-    append(Subpath1, Subpath2, Path).
-
-link(Noun1, [Verb], Noun2) :-
-    upos(Noun1, noun),
-    upos(Noun2, noun),
-    dep(Verb, [nsubj], Noun1),
-    dep(Verb, [obj], Noun2),
-    upos(Verb, verb).
-
-%% Category axioms
-link(Noun, [], Noun) :- upos(Noun, noun). % identity
-link(A, Path, C) :- % composition
-    link(A, Subpath1, B),
-    link(B, Subpath2, C),
-    append(Subpath1, Subpath2, Path).
-```
+See Welsh
 
  #figure(dependency-tree(```
 1	Wyt	bod	VERB	verb	Mood=Ind|Number=Sing|Person=2|Tense=Pres|VerbForm=Fin	0	root	_	TokenRange=0:3
