@@ -27,8 +27,8 @@ executable zine
       ConstraintKinds
       DataKinds
       DeriveFunctor
-      LambdaCase
       KindSignatures
+      LambdaCase
       PolyKinds
       QuasiQuotes
       TemplateHaskell
@@ -41,6 +41,7 @@ executable zine
       base
     , hs-conllu
     , inline-c-cpp
+    , lens
     , nanopass
     , pretty-simple
     , typst

@@ -9,21 +9,21 @@ custom-setup:
 dependencies:
   - base
   - hs-conllu
+  - inline-c-cpp
+  - lens
+  - nanopass
+  - pretty-simple
   - typst
   - yi-core
-  - inline-c-cpp
-  - pretty-simple
-  - nanopass
 executable:
   source-dirs: .
   main: Zine.lhs
   default-extensions:
     - BlockArguments
     - ConstraintKinds
-    - DataKinds
     - DeriveFunctor
-    - LambdaCase
     - KindSignatures
+    - LambdaCase
     - PolyKinds
     - QuasiQuotes
     - TemplateHaskell

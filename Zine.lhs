@@ -95,7 +95,7 @@ Haskell is the glue, so that you can think about the parts in isolation. Categor
 > import qualified Prelude
 > import System.IO.Unsafe
 > import qualified Language.C.Inline.Cpp as Cpp
-> import GHC.TypeNats (Nat, KnownNat)
+> import qualified Control.Lens as Lens
 
 Typst is used for parsing
 
@@ -398,30 +398,17 @@ If you're already familiar with categories and their representation in Haskell, 
 
 Haskell categories
 
-> class Category (k ∷ objectKind → objectKind → Type) where
->   type Ob k (a ∷ objectKind) ∷ Constraint
-> 
->   id  ∷ Ob k a ⇒ k a a
->   (.) ∷ (Ob k a, Ob k b, Ob k c)
->       ⇒ k b c → k a b → k a c
+> class Category (k ∷ Type → Type → Type) where
+>   type Ob k (a ∷ Type) ∷ Constraint
+>   id ∷ Ob k a ⇒ k a a
+>   (.) ∷ (Ob k a, Ob k b, Ob k c) ⇒ k b c → k a b → k a c
 > 
 > instance Category (→) where
 >   type Ob (→) a = ()
->   id  = Prelude.id
->   (.) = (Prelude..)
+>   id x = x
+>   (g . f) x = g (f x)
 
 Using CoNLL-U
-
-> newtype UD (source ∷ Nat) (target ∷ Nat) =
->   UD { dependencyPath ∷ [D.EP] }
->   deriving (Eq, Show)
->
-> instance Category UD where
->   type Ob UD a = KnownNat a
->
->   id = UD []
->
->   UD pathG . UD pathF = UD (pathF <> pathG)
 
 ```prolog
 mor(Category, A, A) :- id(Category, A).
