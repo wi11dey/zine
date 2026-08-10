@@ -42,5 +42,5 @@ Now for the first structural change, though still bookeeping: splitting out any 
 >       { onUPOS = const Nothing
 >       , onDependencyTree = const Nothing
 >       , onDependency = const Nothing
->       , onDependencyRoot = MaybeT (pure Nothing)
+>       , onDependencyRoot = empty
 >       }
