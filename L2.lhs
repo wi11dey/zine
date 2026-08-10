@@ -28,7 +28,7 @@ Now for the first structural change, though still bookeeping: splitting out any 
 > [defpass|(from L1:Stripped to Rooted)|]
 >
 > lower ∷ L1.DependencyTree w → [Root w]
-> lower = snd . runWriter . runMaybeT . collectRoots
+> lower = execWriter . runMaybeT . collectRoots
 >   where
 >     collectRoots tree@(L1.DependencyTree dep upos word children) =
 >       case runWriter (runMaybeT (descendDependency xlate dep)) of
