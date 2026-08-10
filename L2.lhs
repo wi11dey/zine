@@ -36,7 +36,7 @@ Now for the first structural change, though still bookeeping: splitting out any 
 >           case runWriter (runMaybeT (descendDependency xlate dep)) of
 >             (Nothing, _) → Just do
 >               upos' ← descendUPOS xlate upos
->               children' ← mapM (descendDependencyTree xlate) children
+>               children' ← traverse (descendDependencyTree xlate) children
 >               lift $ tell [Root upos' word children']
 >               empty
 >             otherwise → Nothing
