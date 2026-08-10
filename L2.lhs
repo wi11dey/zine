@@ -28,19 +28,18 @@ Now for the first structural change, though still bookeeping: splitting out any 
 > [defpass|(from L1:Stripped to Rooted)|]
 >
 > lower ∷ L1.DependencyTree w → [Root w]
-> lower = execWriter . runMaybeT . collectRoots
+> lower = execWriter . runMaybeT . descendDependencyTree xlate
 >   where
->     collectRoots tree@(L1.DependencyTree dep upos word children) =
->       case runWriter (runMaybeT (descendDependency xlate dep)) of
->         (Nothing, _) → do
->           upos' ← descendUPOS xlate upos
->           children' ← mapM (descendDependencyTree xlate) children
->           lift $ tell [Root upos' word children']
->           empty
->         _ → descendDependencyTree xlate tree
 >     xlate = Xlate
 >       { onUPOS = const Nothing
->       , onDependencyTree = const Nothing
+>       , onDependencyTree = \tree@(L1.DependencyTree dep upos word children) →
+>           case runWriter (runMaybeT (descendDependency xlate dep)) of
+>             (Nothing, _) → Just do
+>               upos' ← descendUPOS xlate upos
+>               children' ← mapM (descendDependencyTree xlate) children
+>               lift $ tell [Root upos' word children']
+>               empty
+>             otherwise → Nothing
 >       , onDependency = const Nothing
 >       , onDependencyRoot = empty
 >       }
