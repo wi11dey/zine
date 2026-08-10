@@ -6,9 +6,12 @@ Now for the first structural change, though still bookeeping: splitting out any 
 
 > module L2 where
 >
-> import Data.Functor.Const
 > import Language.Nanopass
 > import Language.Haskell.TH
+> import Control.Monad.Trans.Maybe
+> import Control.Monad.Trans.Writer
+> import Control.Applicative
+> import Control.Monad.Trans.Class
 > import qualified L1
 
 */
@@ -24,14 +27,19 @@ Now for the first structural change, though still bookeeping: splitting out any 
 >
 > [defpass|(from L1:Stripped to Rooted)|]
 >
-> lower ∷ L1.DependencyTree w → Const [Root w] (DependencyTree w)
-> lower = descendDependencyTree xlate
+> lower ∷ L1.DependencyTree w → MaybeT (Writer [Root w]) (DependencyTree w)
+> lower tree@(L1.DependencyTree dep upos word children) =
+>   case runWriter (runMaybeT (descendDependency xlate dep)) of
+>     (Nothing, _) → do
+>       upos' ← descendUPOS xlate upos
+>       children' ← traverse (descendDependencyTree xlate) children
+>       lift $ tell [Root upos' word children']
+>       empty
+>     _ → descendDependencyTree xlate tree
 >   where
 >     xlate = Xlate
->       { onDependency = const Nothing
->       , onDependencyTree = \case
->           L1.DependencyTree L1.Root _ _ _ → Nothing
->           L1.DependencyTree _ _ _ _ → Nothing
->       , onUPOS = const Nothing
->       , onDependencyRoot = undefined
+>       { onUPOS = const Nothing
+>       , onDependencyTree = const Nothing
+>       , onDependency = const Nothing
+>       , onDependencyRoot = MaybeT (pure Nothing)
 >       }

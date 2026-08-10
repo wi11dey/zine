@@ -34,11 +34,11 @@ First, let's get some annoyances out of the way. Since we're leaving all conntat
 >       , onDependencyPunct = Nothing
 >       , onUPOSPUNCT = Nothing
 >       , onUPOSX = Nothing
->       , onDependencyTree = \(L0.DependencyTree dep pos word children) →
+>       , onDependencyTree = \(L0.DependencyTree dep upos word children) →
 >           Just $
 >             DependencyTree <$>
 >               descendDependency xlate dep <*>
->               descendUPOS xlate pos <*>
+>               descendUPOS xlate upos <*>
 >               pure word <*>
 >               pure (mapMaybe (descendDependencyTree xlate) children)
 >       , onDependency = const Nothing

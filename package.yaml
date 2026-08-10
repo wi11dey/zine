@@ -14,6 +14,7 @@ dependencies:
   - nanopass
   - pretty-simple
   - template-haskell
+  - transformers
   - typst
   - yi-core
 executable:
@@ -22,7 +23,6 @@ executable:
   default-extensions:
     - BlockArguments
     - DeriveFunctor
-    - LambdaCase
     - QuasiQuotes
     - StandaloneDeriving
     - TemplateHaskell

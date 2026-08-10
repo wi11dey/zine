@@ -118,6 +118,7 @@ Intermediate representations
 
 > import qualified L0
 > import qualified L1
+> import qualified L2
 
 > type Word = CW AW
 
