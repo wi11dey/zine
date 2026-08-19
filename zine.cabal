@@ -12,7 +12,9 @@ custom-setup
   setup-depends:
       Cabal
     , base
+    , haskell-src-exts
     , process
+    , text
 
 executable zine
   main-is: Zine.lhs

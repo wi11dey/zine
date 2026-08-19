@@ -6,6 +6,8 @@ custom-setup:
     - base
     - Cabal
     - process
+    - text
+    - haskell-src-exts
 dependencies:
   - base
   - hs-conllu

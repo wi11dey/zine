@@ -137,13 +137,6 @@ This resolves a nominal into a specific noun
 
 Because Dependency is generic on any source or target, coreference can be handled separately on a PoS layer I bet
 
-> --instance Category Dependency where
-> --  id = Dependency $ \source → ([], source)
-> --  (Dependency a) . (Dependency b) = Dependency $ \source →
-> --    let (relations, intermediate) = b source
-> --        (relations', target) = a intermediate
-> --    in (relations ++ relations', target)
-
 Dependency parsing happens sentence-by-sentence
 
 > type Syntax = [Sentence]
