@@ -326,7 +326,7 @@ impl Zine {
             header.left_center() + vec2(8.0, 0.0),
             Align2::LEFT_CENTER,
             "Listener",
-            FontId::new(10.0, FontFamily::Name("Michroma".into())),
+            FontId::new(10.0, FontFamily::Name("Orbitron Light".into())),
             WHITE,
         );
         Frame::NONE
