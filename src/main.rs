@@ -1,4 +1,4 @@
-mod fonts;
+mod pango;
 
 use eframe::egui::{
     self, Align2, Color32, FontFamily, FontId, Frame, Id, Key, Margin, Painter, Rect, ScrollArea,
@@ -38,7 +38,7 @@ fn configure(ctx: &egui::Context) {
         options.feathering = false;
         options.prerasterized_discs = false;
     });
-    fonts::install(ctx);
+    pango::install(ctx);
     ctx.set_visuals(egui::Visuals::light());
     ctx.all_styles_mut(|style| {
         style.visuals.panel_fill = WHITE;
@@ -322,13 +322,20 @@ impl Zine {
     fn listener(&mut self, ui: &mut Ui) {
         let (header, _) = ui.allocate_exact_size(vec2(ui.available_width(), 22.0), Sense::hover());
         ui.painter().rect_filled(header, 0.0, BLACK);
-        ui.painter().text(
-            header.left_center() + vec2(8.0, 0.0),
-            Align2::LEFT_CENTER,
-            "Listener",
-            FontId::new(10.0, FontFamily::Name("Orbitron Light".into())),
-            WHITE,
-        );
+        let title = ui
+            .painter()
+            .layout_job(egui::text::LayoutJob::single_section(
+                "Listener".into(),
+                egui::TextFormat {
+                    font_id: FontId::new(12.0, FontFamily::Name("Orbitron Light".into())),
+                    color: WHITE,
+                    italics: true,
+                    ..Default::default()
+                },
+            ));
+        let title_rect =
+            Align2::LEFT_CENTER.anchor_size(header.left_center() + vec2(8.0, 0.0), title.size());
+        ui.painter().galley(title_rect.min, title, WHITE);
         Frame::NONE
             .inner_margin(Margin {
                 left: 12,

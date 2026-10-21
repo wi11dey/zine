@@ -153,26 +153,18 @@ impl MonochromeFonts {
     }
 
     fn rasterize(&self, request: &GlyphRasterizerRequest<'_>) -> RasterizedGlyph {
-        let (text, multiplier) = match request.cluster {
-            "\t" => (" ", 4.0),
-            "\u{2009}" | "\u{202f}" => (" ", 0.5),
-            text => (text, 1.0),
-        };
         let family = match request.family {
-            FontFamily::Proportional => "Droid Sans",
-            FontFamily::Monospace => "Hack",
+            FontFamily::Proportional | FontFamily::Monospace => "Droid Sans",
             FontFamily::Name(name) => name.as_ref(),
         };
         let mut description = FontDescription::from_string(family);
         description.set_absolute_size(request.font_size_px as f64 * pango::SCALE as f64);
         let layout = &self.layout;
         layout.set_font_description(Some(&description));
-        layout.set_text(text);
+        layout.set_text(request.cluster);
         let (ink, _) = layout.pixel_extents();
         let (width, height) = (ink.width().max(1), ink.height().max(1));
         let mut coverage = vec![0u8; width as usize * height as usize];
-        // PangoFT2 composites mono glyphs into an 8-bit destination, expanding
-        // each bit to 0/255. It also positions and combines all glyphs in the layout.
         let mut bitmap = ffi::FT_Bitmap {
             rows: height,
             width,
@@ -188,20 +180,22 @@ impl MonochromeFonts {
         unsafe {
             pango_ft2_render_layout(&mut bitmap, layout.to_glib_none().0, -ink.x(), -ink.y());
         }
-        let pixels = coverage
-            .into_iter()
-            .map(Color32::from_white_alpha)
-            .collect();
         RasterizedGlyph {
             bitmap: GlyphBitmap {
-                image: ColorImage::new([width as usize, height as usize], pixels),
+                image: ColorImage::new(
+                    [width as usize, height as usize],
+                    coverage
+                        .into_iter()
+                        .map(Color32::from_white_alpha)
+                        .collect(),
+                ),
                 offset_px: vec2(
                     ink.x() as f32 + request.subpixel_offset_px.round(),
                     ink.y() as f32 - layout.baseline() as f32 / pango::SCALE as f32,
                 ),
                 is_color: false,
             },
-            advance_px: layout.size().0 as f32 / pango::SCALE as f32 * multiplier,
+            advance_px: layout.size().0 as f32 / pango::SCALE as f32,
         }
     }
 }
