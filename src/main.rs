@@ -6,8 +6,8 @@ use eframe::egui::{
 };
 use egui::scroll_area::ScrollBarVisibility;
 
-const BLACK: Color32 = Color32::BLACK;
-const WHITE: Color32 = Color32::WHITE;
+const FOREGROUND: Color32 = Color32::BLACK;
+const BACKGROUND: Color32 = Color32::WHITE;
 const TAB_HEIGHT: f32 = 36.0;
 const LISTENER_HEIGHT: f32 = 132.0;
 const SCROLLBAR_WIDTH: f32 = 9.0;
@@ -41,11 +41,11 @@ fn configure(ctx: &egui::Context) {
     pango::install(ctx);
     ctx.set_visuals(egui::Visuals::light());
     ctx.all_styles_mut(|style| {
-        style.visuals.panel_fill = WHITE;
-        style.visuals.override_text_color = Some(BLACK);
-        style.visuals.text_cursor.stroke = Stroke::new(1.0, BLACK);
-        style.visuals.selection.bg_fill = BLACK;
-        style.visuals.selection.stroke = Stroke::new(1.0, WHITE);
+        style.visuals.panel_fill = BACKGROUND;
+        style.visuals.override_text_color = Some(FOREGROUND);
+        style.visuals.text_cursor.stroke = Stroke::new(1.0, FOREGROUND);
+        style.visuals.selection.bg_fill = FOREGROUND;
+        style.visuals.selection.stroke = Stroke::new(1.0, BACKGROUND);
         style
             .text_styles
             .insert(egui::TextStyle::Body, FontId::proportional(12.0));
@@ -56,14 +56,14 @@ fn configure(ctx: &egui::Context) {
 
 fn paint_stipple(painter: &Painter, rect: Rect) {
     let painter = painter.with_clip_rect(rect);
-    painter.rect_filled(rect, 0.0, WHITE);
+    painter.rect_filled(rect, 0.0, BACKGROUND);
     let mut mesh = egui::Mesh::default();
     for y in 0..rect.height().ceil() as usize {
         let offset = y % 2;
         for x in (offset..rect.width().ceil() as usize).step_by(2) {
             mesh.add_colored_rect(
                 Rect::from_min_size(rect.min + vec2(x as f32, y as f32), Vec2::splat(1.0)),
-                BLACK,
+                FOREGROUND,
             );
         }
     }
@@ -77,9 +77,9 @@ fn paint_tab(painter: &Painter, rect: Rect, active: bool) {
         pos2(rect.right() - 10.5, rect.top() + 0.5),
         pos2(rect.right() - 0.5, rect.bottom() - 0.5),
     ];
-    painter.add(Shape::convex_polygon(corners.clone(), WHITE, Stroke::NONE));
+    painter.add(Shape::convex_polygon(corners.clone(), BACKGROUND, Stroke::NONE));
     for edge in corners.windows(2) {
-        painter.line_segment([edge[0], edge[1]], Stroke::new(1.0, BLACK));
+        painter.line_segment([edge[0], edge[1]], Stroke::new(1.0, FOREGROUND));
     }
     if active {
         // Erase the strip's baseline so the active tab joins the document surface.
@@ -89,10 +89,10 @@ fn paint_tab(painter: &Painter, rect: Rect, active: bool) {
                 vec2(rect.width() - 2.0, 1.0),
             ),
             0.0,
-            WHITE,
+            BACKGROUND,
         );
     } else {
-        painter.line_segment([corners[3], corners[0]], Stroke::new(1.0, BLACK));
+        painter.line_segment([corners[3], corners[0]], Stroke::new(1.0, FOREGROUND));
     }
 }
 
@@ -136,17 +136,17 @@ impl eframe::App for Zine {
         egui::Panel::top("tabs")
             .exact_size(TAB_HEIGHT)
             .show_separator_line(false)
-            .frame(Frame::NONE.fill(WHITE))
+            .frame(Frame::NONE.fill(BACKGROUND))
             .show(ui, |ui| self.tabs(ui));
 
         egui::Panel::bottom("listener")
             .exact_size(LISTENER_HEIGHT)
             .show_separator_line(false)
-            .frame(Frame::NONE.fill(WHITE))
+            .frame(Frame::NONE.fill(BACKGROUND))
             .show(ui, |ui| self.listener(ui));
 
         egui::CentralPanel::default()
-            .frame(Frame::NONE.fill(WHITE))
+            .frame(Frame::NONE.fill(BACKGROUND))
             .show(ui, |ui| self.viewport(ui));
     }
 }
@@ -158,7 +158,7 @@ impl Zine {
         ui.painter().hline(
             strip.x_range(),
             strip.bottom() - 0.5,
-            Stroke::new(1.0, BLACK),
+            Stroke::new(1.0, FOREGROUND),
         );
 
         ScrollArea::horizontal()
@@ -195,7 +195,7 @@ impl Zine {
                         Align2::CENTER_CENTER,
                         &self.documents[i].name,
                         font,
-                        BLACK,
+                        FOREGROUND,
                     );
                     if ui
                         .interact(rect, Id::unique(("tab", i)), Sense::click())
@@ -214,14 +214,14 @@ impl Zine {
                 ui.painter().rect_filled(
                     Rect::from_center_size(add.center() + vec2(0.0, 0.5), vec2(18.0, 20.0)),
                     0.0,
-                    WHITE,
+                    BACKGROUND,
                 );
                 ui.painter().text(
                     add.center(),
                     Align2::CENTER_CENTER,
                     "+",
                     FontId::proportional(16.0),
-                    BLACK,
+                    FOREGROUND,
                 );
                 if ui
                     .interact(add, Id::unique("new_document"), Sense::click())
@@ -303,7 +303,7 @@ impl Zine {
 
         paint_stipple(ui.painter(), track);
         ui.painter()
-            .rect_stroke(track, 0.0, Stroke::new(1.0, BLACK), StrokeKind::Inside);
+            .rect_stroke(track, 0.0, Stroke::new(1.0, FOREGROUND), StrokeKind::Inside);
         let top = track.top()
             + if max_scroll > 0.0 {
                 document.scroll / max_scroll * travel
@@ -313,27 +313,27 @@ impl Zine {
         ui.painter().rect_filled(
             Rect::from_min_size(pos2(track.left(), top), vec2(SCROLLBAR_WIDTH, thumb_height)),
             0.0,
-            BLACK,
+            FOREGROUND,
         );
     }
 
     fn listener(&mut self, ui: &mut Ui) {
         let (header, _) = ui.allocate_exact_size(vec2(ui.available_width(), 22.0), Sense::hover());
-        ui.painter().rect_filled(header, 0.0, BLACK);
+        ui.painter().rect_filled(header, 0.0, FOREGROUND);
         let title = ui
             .painter()
             .layout_job(egui::text::LayoutJob::single_section(
                 "Listener".into(),
                 egui::TextFormat {
                     font_id: FontId::new(12.0, FontFamily::Name("Orbitron Light".into())),
-                    color: WHITE,
+                    color: BACKGROUND,
                     italics: true,
                     ..Default::default()
                 },
             ));
         let title_rect =
             Align2::LEFT_CENTER.anchor_size(header.left_center() + vec2(8.0, 0.0), title.size());
-        ui.painter().galley(title_rect.min, title, WHITE);
+        ui.painter().galley(title_rect.min, title, BACKGROUND);
         Frame::NONE
             .inner_margin(Margin {
                 left: 12,
@@ -359,7 +359,7 @@ impl Zine {
                                 Align2::LEFT_CENTER,
                                 line,
                                 FontId::proportional(12.0),
-                                BLACK,
+                                FOREGROUND,
                             );
                         }
                     });
@@ -371,7 +371,7 @@ impl Zine {
                         ui.label(
                             egui::RichText::new("Command:")
                                 .font(FontId::proportional(12.0))
-                                .color(BLACK),
+                                .color(FOREGROUND),
                         );
                         let input = ui.add(
                             TextEdit::singleline(&mut self.command)
@@ -388,7 +388,7 @@ impl Zine {
                                     vec2(7.0, 16.0),
                                 ),
                                 0.0,
-                                Stroke::new(1.0, BLACK),
+                                Stroke::new(1.0, FOREGROUND),
                                 StrokeKind::Inside,
                             );
                         }
