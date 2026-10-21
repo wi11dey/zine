@@ -1,19 +1,14 @@
-use std::{collections::BTreeMap, sync::Arc};
+use std::{
+    collections::BTreeMap,
+    sync::{Arc, Mutex},
+};
 
 use eframe::egui::{self, Color32, ColorImage, FontData, FontDefinitions, FontFamily, vec2};
 use egui::epaint::text::{
     FontPriority, GlyphBitmap, GlyphRasterizer, GlyphRasterizerRequest, RasterizedGlyph,
 };
-use harfrust::{ShapeOptions, ShaperData, UnicodeBuffer};
-use skrifa::{
-    FontRef, GlyphId, MetadataProvider,
-    instance::{LocationRef, Size},
-    outline::{DrawSettings, HintingInstance, OutlinePen, Target},
-};
-use vello_cpu::{
-    Pixmap, RenderContext, Resources, color,
-    kurbo::{Affine, BezPath},
-};
+use freetype::{Library, RenderMode, bitmap::PixelMode, face::LoadFlag};
+use harfrust::{FontRef, ShapeOptions, ShaperData, UnicodeBuffer};
 
 pub fn install(ctx: &egui::Context) {
     let definitions = definitions();
@@ -69,6 +64,9 @@ fn definitions() -> FontDefinitions {
 struct Face {
     data: Arc<FontData>,
     shaper: ShaperData,
+    // egui's callback is Send + Sync. Keep all FreeType operations for this font,
+    // including face creation/destruction, under the same lock.
+    library: Mutex<Library>,
 }
 
 struct MonochromeFonts {
@@ -89,6 +87,7 @@ impl MonochromeFonts {
                     Face {
                         data: data.clone(),
                         shaper: ShaperData::new(&font),
+                        library: Mutex::new(Library::init().expect("initialize FreeType")),
                     },
                 )
             })
@@ -143,9 +142,6 @@ impl Face {
     fn rasterize(&self, request: &GlyphRasterizerRequest<'_>) -> Option<RasterizedGlyph> {
         let font = FontRef::from_index(self.data.bytes(), self.data.index).ok()?;
         let size_px = request.font_size_px * self.data.tweak.scale;
-        let size = Size::new(size_px);
-        let location = LocationRef::default();
-        let unit_scale = size_px / font.metrics(size, location).units_per_em as f32;
 
         let (text, advance_multiplier) = match request.cluster {
             "\t" => (" ", self.data.tweak.tab_size),
@@ -164,63 +160,116 @@ impl Face {
             return None;
         }
 
-        let outlines = font.outline_glyphs();
-        // Mono hinting grid-fits both axes before Vello rasterizes the outline.
-        let hinting = HintingInstance::new(&outlines, size, location, Target::Mono).ok()?;
-        let metrics = font.glyph_metrics(size, location);
-        let mut path = BezPath::new();
+        let library = self.library.lock().expect("FreeType lock poisoned");
+        let face = library
+            .new_memory_face2(self.data.bytes(), self.data.index as isize)
+            .ok()?;
+        // At 72 DPI, FreeType's 26.6 point size equals the requested physical pixels.
+        face.set_char_size(0, (size_px * 64.0).round() as isize, 72, 72)
+            .ok()?;
+        let unit_scale = size_px / face.em_size() as f32;
+        let mut bitmaps = Vec::new();
         let mut advance = 0.0_f32;
         for (info, position) in shaped.glyph_infos().iter().zip(shaped.glyph_positions()) {
-            let glyph_id = GlyphId::new(info.glyph_id);
-            let outline = outlines.get(glyph_id)?;
-            let mut pen = GlyphPen {
-                path: &mut path,
-                x: (advance + position.x_offset as f32 * unit_scale + request.subpixel_offset_px)
-                    .round() as f64,
-                y: (-position.y_offset as f32 * unit_scale
-                    + size_px * self.data.tweak.y_offset_factor)
-                    .round() as f64,
-            };
-            let adjusted = outline
-                .draw(DrawSettings::hinted(&hinting, false), &mut pen)
-                .ok()?;
-            // Keep shaping adjustments (e.g. a combining mark's zero advance),
-            // while using the hinter's advance for spacing ordinary glyphs.
+            // TARGET_MONO is FreeType's strongest B/W grid fitting. Native font
+            // hints take precedence; the auto-hinter is available for unhinted
+            // fonts. NO_BITMAP ensures embedded strikes cannot bypass hinting.
+            face.load_glyph(
+                info.glyph_id,
+                LoadFlag::TARGET_MONO | LoadFlag::MONOCHROME | LoadFlag::NO_BITMAP,
+            )
+            .ok()?;
+            let slot = face.glyph();
+            slot.render_glyph(RenderMode::Mono).ok()?;
+            let bitmap = slot.bitmap();
+            if bitmap.width() > 0 && bitmap.rows() > 0 {
+                if bitmap.pixel_mode().ok()? != PixelMode::Mono {
+                    return None;
+                }
+                // FreeType's outline renderer returns top-down rows. The pitch
+                // includes byte padding; each pixel is a single MSB-first bit.
+                let pitch = usize::try_from(bitmap.pitch()).ok()?;
+                bitmaps.push(GlyphBitmap {
+                    image: unpack_mono(
+                        bitmap.buffer(),
+                        bitmap.width() as usize,
+                        bitmap.rows() as usize,
+                        pitch,
+                    ),
+                    offset_px: vec2(
+                        (advance
+                            + position.x_offset as f32 * unit_scale
+                            + request.subpixel_offset_px)
+                            .round()
+                            + slot.bitmap_left() as f32,
+                        (-position.y_offset as f32 * unit_scale
+                            + size_px * self.data.tweak.y_offset_factor)
+                            .round()
+                            - slot.bitmap_top() as f32,
+                    ),
+                    is_color: false,
+                });
+            }
+            // Preserve shaping adjustments (especially zero-advance marks), but
+            // replace each advancing glyph's linear width with its hinted width.
             let mut glyph_advance = position.x_advance as f32 * unit_scale;
             if position.x_advance != 0 {
-                if let Some(hinted) = adjusted.advance_width {
-                    glyph_advance += hinted - metrics.advance_width(glyph_id).unwrap_or(0.0);
-                }
+                glyph_advance +=
+                    slot.advance().x as f32 / 64.0 - slot.linear_hori_advance() as f32 / 65536.0;
                 glyph_advance = glyph_advance.round();
             }
             advance += glyph_advance;
         }
-        let advance_px = advance * advance_multiplier;
-        let bounds = path.control_box().expand();
-        if bounds.width() <= 0.0 || bounds.height() <= 0.0 {
-            // egui rejects zero-sized bitmaps, including otherwise valid spaces.
-            return Some(blank_glyph(advance_px));
+        Some(combine_bitmaps(bitmaps, advance * advance_multiplier))
+    }
+}
+
+fn unpack_mono(buffer: &[u8], width: usize, height: usize, pitch: usize) -> ColorImage {
+    let mut image = ColorImage::filled([width, height], Color32::TRANSPARENT);
+    for y in 0..height {
+        for x in 0..width {
+            if buffer[y * pitch + x / 8] & (0x80 >> (x % 8)) != 0 {
+                image[(x, y)] = Color32::WHITE;
+            }
         }
-        let width = u16::try_from(bounds.width() as u32).ok()?;
-        let height = u16::try_from(bounds.height() as u32).ok()?;
-        let mut renderer = RenderContext::new(width, height);
-        renderer.set_transform(Affine::translate((-bounds.x0, -bounds.y0)));
-        renderer.set_paint(color::OpaqueColor::<color::Srgb>::WHITE);
-        renderer.set_aliasing_threshold(Some(128));
-        renderer.fill_path(&path);
-        let mut pixmap = Pixmap::new(width, height);
-        renderer.render(&mut pixmap, &mut Resources::new());
-        Some(RasterizedGlyph {
-            bitmap: GlyphBitmap {
-                image: ColorImage::from_rgba_premultiplied(
-                    [width as usize, height as usize],
-                    pixmap.data_as_u8_slice(),
-                ),
-                offset_px: vec2(bounds.x0 as f32, bounds.y0 as f32),
-                is_color: false,
-            },
-            advance_px,
-        })
+    }
+    image
+}
+
+fn combine_bitmaps(bitmaps: Vec<GlyphBitmap>, advance_px: f32) -> RasterizedGlyph {
+    // egui rejects zero-sized bitmaps, including otherwise valid spaces.
+    let Some(first) = bitmaps.first() else {
+        return blank_glyph(advance_px);
+    };
+    let mut min = first.offset_px;
+    let mut max = min + vec2(first.image.width() as f32, first.image.height() as f32);
+    for bitmap in &bitmaps[1..] {
+        min = min.min(bitmap.offset_px);
+        max = max.max(
+            bitmap.offset_px + vec2(bitmap.image.width() as f32, bitmap.image.height() as f32),
+        );
+    }
+    let size = max - min;
+    let mut image = ColorImage::filled([size.x as usize, size.y as usize], Color32::TRANSPARENT);
+    for bitmap in bitmaps {
+        let offset = bitmap.offset_px - min;
+        for y in 0..bitmap.image.height() {
+            for x in 0..bitmap.image.width() {
+                // Union the masks so a combining mark's transparent pixels do
+                // not erase the base glyph beneath it.
+                if bitmap.image[(x, y)] == Color32::WHITE {
+                    image[(offset.x as usize + x, offset.y as usize + y)] = Color32::WHITE;
+                }
+            }
+        }
+    }
+    RasterizedGlyph {
+        bitmap: GlyphBitmap {
+            image,
+            offset_px: min,
+            is_color: false,
+        },
+        advance_px,
     }
 }
 
@@ -235,42 +284,6 @@ fn blank_glyph(advance_px: f32) -> RasterizedGlyph {
     }
 }
 
-/// Convert the font's upward Y axis to egui's downward Y axis.
-struct GlyphPen<'a> {
-    path: &'a mut BezPath,
-    x: f64,
-    y: f64,
-}
-
-impl OutlinePen for GlyphPen<'_> {
-    fn move_to(&mut self, x: f32, y: f32) {
-        self.path.move_to((self.x + x as f64, self.y - y as f64));
-    }
-
-    fn line_to(&mut self, x: f32, y: f32) {
-        self.path.line_to((self.x + x as f64, self.y - y as f64));
-    }
-
-    fn quad_to(&mut self, cx: f32, cy: f32, x: f32, y: f32) {
-        self.path.quad_to(
-            (self.x + cx as f64, self.y - cy as f64),
-            (self.x + x as f64, self.y - y as f64),
-        );
-    }
-
-    fn curve_to(&mut self, cx0: f32, cy0: f32, cx1: f32, cy1: f32, x: f32, y: f32) {
-        self.path.curve_to(
-            (self.x + cx0 as f64, self.y - cy0 as f64),
-            (self.x + cx1 as f64, self.y - cy1 as f64),
-            (self.x + x as f64, self.y - y as f64),
-        );
-    }
-
-    fn close(&mut self) {
-        self.path.close_path();
-    }
-}
-
 struct NearestFontSampling;
 
 impl egui::Plugin for NearestFontSampling {
@@ -280,7 +293,7 @@ impl egui::Plugin for NearestFontSampling {
 
     fn output_hook(&mut self, _ctx: &egui::Context, output: &mut egui::FullOutput) {
         // Only change sampling. Glyph pixels already have binary coverage when
-        // they leave Vello; no atlas pixels are inspected or rewritten here.
+        // they leave FreeType; no atlas pixels are inspected or rewritten here.
         for (id, delta) in &mut output.textures_delta.set {
             if *id == egui::TextureId::default() {
                 for patch in delta {
@@ -317,6 +330,41 @@ mod tests {
                 .iter()
                 .all(|&pixel| pixel == Color32::TRANSPARENT || pixel == Color32::WHITE)
         );
+    }
+
+    #[test]
+    fn monochrome_bits_respect_bit_order_width_and_row_padding() {
+        // Nine pixels in four-byte rows. Padding bits and bytes must be ignored.
+        let image = unpack_mono(&[0x81, 0xff, 0xff, 0xff, 0x40, 0x7f, 0xff, 0xff], 9, 2, 4);
+        let white: Vec<_> = image
+            .pixels
+            .iter()
+            .enumerate()
+            .filter_map(|(i, &pixel)| (pixel == Color32::WHITE).then_some((i % 9, i / 9)))
+            .collect();
+        assert_eq!(white, [(0, 0), (7, 0), (8, 0), (1, 1)]);
+    }
+
+    #[test]
+    fn overlapping_glyph_masks_preserve_ink_and_negative_bearings() {
+        let glyph = combine_bitmaps(
+            vec![
+                GlyphBitmap {
+                    image: ColorImage::new([2, 1], vec![Color32::WHITE, Color32::TRANSPARENT]),
+                    offset_px: vec2(-1.0, -2.0),
+                    is_color: false,
+                },
+                GlyphBitmap {
+                    image: ColorImage::new([2, 1], vec![Color32::TRANSPARENT, Color32::WHITE]),
+                    offset_px: vec2(-1.0, -2.0),
+                    is_color: false,
+                },
+            ],
+            3.0,
+        );
+        assert_eq!(glyph.bitmap.offset_px, vec2(-1.0, -2.0));
+        assert_eq!(glyph.bitmap.image.pixels, [Color32::WHITE, Color32::WHITE]);
+        assert_eq!(glyph.advance_px, 3.0);
     }
 
     #[test]
