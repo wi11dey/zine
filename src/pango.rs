@@ -57,7 +57,6 @@ fn definitions() -> FontDefinitions {
         ),
         (
             "Orbitron Light",
-            // League of Moveable Type v1.000 preserves both X- and Y-axis hints.
             include_bytes!("../assets/fonts/Orbitron-Light.ttf").as_slice(),
         ),
     ] {
