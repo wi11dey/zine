@@ -9,7 +9,6 @@ use freetype_sys as ffi;
 use pango::{FontDescription, Layout, glib::translate::*, prelude::*};
 use tempfile::NamedTempFile;
 
-// gtk-rs exposes Pango but not PangoFT2. These functions are linked by build.rs.
 unsafe extern "C" {
     fn pango_ft2_font_map_new() -> *mut pango::ffi::PangoFontMap;
     fn pango_fc_font_map_set_config(map: *mut pango::ffi::PangoFontMap, config: *mut fc::FcConfig);

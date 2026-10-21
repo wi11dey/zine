@@ -20,6 +20,7 @@ fn main() -> eframe::Result {
             multisampling: 0,
             dithering: false,
             viewport: egui::ViewportBuilder::default()
+                .with_decorations(false)
                 .with_inner_size([1600.0, 984.0])
                 .with_min_inner_size([400.0, 300.0]),
             ..Default::default()
