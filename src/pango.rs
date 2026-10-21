@@ -47,12 +47,8 @@ fn definitions() -> FontDefinitions {
     let mut fonts = FontDefinitions::default();
     for (name, bytes) in [
         (
-            "Droid Sans",
-            include_bytes!("../assets/fonts/DroidSans.ttf").as_slice(),
-        ),
-        (
-            "Droid Sans Bold",
-            include_bytes!("../assets/fonts/DroidSans-Bold.ttf").as_slice(),
+            "ChicagoFLF",
+            include_bytes!("../assets/fonts/ChicagoFLF-XY-test.ttf").as_slice(),
         ),
         (
             "Orbitron Light",
@@ -62,7 +58,7 @@ fn definitions() -> FontDefinitions {
         fonts
             .font_data
             .insert(name.into(), FontData::from_static(bytes).into());
-        let family = if name == "Droid Sans" {
+        let family = if name == "ChicagoFLF" {
             FontFamily::Proportional
         } else {
             FontFamily::Name(name.into())
@@ -124,7 +120,7 @@ impl MonochromeFonts {
         context.set_round_glyph_positions(true);
         // Each FT2 map owns a FreeType library shared by its primary/fallback fonts.
         let font = context
-            .load_font(&FontDescription::from_string("Droid Sans 12"))
+            .load_font(&FontDescription::from_string("ChicagoFLF 12"))
             .expect("load FreeType font");
         let version: ffi::FT_UInt = 35;
         // SAFETY: Access the map's library through its locked face, then unlock
@@ -152,7 +148,7 @@ impl MonochromeFonts {
 
     fn rasterize(&self, request: &GlyphRasterizerRequest<'_>) -> RasterizedGlyph {
         let family = match request.family {
-            FontFamily::Proportional | FontFamily::Monospace => "Droid Sans",
+            FontFamily::Proportional | FontFamily::Monospace => "ChicagoFLF",
             FontFamily::Name(name) => name.as_ref(),
         };
         let mut description = FontDescription::from_string(family);

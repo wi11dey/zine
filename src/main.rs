@@ -76,7 +76,11 @@ fn paint_tab(painter: &Painter, rect: Rect, active: bool) {
         pos2(rect.right() - 10.5, rect.top() + 0.5),
         pos2(rect.right() - 0.5, rect.bottom() - 0.5),
     ];
-    painter.add(Shape::convex_polygon(corners.clone(), BACKGROUND, Stroke::NONE));
+    painter.add(Shape::convex_polygon(
+        corners.clone(),
+        BACKGROUND,
+        Stroke::NONE,
+    ));
     for edge in corners.windows(2) {
         painter.line_segment([edge[0], edge[1]], Stroke::new(1.0, FOREGROUND));
     }
@@ -184,11 +188,7 @@ impl Zine {
                         vec2(176.0, height),
                     );
                     paint_tab(ui.painter(), rect, selected);
-                    let font = if selected {
-                        FontId::new(12.0, FontFamily::Name("Droid Sans Bold".into()))
-                    } else {
-                        FontId::proportional(12.0)
-                    };
+                    let font = FontId::proportional(12.0);
                     ui.painter().text(
                         pos2(rect.center().x, rect.bottom() - 13.5),
                         Align2::CENTER_CENTER,
