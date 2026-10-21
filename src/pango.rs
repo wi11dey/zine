@@ -54,6 +54,10 @@ fn definitions() -> FontDefinitions {
             "Orbitron Light",
             include_bytes!("../assets/fonts/Orbitron-Light.ttf").as_slice(),
         ),
+        (
+            "DejaVu Sans",
+            include_bytes!("../assets/fonts/DejaVuSans.ttf").as_slice(),
+        ),
     ] {
         fonts
             .font_data

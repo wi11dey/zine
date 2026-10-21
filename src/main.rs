@@ -317,6 +317,7 @@ impl Zine {
     }
 
     fn listener(&mut self, ui: &mut Ui) {
+        let font = FontId::new(12.0, FontFamily::Name("DejaVu Sans".into()));
         let (header, _) = ui.allocate_exact_size(vec2(ui.available_width(), 22.0), Sense::hover());
         ui.painter().rect_filled(header, 0.0, FOREGROUND);
         let title = ui
@@ -324,7 +325,7 @@ impl Zine {
             .layout_job(egui::text::LayoutJob::single_section(
                 "Listener".into(),
                 egui::TextFormat {
-                    font_id: FontId::new(12.0, FontFamily::Name("Orbitron Light".into())),
+                    font_id: font.clone(),
                     color: BACKGROUND,
                     italics: true,
                     ..Default::default()
@@ -357,7 +358,7 @@ impl Zine {
                                 rect.left_center(),
                                 Align2::LEFT_CENTER,
                                 line,
-                                FontId::proportional(12.0),
+                                font.clone(),
                                 FOREGROUND,
                             );
                         }
@@ -369,13 +370,13 @@ impl Zine {
                         ui.spacing_mut().item_spacing.x = 7.0;
                         ui.label(
                             egui::RichText::new("Command:")
-                                .font(FontId::proportional(12.0))
+                                .font(font.clone())
                                 .color(FOREGROUND),
                         );
                         let input = ui.add(
                             TextEdit::singleline(&mut self.command)
                                 .id(Id::unique("command_input"))
-                                .font(FontId::proportional(12.0))
+                                .font(font.clone())
                                 .desired_width(f32::INFINITY)
                                 .margin(Vec2::ZERO)
                                 .frame(Frame::NONE),
