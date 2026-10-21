@@ -7,7 +7,7 @@ use eframe::egui::{self, Color32, ColorImage, FontData, FontDefinitions, FontFam
 use egui::epaint::text::{
     FontPriority, GlyphBitmap, GlyphRasterizer, GlyphRasterizerRequest, RasterizedGlyph,
 };
-use freetype::{Library, RenderMode, bitmap::PixelMode, face::LoadFlag};
+use freetype::{Library, RenderMode, bitmap::PixelMode, face::LoadFlag, ffi};
 use harfrust::{FontRef, ShapeOptions, ShaperData, UnicodeBuffer};
 
 pub fn install(ctx: &egui::Context) {
@@ -82,12 +82,25 @@ impl MonochromeFonts {
             .map(|(name, data)| {
                 let font =
                     FontRef::from_index(data.bytes(), data.index).expect("valid embedded font");
+                let library = Library::init().expect("initialize FreeType");
+                let interpreter_version: ffi::FT_UInt = 35;
+                // SAFETY: The library is live and exclusively owned here. FreeType
+                // reads an FT_UInt for this property during the call.
+                let error = unsafe {
+                    ffi::FT_Property_Set(
+                        library.raw(),
+                        c"truetype".as_ptr(),
+                        c"interpreter-version".as_ptr(),
+                        (&interpreter_version as *const ffi::FT_UInt).cast(),
+                    )
+                };
+                assert_eq!(error, 0, "set FreeType interpreter version to 35");
                 (
                     name.clone(),
                     Face {
                         data: data.clone(),
                         shaper: ShaperData::new(&font),
-                        library: Mutex::new(Library::init().expect("initialize FreeType")),
+                        library: Mutex::new(library),
                     },
                 )
             })
