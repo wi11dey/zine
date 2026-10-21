@@ -57,11 +57,9 @@ fn configure(ctx: &egui::Context) {
 fn paint_stipple(painter: &Painter, rect: Rect) {
     let painter = painter.with_clip_rect(rect);
     painter.rect_filled(rect, 0.0, WHITE);
-    // Staggered 1-point dots on alternate rows, matching the frame's 1-bit pattern.
-    // One mesh keeps the dots crisp (no antialiasing) and batches the draw calls.
     let mut mesh = egui::Mesh::default();
-    for y in (0..rect.height().ceil() as usize).step_by(2) {
-        let offset = (y / 2) % 2;
+    for y in 0..rect.height().ceil() as usize {
+        let offset = y % 2;
         for x in (offset..rect.width().ceil() as usize).step_by(2) {
             mesh.add_colored_rect(
                 Rect::from_min_size(rect.min + vec2(x as f32, y as f32), Vec2::splat(1.0)),
