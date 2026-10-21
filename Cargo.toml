@@ -2,9 +2,12 @@
 name = "zine"
 version = "0.1.0"
 edition = "2024"
-rust-version = "1.88"
+rust-version = "1.95"
 description = "A minimal egui shell for Zine"
 publish = false
 
 [dependencies]
-eframe = { version = "0.33.3", default-features = false, features = ["default_fonts", "glow", "wayland", "x11"] }
+eframe = { version = "0.37.0", default-features = false, features = ["clipboard", "default_fonts", "glow", "wayland", "x11"] }
+harfrust = "0.12"
+skrifa = "0.44"
+vello_cpu = { version = "0.2", default-features = false, features = ["std", "u8_pipeline"] }

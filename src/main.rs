@@ -1,7 +1,8 @@
+mod fonts;
+
 use eframe::egui::{
-    self, Align2, Color32, FontData, FontDefinitions, FontFamily, FontId, Frame, Id, Key, Margin,
-    Painter, Rect, ScrollArea, Sense, Shape, Stroke, StrokeKind, TextEdit, Ui, UiBuilder, Vec2,
-    pos2, vec2,
+    self, Align2, Color32, FontFamily, FontId, Frame, Id, Key, Margin, Painter, Rect, ScrollArea,
+    Sense, Shape, Stroke, StrokeKind, TextEdit, Ui, UiBuilder, Vec2, pos2, vec2,
 };
 use egui::scroll_area::ScrollBarVisibility;
 
@@ -18,6 +19,8 @@ fn main() -> eframe::Result {
     eframe::run_native(
         "zine",
         eframe::NativeOptions {
+            multisampling: 0,
+            dithering: false,
             viewport: egui::ViewportBuilder::default()
                 .with_inner_size([1600.0, 984.0])
                 .with_min_inner_size([400.0, 300.0]),
@@ -31,43 +34,13 @@ fn main() -> eframe::Result {
 }
 
 fn configure(ctx: &egui::Context) {
-    let mut fonts = FontDefinitions::default();
-    for (name, bytes) in [
-        (
-            "Droid Sans",
-            include_bytes!("../assets/fonts/DroidSans.ttf").as_slice(),
-        ),
-        (
-            "Droid Sans Bold",
-            include_bytes!("../assets/fonts/DroidSans-Bold.ttf").as_slice(),
-        ),
-        (
-            "Michroma",
-            include_bytes!("../assets/fonts/Michroma-Regular.ttf").as_slice(),
-        ),
-    ] {
-        fonts
-            .font_data
-            .insert(name.into(), FontData::from_static(bytes).into());
-    }
-    fonts
-        .families
-        .get_mut(&FontFamily::Proportional)
-        .unwrap()
-        .insert(0, "Droid Sans".into());
-    fonts
-        .families
-        .get_mut(&FontFamily::Proportional)
-        .unwrap()
-        .push("Hack".into());
-    for name in ["Droid Sans Bold", "Michroma"] {
-        let mut family = vec![name.into()];
-        family.extend(fonts.families[&FontFamily::Proportional].clone());
-        fonts.families.insert(FontFamily::Name(name.into()), family);
-    }
-    ctx.set_fonts(fonts);
+    ctx.tessellation_options_mut(|options| {
+        options.feathering = false;
+        options.prerasterized_discs = false;
+    });
+    fonts::install(ctx);
     ctx.set_visuals(egui::Visuals::light());
-    ctx.style_mut(|style| {
+    ctx.all_styles_mut(|style| {
         style.visuals.panel_fill = WHITE;
         style.visuals.override_text_color = Some(BLACK);
         style.visuals.text_cursor.stroke = Stroke::new(1.0, BLACK);
@@ -161,22 +134,22 @@ impl Default for Zine {
 }
 
 impl eframe::App for Zine {
-    fn update(&mut self, ctx: &egui::Context, _frame: &mut eframe::Frame) {
-        egui::TopBottomPanel::top("tabs")
-            .exact_height(TAB_HEIGHT)
+    fn ui(&mut self, ui: &mut Ui, _frame: &mut eframe::Frame) {
+        egui::Panel::top("tabs")
+            .exact_size(TAB_HEIGHT)
             .show_separator_line(false)
             .frame(Frame::NONE.fill(WHITE))
-            .show(ctx, |ui| self.tabs(ui));
+            .show(ui, |ui| self.tabs(ui));
 
-        egui::TopBottomPanel::bottom("listener")
-            .exact_height(LISTENER_HEIGHT)
+        egui::Panel::bottom("listener")
+            .exact_size(LISTENER_HEIGHT)
             .show_separator_line(false)
             .frame(Frame::NONE.fill(WHITE))
-            .show(ctx, |ui| self.listener(ui));
+            .show(ui, |ui| self.listener(ui));
 
         egui::CentralPanel::default()
             .frame(Frame::NONE.fill(WHITE))
-            .show(ctx, |ui| self.viewport(ui));
+            .show(ui, |ui| self.viewport(ui));
     }
 }
 
@@ -227,7 +200,7 @@ impl Zine {
                         BLACK,
                     );
                     if ui
-                        .interact(rect, Id::new(("tab", i)), Sense::click())
+                        .interact(rect, Id::unique(("tab", i)), Sense::click())
                         .clicked()
                     {
                         self.active = i;
@@ -253,7 +226,7 @@ impl Zine {
                     BLACK,
                 );
                 if ui
-                    .interact(add, Id::new("new_document"), Sense::click())
+                    .interact(add, Id::unique("new_document"), Sense::click())
                     .on_hover_text("New document")
                     .clicked()
                 {
@@ -289,7 +262,7 @@ impl Zine {
 
         let response = ui.interact(
             track,
-            Id::new("document_scrollbar"),
+            Id::unique("document_scrollbar"),
             Sense::click_and_drag(),
         );
         if let Some(pointer) = response.interact_pointer_pos() {
@@ -327,7 +300,7 @@ impl Zine {
                 .show(ui, |ui| {
                     ui.set_min_size(vec2(viewport.width(), DOCUMENT_HEIGHT));
                 });
-            document.scroll = output.state.offset.y;
+            document.scroll = output.state.clamped_offset().y;
         });
 
         paint_stipple(ui.painter(), track);
@@ -397,11 +370,11 @@ impl Zine {
                         );
                         let input = ui.add(
                             TextEdit::singleline(&mut self.command)
-                                .id(Id::new("command_input"))
+                                .id(Id::unique("command_input"))
                                 .font(FontId::proportional(12.0))
                                 .desired_width(f32::INFINITY)
                                 .margin(Vec2::ZERO)
-                                .frame(false),
+                                .frame(Frame::NONE),
                         );
                         if self.command.is_empty() && !input.has_focus() {
                             ui.painter().rect_stroke(
