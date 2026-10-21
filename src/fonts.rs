@@ -1,22 +1,45 @@
-use std::{
-    collections::BTreeMap,
-    sync::{Arc, Mutex},
-};
+use std::{io::Write, ptr};
 
 use eframe::egui::{self, Color32, ColorImage, FontData, FontDefinitions, FontFamily, vec2};
 use egui::epaint::text::{
     FontPriority, GlyphBitmap, GlyphRasterizer, GlyphRasterizerRequest, RasterizedGlyph,
 };
-use freetype::{Library, RenderMode, bitmap::PixelMode, face::LoadFlag, ffi};
-use harfrust::{FontRef, ShapeOptions, ShaperData, UnicodeBuffer};
+use fontconfig_sys as fc;
+use freetype_sys as ffi;
+use pango::{FontDescription, Layout, glib::translate::*, prelude::*};
+use tempfile::NamedTempFile;
+
+// gtk-rs exposes Pango but not PangoFT2. These functions are linked by build.rs.
+unsafe extern "C" {
+    fn pango_ft2_font_map_new() -> *mut pango::ffi::PangoFontMap;
+    fn pango_fc_font_map_set_config(map: *mut pango::ffi::PangoFontMap, config: *mut fc::FcConfig);
+    fn FcConfigParseAndLoadFromMemory(
+        config: *mut fc::FcConfig,
+        xml: *const u8,
+        complain: fc::FcBool,
+    ) -> fc::FcBool;
+    fn pango_fc_font_lock_face(font: *mut pango::ffi::PangoFont) -> ffi::FT_Face;
+    fn pango_fc_font_unlock_face(font: *mut pango::ffi::PangoFont);
+    #[cfg(test)]
+    fn pango_fc_font_get_pattern(font: *mut pango::ffi::PangoFont) -> *mut fc::FcPattern;
+    fn pango_ft2_render_layout(
+        bitmap: *mut ffi::FT_Bitmap,
+        layout: *mut pango::ffi::PangoLayout,
+        x: i32,
+        y: i32,
+    );
+}
+
+thread_local! {
+    // Pango objects stay on their creating thread; egui's callback is Send + Sync.
+    static FONTS: MonochromeFonts = MonochromeFonts::new();
+}
 
 pub fn install(ctx: &egui::Context) {
-    let definitions = definitions();
-    let rasterizer = MonochromeFonts::new(&definitions);
-    ctx.set_fonts(definitions);
+    ctx.set_fonts(definitions());
     ctx.add_glyph_rasterizer(
-        GlyphRasterizer::new("zine::monochrome", move |request| {
-            Some(rasterizer.rasterize(request))
+        GlyphRasterizer::new("zine::monochrome", |request| {
+            Some(FONTS.with(|fonts| fonts.rasterize(request)))
         })
         .with_priority(FontPriority::Highest),
     );
@@ -42,258 +65,149 @@ fn definitions() -> FontDefinitions {
         fonts
             .font_data
             .insert(name.into(), FontData::from_static(bytes).into());
+        let family = if name == "Droid Sans" {
+            FontFamily::Proportional
+        } else {
+            FontFamily::Name(name.into())
+        };
+        // egui uses the primary font for line metrics; Pango selects fallbacks.
+        fonts.families.insert(family, vec![name.into()]);
     }
     fonts
-        .families
-        .get_mut(&FontFamily::Proportional)
-        .unwrap()
-        .insert(0, "Droid Sans".into());
-    fonts
-        .families
-        .get_mut(&FontFamily::Proportional)
-        .unwrap()
-        .push("Hack".into());
-    for name in ["Droid Sans Bold", "Michroma"] {
-        let mut family = vec![name.into()];
-        family.extend(fonts.families[&FontFamily::Proportional].clone());
-        fonts.families.insert(FontFamily::Name(name.into()), family);
-    }
-    fonts
-}
-
-struct Face {
-    data: Arc<FontData>,
-    shaper: ShaperData,
-    // egui's callback is Send + Sync. Keep all FreeType operations for this font,
-    // including face creation/destruction, under the same lock.
-    library: Mutex<Library>,
 }
 
 struct MonochromeFonts {
-    faces: BTreeMap<String, Face>,
-    families: BTreeMap<FontFamily, Vec<String>>,
+    context: pango::Context,
+    // Pango loads fonts from files. Keep the embedded font files alive with the map.
+    _files: Vec<NamedTempFile>,
 }
 
 impl MonochromeFonts {
-    fn new(definitions: &FontDefinitions) -> Self {
-        let faces = definitions
+    fn new() -> Self {
+        // Keep font discovery, but override rendering rules in a private config.
+        // A target="font" rule must run after matching; request options can be
+        // overridden by user rules (including a global hintnone setting).
+        // SAFETY: The config/map are newly owned. Pango retains the config, and
+        // from_glib_full takes ownership of the map. Nothing crosses threads.
+        let map: pango::FontMap = unsafe {
+            let config = fc::FcInitLoadConfigAndFonts();
+            assert!(!config.is_null(), "load Fontconfig configuration");
+            let configured = FcConfigParseAndLoadFromMemory(
+                config,
+                cr#"
+                <fontconfig><match target="font">
+                  <edit name="antialias" mode="assign"><bool>false</bool></edit>
+                  <edit name="hinting" mode="assign"><bool>true</bool></edit>
+                  <edit name="hintstyle" mode="assign"><const>hintfull</const></edit>
+                  <edit name="autohint" mode="assign"><bool>false</bool></edit>
+                </match></fontconfig>
+            "#
+                .as_ptr()
+                .cast(),
+                1,
+            );
+            assert_ne!(configured, 0, "configure mono hinting and rendering");
+            let map = pango_ft2_font_map_new();
+            pango_fc_font_map_set_config(map, config);
+            fc::FcConfigDestroy(config);
+            from_glib_full(map)
+        };
+        let files = definitions()
             .font_data
-            .iter()
-            .map(|(name, data)| {
-                let font =
-                    FontRef::from_index(data.bytes(), data.index).expect("valid embedded font");
-                let library = Library::init().expect("initialize FreeType");
-                let interpreter_version: ffi::FT_UInt = 35;
-                // SAFETY: The library is live and exclusively owned here. FreeType
-                // reads an FT_UInt for this property during the call.
-                let error = unsafe {
-                    ffi::FT_Property_Set(
-                        library.raw(),
-                        c"truetype".as_ptr(),
-                        c"interpreter-version".as_ptr(),
-                        (&interpreter_version as *const ffi::FT_UInt).cast(),
-                    )
-                };
-                assert_eq!(error, 0, "set FreeType interpreter version to 35");
-                (
-                    name.clone(),
-                    Face {
-                        data: data.clone(),
-                        shaper: ShaperData::new(&font),
-                        library: Mutex::new(library),
-                    },
-                )
+            .values()
+            .map(|data| {
+                let mut file = NamedTempFile::new().expect("create embedded font file");
+                file.write_all(data.bytes()).expect("write embedded font");
+                map.add_font_file(file.path())
+                    .expect("register embedded font with Pango");
+                file
             })
             .collect();
+        let context = map.create_context();
+        context.set_round_glyph_positions(true);
+        // Each FT2 map owns a FreeType library shared by its primary/fallback fonts.
+        let font = context
+            .load_font(&FontDescription::from_string("Droid Sans 12"))
+            .expect("load FreeType font");
+        let version: ffi::FT_UInt = 35;
+        // SAFETY: Access the map's library through its locked face, then unlock
+        // before checking the result. Configure it before shaping any layout.
+        let error = unsafe {
+            let face = pango_fc_font_lock_face(font.to_glib_none().0);
+            assert!(!face.is_null(), "lock Pango FreeType face");
+            let error = ffi::FT_Property_Set(
+                (*(*face).glyph).library,
+                c"truetype".as_ptr(),
+                c"interpreter-version".as_ptr(),
+                (&version as *const ffi::FT_UInt).cast(),
+            );
+            pango_fc_font_unlock_face(font.to_glib_none().0);
+            error
+        };
+        assert_eq!(error, 0, "set FreeType interpreter version to 35");
         Self {
-            faces,
-            families: definitions.families.clone(),
+            context,
+            _files: files,
         }
+    }
+
+    fn layout(&self, request: &GlyphRasterizerRequest<'_>, text: &str) -> Layout {
+        let family = match request.family {
+            FontFamily::Proportional => "Droid Sans",
+            FontFamily::Monospace => "Hack",
+            FontFamily::Name(name) => name.as_ref(),
+        };
+        let mut description = FontDescription::from_string(family);
+        description.set_absolute_size(request.font_size_px as f64 * pango::SCALE as f64);
+        let layout = Layout::new(&self.context);
+        layout.set_font_description(Some(&description));
+        layout.set_single_paragraph_mode(true);
+        layout.set_text(text);
+        layout
     }
 
     fn rasterize(&self, request: &GlyphRasterizerRequest<'_>) -> RasterizedGlyph {
-        let family = self
-            .families
-            .get(request.family)
-            .unwrap_or(&self.families[&FontFamily::Proportional]);
-        for name in family {
-            if let Some(glyph) = self.faces[name].rasterize(request) {
-                return glyph;
-            }
-        }
-        // Missing characters must also stay monochrome instead of falling through
-        // to egui's antialiased rasterizer. Use the family's replacement glyph.
-        if request.cluster != "\u{fffd}" {
-            return self.rasterize(&GlyphRasterizerRequest {
-                cluster: "\u{fffd}",
-                ..*request
-            });
-        }
-        // Some fallback families have no U+FFFD. Draw a small missing-glyph box.
-        let width = (request.font_size_px * 0.5).round().max(3.0) as usize;
-        let height = (request.font_size_px * 0.7).round().max(3.0) as usize;
-        let mut image = ColorImage::filled([width, height], Color32::TRANSPARENT);
-        for y in 0..height {
-            for x in 0..width {
-                if x == 0 || y == 0 || x == width - 1 || y == height - 1 {
-                    image[(x, y)] = Color32::WHITE;
-                }
-            }
-        }
-        RasterizedGlyph {
-            bitmap: GlyphBitmap {
-                image,
-                offset_px: vec2(1.0, -(height as f32)),
-                is_color: false,
-            },
-            advance_px: width as f32 + 2.0,
-        }
-    }
-}
-
-impl Face {
-    fn rasterize(&self, request: &GlyphRasterizerRequest<'_>) -> Option<RasterizedGlyph> {
-        let font = FontRef::from_index(self.data.bytes(), self.data.index).ok()?;
-        let size_px = request.font_size_px * self.data.tweak.scale;
-
-        let (text, advance_multiplier) = match request.cluster {
-            "\t" => (" ", self.data.tweak.tab_size),
-            "\u{2009}" | "\u{202f}" => (" ", self.data.tweak.thin_space_width),
+        let (text, multiplier) = match request.cluster {
+            "\t" => (" ", 4.0),
+            "\u{2009}" | "\u{202f}" => (" ", 0.5),
             text => (text, 1.0),
         };
-        let mut buffer = UnicodeBuffer::new();
-        buffer.push_str(text);
-        buffer.guess_segment_properties();
-        let shaped = self
-            .shaper
-            .shaper(&font)
-            .build()
-            .shape(buffer, ShapeOptions::default());
-        if shaped.glyph_infos().iter().any(|glyph| glyph.glyph_id == 0) {
-            return None;
+        let layout = self.layout(request, text);
+        let (ink, _) = layout.pixel_extents();
+        let (width, height) = (ink.width().max(1), ink.height().max(1));
+        let mut coverage = vec![0u8; width as usize * height as usize];
+        // PangoFT2 composites mono glyphs into an 8-bit destination, expanding
+        // each bit to 0/255. It also positions and combines all glyphs in the layout.
+        let mut bitmap = ffi::FT_Bitmap {
+            rows: height,
+            width,
+            pitch: width,
+            buffer: coverage.as_mut_ptr(),
+            num_grays: 256,
+            pixel_mode: ffi::FT_PIXEL_MODE_GRAY as _,
+            palette_mode: 0,
+            palette: ptr::null_mut(),
+        };
+        // SAFETY: The bitmap describes the live, writable coverage buffer, and
+        // Pango only borrows it and the layout during this call.
+        unsafe {
+            pango_ft2_render_layout(&mut bitmap, layout.to_glib_none().0, -ink.x(), -ink.y());
         }
-
-        let library = self.library.lock().expect("FreeType lock poisoned");
-        let face = library
-            .new_memory_face2(self.data.bytes(), self.data.index as isize)
-            .ok()?;
-        // At 72 DPI, FreeType's 26.6 point size equals the requested physical pixels.
-        face.set_char_size(0, (size_px * 64.0).round() as isize, 72, 72)
-            .ok()?;
-        let unit_scale = size_px / face.em_size() as f32;
-        let mut bitmaps = Vec::new();
-        let mut advance = 0.0_f32;
-        for (info, position) in shaped.glyph_infos().iter().zip(shaped.glyph_positions()) {
-            // TARGET_MONO is FreeType's strongest B/W grid fitting. Native font
-            // hints take precedence; the auto-hinter is available for unhinted
-            // fonts. NO_BITMAP ensures embedded strikes cannot bypass hinting.
-            face.load_glyph(
-                info.glyph_id,
-                LoadFlag::TARGET_MONO | LoadFlag::MONOCHROME | LoadFlag::NO_BITMAP,
-            )
-            .ok()?;
-            let slot = face.glyph();
-            slot.render_glyph(RenderMode::Mono).ok()?;
-            let bitmap = slot.bitmap();
-            if bitmap.width() > 0 && bitmap.rows() > 0 {
-                if bitmap.pixel_mode().ok()? != PixelMode::Mono {
-                    return None;
-                }
-                // FreeType's outline renderer returns top-down rows. The pitch
-                // includes byte padding; each pixel is a single MSB-first bit.
-                let pitch = usize::try_from(bitmap.pitch()).ok()?;
-                bitmaps.push(GlyphBitmap {
-                    image: unpack_mono(
-                        bitmap.buffer(),
-                        bitmap.width() as usize,
-                        bitmap.rows() as usize,
-                        pitch,
-                    ),
-                    offset_px: vec2(
-                        (advance
-                            + position.x_offset as f32 * unit_scale
-                            + request.subpixel_offset_px)
-                            .round()
-                            + slot.bitmap_left() as f32,
-                        (-position.y_offset as f32 * unit_scale
-                            + size_px * self.data.tweak.y_offset_factor)
-                            .round()
-                            - slot.bitmap_top() as f32,
-                    ),
-                    is_color: false,
-                });
-            }
-            // Preserve shaping adjustments (especially zero-advance marks), but
-            // replace each advancing glyph's linear width with its hinted width.
-            let mut glyph_advance = position.x_advance as f32 * unit_scale;
-            if position.x_advance != 0 {
-                glyph_advance +=
-                    slot.advance().x as f32 / 64.0 - slot.linear_hori_advance() as f32 / 65536.0;
-                glyph_advance = glyph_advance.round();
-            }
-            advance += glyph_advance;
+        let pixels = coverage
+            .into_iter()
+            .map(Color32::from_white_alpha)
+            .collect();
+        RasterizedGlyph {
+            bitmap: GlyphBitmap {
+                image: ColorImage::new([width as usize, height as usize], pixels),
+                offset_px: vec2(
+                    ink.x() as f32 + request.subpixel_offset_px.round(),
+                    ink.y() as f32 - layout.baseline() as f32 / pango::SCALE as f32,
+                ),
+                is_color: false,
+            },
+            advance_px: layout.size().0 as f32 / pango::SCALE as f32 * multiplier,
         }
-        Some(combine_bitmaps(bitmaps, advance * advance_multiplier))
-    }
-}
-
-fn unpack_mono(buffer: &[u8], width: usize, height: usize, pitch: usize) -> ColorImage {
-    let mut image = ColorImage::filled([width, height], Color32::TRANSPARENT);
-    for y in 0..height {
-        for x in 0..width {
-            if buffer[y * pitch + x / 8] & (0x80 >> (x % 8)) != 0 {
-                image[(x, y)] = Color32::WHITE;
-            }
-        }
-    }
-    image
-}
-
-fn combine_bitmaps(bitmaps: Vec<GlyphBitmap>, advance_px: f32) -> RasterizedGlyph {
-    // egui rejects zero-sized bitmaps, including otherwise valid spaces.
-    let Some(first) = bitmaps.first() else {
-        return blank_glyph(advance_px);
-    };
-    let mut min = first.offset_px;
-    let mut max = min + vec2(first.image.width() as f32, first.image.height() as f32);
-    for bitmap in &bitmaps[1..] {
-        min = min.min(bitmap.offset_px);
-        max = max.max(
-            bitmap.offset_px + vec2(bitmap.image.width() as f32, bitmap.image.height() as f32),
-        );
-    }
-    let size = max - min;
-    let mut image = ColorImage::filled([size.x as usize, size.y as usize], Color32::TRANSPARENT);
-    for bitmap in bitmaps {
-        let offset = bitmap.offset_px - min;
-        for y in 0..bitmap.image.height() {
-            for x in 0..bitmap.image.width() {
-                // Union the masks so a combining mark's transparent pixels do
-                // not erase the base glyph beneath it.
-                if bitmap.image[(x, y)] == Color32::WHITE {
-                    image[(offset.x as usize + x, offset.y as usize + y)] = Color32::WHITE;
-                }
-            }
-        }
-    }
-    RasterizedGlyph {
-        bitmap: GlyphBitmap {
-            image,
-            offset_px: min,
-            is_color: false,
-        },
-        advance_px,
-    }
-}
-
-fn blank_glyph(advance_px: f32) -> RasterizedGlyph {
-    RasterizedGlyph {
-        bitmap: GlyphBitmap {
-            image: ColorImage::filled([1, 1], Color32::TRANSPARENT),
-            offset_px: egui::Vec2::ZERO,
-            is_color: false,
-        },
-        advance_px,
     }
 }
 
@@ -306,7 +220,7 @@ impl egui::Plugin for NearestFontSampling {
 
     fn output_hook(&mut self, _ctx: &egui::Context, output: &mut egui::FullOutput) {
         // Only change sampling. Glyph pixels already have binary coverage when
-        // they leave FreeType; no atlas pixels are inspected or rewritten here.
+        // they leave the rasterizer; no atlas pixels are inspected or rewritten here.
         for (id, delta) in &mut output.textures_delta.set {
             if *id == egui::TextureId::default() {
                 for patch in delta {
@@ -320,6 +234,7 @@ impl egui::Plugin for NearestFontSampling {
 #[cfg(test)]
 mod tests {
     use super::*;
+    use fc::constants::*;
 
     fn request<'a>(
         cluster: &'a str,
@@ -346,44 +261,9 @@ mod tests {
     }
 
     #[test]
-    fn monochrome_bits_respect_bit_order_width_and_row_padding() {
-        // Nine pixels in four-byte rows. Padding bits and bytes must be ignored.
-        let image = unpack_mono(&[0x81, 0xff, 0xff, 0xff, 0x40, 0x7f, 0xff, 0xff], 9, 2, 4);
-        let white: Vec<_> = image
-            .pixels
-            .iter()
-            .enumerate()
-            .filter_map(|(i, &pixel)| (pixel == Color32::WHITE).then_some((i % 9, i / 9)))
-            .collect();
-        assert_eq!(white, [(0, 0), (7, 0), (8, 0), (1, 1)]);
-    }
-
-    #[test]
-    fn overlapping_glyph_masks_preserve_ink_and_negative_bearings() {
-        let glyph = combine_bitmaps(
-            vec![
-                GlyphBitmap {
-                    image: ColorImage::new([2, 1], vec![Color32::WHITE, Color32::TRANSPARENT]),
-                    offset_px: vec2(-1.0, -2.0),
-                    is_color: false,
-                },
-                GlyphBitmap {
-                    image: ColorImage::new([2, 1], vec![Color32::TRANSPARENT, Color32::WHITE]),
-                    offset_px: vec2(-1.0, -2.0),
-                    is_color: false,
-                },
-            ],
-            3.0,
-        );
-        assert_eq!(glyph.bitmap.offset_px, vec2(-1.0, -2.0));
-        assert_eq!(glyph.bitmap.image.pixels, [Color32::WHITE, Color32::WHITE]);
-        assert_eq!(glyph.advance_px, 3.0);
-    }
-
-    #[test]
     fn all_families_render_binary_at_multiple_pixel_sizes() {
-        let fonts = MonochromeFonts::new(&definitions());
-        for family in fonts.families.keys() {
+        let fonts = MonochromeFonts::new();
+        for family in definitions().families.keys() {
             for size in [10.0, 12.0, 15.0, 17.5, 20.0, 24.0] {
                 for cluster in ["A", "g", "@", "→", "é", "x\u{301}", "\u{10ffff}"] {
                     let glyph = fonts.rasterize(&request(cluster, family, size));
@@ -400,7 +280,7 @@ mod tests {
 
     #[test]
     fn spaces_are_invisible_and_keep_their_advances() {
-        let fonts = MonochromeFonts::new(&definitions());
+        let fonts = MonochromeFonts::new();
         let family = FontFamily::Proportional;
         let space = fonts.rasterize(&request(" ", &family, 24.0));
         assert!(space.advance_px > 0.0);
@@ -426,7 +306,7 @@ mod tests {
 
     #[test]
     fn combining_marks_are_shaped_with_the_base_glyph() {
-        let fonts = MonochromeFonts::new(&definitions());
+        let fonts = MonochromeFonts::new();
         let family = FontFamily::Proportional;
         let composed = fonts.rasterize(&request("é", &family, 24.0));
         let decomposed = fonts.rasterize(&request("e\u{301}", &family, 24.0));
@@ -440,17 +320,82 @@ mod tests {
 
     #[test]
     fn listener_arrow_uses_a_real_fallback_glyph() {
-        let fonts = MonochromeFonts::new(&definitions());
+        let fonts = MonochromeFonts::new();
         let family = FontFamily::Proportional;
         let arrow_request = request("→", &family, 24.0);
-        assert!(
-            fonts.faces["Droid Sans"]
-                .rasterize(&arrow_request)
-                .is_none()
-        );
+        assert_eq!(fonts.layout(&arrow_request, "→").unknown_glyphs_count(), 0);
         let arrow = fonts.rasterize(&arrow_request);
         let replacement = fonts.rasterize(&request("\u{fffd}", &family, 24.0));
         assert_ne!(arrow.bitmap.image, replacement.bitmap.image);
         assert_binary(&arrow);
+    }
+
+    #[test]
+    fn primary_and_fallback_fonts_use_freetype_v35_and_mono_options() {
+        let fonts = MonochromeFonts::new();
+        for (family, text, expected) in [
+            (
+                FontFamily::Proportional,
+                "A",
+                Some(("Droid Sans", pango::Weight::Normal)),
+            ),
+            (
+                FontFamily::Name("Droid Sans Bold".into()),
+                "A",
+                Some(("Droid Sans", pango::Weight::Bold)),
+            ),
+            (
+                FontFamily::Name("Michroma".into()),
+                "A",
+                Some(("Michroma", pango::Weight::Normal)),
+            ),
+            (FontFamily::Proportional, "→", None),
+        ] {
+            let layout = fonts.layout(&request(text, &family, 24.0), text);
+            let font = layout.line_readonly(0).unwrap().runs()[0]
+                .item()
+                .analysis()
+                .font();
+            if let Some((family, weight)) = expected {
+                assert_eq!(font.describe().family().as_deref(), Some(family));
+                assert_eq!(font.describe().weight(), weight);
+            } else {
+                assert_ne!(font.describe().family().as_deref(), Some("Droid Sans"));
+            }
+            // SAFETY: This font comes from our FT2 map and owns the pattern.
+            unsafe {
+                let pattern = pango_fc_font_get_pattern(font.to_glib_none().0);
+                for (key, expected) in [(FC_ANTIALIAS, 0), (FC_HINTING, 1), (FC_AUTOHINT, 0)] {
+                    let mut actual = -1;
+                    assert_eq!(
+                        fc::FcPatternGetBool(pattern, key.as_ptr(), 0, &mut actual),
+                        fc::FcResultMatch
+                    );
+                    assert_eq!(actual, expected);
+                }
+                let mut hint_style = -1;
+                assert_eq!(
+                    fc::FcPatternGetInteger(pattern, FC_HINT_STYLE.as_ptr(), 0, &mut hint_style),
+                    fc::FcResultMatch
+                );
+                assert_eq!(hint_style, FC_HINT_FULL);
+            }
+            let mut version: ffi::FT_UInt = 0;
+            // SAFETY: Query the actual rendering library while its face is locked.
+            let error = unsafe {
+                let face = pango_fc_font_lock_face(font.to_glib_none().0);
+                assert!(!face.is_null());
+                let error = ffi::FT_Property_Get(
+                    (*(*face).glyph).library,
+                    c"truetype".as_ptr(),
+                    c"interpreter-version".as_ptr(),
+                    (&mut version as *mut ffi::FT_UInt).cast(),
+                );
+                pango_fc_font_unlock_face(font.to_glib_none().0);
+                error
+            };
+            assert_eq!(error, 0);
+            assert_eq!(version, 35);
+        }
     }
 }

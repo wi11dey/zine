@@ -8,5 +8,10 @@ publish = false
 
 [dependencies]
 eframe = { version = "0.37.0", default-features = false, features = ["clipboard", "default_fonts", "glow", "wayland", "x11"] }
-freetype-rs = { version = "0.38", features = ["bundled"] }
-harfrust = "0.12"
+freetype-sys = "0.23"
+pango = { version = "0.21", features = ["v1_56"] }
+tempfile = "3"
+yeslogic-fontconfig-sys = "6.0"
+
+[build-dependencies]
+pkg-config = "0.3"
