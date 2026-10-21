@@ -11,8 +11,6 @@ const BACKGROUND: Color32 = Color32::WHITE;
 const TAB_HEIGHT: f32 = 36.0;
 const LISTENER_HEIGHT: f32 = 132.0;
 const SCROLLBAR_WIDTH: f32 = 9.0;
-// An empty document still has scrollable extent; at the design's 816 px viewport
-// height this gives the original 208 px scroll thumb.
 const DOCUMENT_HEIGHT: f32 = 3200.0;
 
 fn main() -> eframe::Result {
