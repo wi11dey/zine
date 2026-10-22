@@ -11,7 +11,6 @@ const BACKGROUND: Color32 = Color32::WHITE;
 const TAB_HEIGHT: f32 = 36.0;
 const LISTENER_HEIGHT: f32 = 132.0;
 const SCROLLBAR_WIDTH: f32 = 9.0;
-const DOCUMENT_HEIGHT: f32 = 3200.0;
 
 fn main() -> eframe::Result {
     eframe::run_native(
@@ -101,7 +100,9 @@ fn paint_tab(painter: &Painter, rect: Rect, active: bool) {
 
 struct Document {
     name: String,
+    text: String,
     scroll: f32,
+    height: f32,
 }
 
 struct Zine {
@@ -119,7 +120,9 @@ impl Default for Zine {
                 .into_iter()
                 .map(|name| Document {
                     name: name.into(),
+                    text: String::new(),
                     scroll: 0.0,
+                    height: 0.0,
                 })
                 .collect(),
             active: 0,
@@ -229,7 +232,9 @@ impl Zine {
                 {
                     self.documents.push(Document {
                         name: format!("untitled-{}.typ", self.documents.len() - 1),
+                        text: String::new(),
                         scroll: 0.0,
+                        height: 0.0,
                     });
                     self.active = self.documents.len() - 1;
                     ui.scroll_to_rect(
@@ -245,9 +250,10 @@ impl Zine {
         let track = Rect::from_min_size(bounds.min, vec2(SCROLLBAR_WIDTH, bounds.height()));
         let viewport = Rect::from_min_max(pos2(track.right(), bounds.top()), bounds.max);
         let document = &mut self.documents[self.active];
-        let max_scroll = (DOCUMENT_HEIGHT - viewport.height()).max(0.0);
+        let document_height = document.height.max(viewport.height()).max(1.0);
+        let max_scroll = (document_height - viewport.height()).max(0.0);
         document.scroll = document.scroll.clamp(0.0, max_scroll);
-        let thumb_height = (track.height() * viewport.height() / DOCUMENT_HEIGHT)
+        let thumb_height = (track.height() * viewport.height() / document_height)
             .clamp(24.0_f32.min(track.height()), track.height());
         let travel = track.height() - thumb_height;
         let thumb_top = track.top()
@@ -295,11 +301,22 @@ impl Zine {
                 .vertical_scroll_offset(document.scroll)
                 .auto_shrink([false, false])
                 .show(ui, |ui| {
-                    ui.set_min_size(vec2(viewport.width(), DOCUMENT_HEIGHT));
+                    ui.add(
+                        TextEdit::multiline(&mut document.text)
+                            .id(Id::unique(("document_text", self.active)))
+                            .desired_width(f32::INFINITY)
+                            .min_size(viewport.size())
+                            .frame(Frame::NONE),
+                    );
                 });
             document.scroll = output.state.clamped_offset().y;
+            document.height = output.content_size.y;
         });
 
+        let max_scroll = (document.height - viewport.height()).max(0.0);
+        let thumb_height = (track.height() * viewport.height() / document.height.max(1.0))
+            .clamp(24.0_f32.min(track.height()), track.height());
+        let travel = track.height() - thumb_height;
         paint_stipple(ui.painter(), track);
         ui.painter()
             .rect_stroke(track, 0.0, Stroke::new(1.0, FOREGROUND), StrokeKind::Inside);
