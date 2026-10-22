@@ -1,5 +1,5 @@
-mod fonts;
 mod convert;
+mod fonts;
 
 use eframe::egui::{
     self, Align2, Color32, FontFamily, FontId, Frame, Id, Key, Margin, Painter, Rect, ScrollArea,
