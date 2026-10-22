@@ -317,7 +317,7 @@ impl Zine {
     }
 
     fn listener(&mut self, ui: &mut Ui) {
-        let font = FontId::new(12.0, FontFamily::Name("DejaVu Sans".into()));
+        let font = FontId::proportional(12.0);
         let (header, _) = ui.allocate_exact_size(vec2(ui.available_width(), 22.0), Sense::hover());
         ui.painter().rect_filled(header, 0.0, FOREGROUND);
         let title = ui
