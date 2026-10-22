@@ -1,5 +1,6 @@
-mod convert;
+mod display_list;
 mod fonts;
+mod haskell;
 
 use eframe::egui::{
     self, Align2, Color32, FontFamily, FontId, Frame, Id, Key, Margin, Painter, Rect, ScrollArea,
