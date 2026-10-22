@@ -1,4 +1,4 @@
-mod pango;
+mod fonts;
 
 use eframe::egui::{
     self, Align2, Color32, FontFamily, FontId, Frame, Id, Key, Margin, Painter, Rect, ScrollArea,
@@ -36,7 +36,7 @@ fn configure(ctx: &egui::Context) {
         options.feathering = false;
         options.prerasterized_discs = false;
     });
-    pango::install(ctx);
+    fonts::install(ctx);
     ctx.set_visuals(egui::Visuals::light());
     ctx.all_styles_mut(|style| {
         style.visuals.panel_fill = BACKGROUND;
