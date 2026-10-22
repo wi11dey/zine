@@ -2,10 +2,11 @@ name: zine-math
 version: 1.0.0
 dependencies:
   - base
-  - ghc
-  - symtegration
-  - kan-extensions
   - constrained-categories
+  - ghc
+  - kan-extensions
+  - numeric-prelude
+  - symtegration
 library:
   source-dirs: haskell
   default-extensions:

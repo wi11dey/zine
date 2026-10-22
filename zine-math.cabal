@@ -9,6 +9,8 @@ version:        1.0.0
 build-type:     Simple
 
 library
+  exposed-modules:
+      Zine.Script
   other-modules:
       Paths_zine_math
   hs-source-dirs:
@@ -20,5 +22,6 @@ library
     , constrained-categories
     , ghc
     , kan-extensions
+    , numeric-prelude
     , symtegration
   default-language: Haskell2010
