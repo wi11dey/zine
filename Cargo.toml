@@ -12,6 +12,7 @@ freetype-sys = "0.23"
 pango = { version = "0.21", features = ["v1_56"] }
 ropey = "1.6.1"
 tempfile = "3"
+tinyfiledialogs = "3.9.1"
 typst = "0.15.1"
 webrender = "0.70.0"
 yeslogic-fontconfig-sys = "6.0"
