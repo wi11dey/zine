@@ -5,6 +5,10 @@ fn main() {
         .probe("pangoft2")
         .expect("PangoFT2 1.56 or newer is required");
 
+    println!("cargo::rerun-if-changed=haskell");
+    println!("cargo::rerun-if-changed=package.yaml");
+    println!("cargo::rerun-if-changed=stack.yaml");
+    println!("cargo::rerun-if-changed=stack.yaml.lock");
     let status = std::process::Command::new("stack")
         .arg("build")
         .status()

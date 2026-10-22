@@ -6,6 +6,7 @@ dependencies:
   - ghc
   - kan-extensions
   - numeric-prelude
+  - pandoc
   - symtegration
 library:
   source-dirs: haskell
