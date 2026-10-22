@@ -10,7 +10,7 @@ build-type:     Simple
 
 library
   exposed-modules:
-      Zine.Script
+      Zine.Prelude
   other-modules:
       Paths_zine_math
   hs-source-dirs:
