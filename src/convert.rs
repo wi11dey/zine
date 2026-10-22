@@ -8,6 +8,6 @@ pub fn to_displayitem((location, frame_item): (Point, FrameItem)) -> DisplayItem
         FrameItem::Shape(_, _) => todo!(),
         FrameItem::Image(_, _, _) => todo!(),
         FrameItem::Link(_, _) => todo!(),
-        FrameItem::Tag(_) => todo!()
+        FrameItem::Tag(_) => todo!(),
     }
 }
