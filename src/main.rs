@@ -325,7 +325,7 @@ impl Zine {
             .layout_job(egui::text::LayoutJob::single_section(
                 "Listener".into(),
                 egui::TextFormat {
-                    font_id: font.clone(),
+                    font_id: FontId::new(12.0, FontFamily::Name("Orbitron Light".into())),
                     color: BACKGROUND,
                     italics: true,
                     ..Default::default()
