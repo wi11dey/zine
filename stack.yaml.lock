@@ -5,30 +5,12 @@
 
 packages:
 - completed:
-    hackage: hs-conllu-0.1.5@sha256:29f53236e1e9d1020a7690747f49695fa5dda4b7a06236447633757b789a1661,2789
+    hackage: symtegration-0.6.1@sha256:81ef5c895935f20f08e939a7f0d08ee86dff599793d1026eb1e79f8872348bac,4918
     pantry-tree:
-      sha256: d0ebd9d083c6fe92c1c62c8e2b334dba89e7711e395b8abc9dc9238141633551
-      size: 784
+      sha256: 184b919982a40436ec9ecee2c5bd7321fbfeb04d5502be436b6e20843c61de0a
+      size: 5060
   original:
-    hackage: hs-conllu-0.1.5@sha256:29f53236e1e9d1020a7690747f49695fa5dda4b7a06236447633757b789a1661,2789
-- completed:
-    hackage: nanopass-0.0.3.2@sha256:dd298ed91b4ea885d4f6d6b1f6948781df4b358f1007bce8aedfe492acb55232,2014
-    pantry-tree:
-      sha256: 65e3e5a09f1d6abfb0b28aab48f15fb6339d7dafa70763e8ff27c48e441e9775
-      size: 1025
-  original:
-    hackage: nanopass-0.0.3.2@sha256:dd298ed91b4ea885d4f6d6b1f6948781df4b358f1007bce8aedfe492acb55232,2014
-- completed:
-    commit: 75e61cf368359b9b80fadc95a7ffcbac5a583a25
-    git: https://github.com/wi11dey/sexpr-parser.git
-    name: sexpr-parser
-    pantry-tree:
-      sha256: dce9b911f190388b18beb3138b86ade20b6a6930fc9fab83db2b3f3a3f26bfb8
-      size: 983
-    version: 0.2.2.0
-  original:
-    commit: 75e61cf368359b9b80fadc95a7ffcbac5a583a25
-    git: https://github.com/wi11dey/sexpr-parser.git
+    hackage: symtegration-0.6.1@sha256:81ef5c895935f20f08e939a7f0d08ee86dff599793d1026eb1e79f8872348bac,4918
 snapshots:
 - completed:
     sha256: 1c2140555bdf61c30a893b3ec1033987d01eda75ce82a1dda033e8fb6f8b322c

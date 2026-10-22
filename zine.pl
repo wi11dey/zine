@@ -8,7 +8,7 @@ load_text(Text) :-
     retractall(upos(_, _)),
     retractall(udep(_, _, _)),
     process_create(
-        './udpipe/src/udpipe',
+        path(udpipe),
         ['--tokenize', '--tag', '--parse',
          'english-ewt-ud-2.5-191206.udpipe'],
         [stdin(pipe(In)), stdout(pipe(Out)), stderr(null), process(PID)]
