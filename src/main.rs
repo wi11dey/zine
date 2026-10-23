@@ -33,7 +33,6 @@ fn main() -> eframe::Result {
                 options.prerasterized_discs = false;
             });
             fonts::install(ctx);
-            ctx.set_visuals(egui::Visuals::light());
             ctx.all_styles_mut(|style| {
                 style.visuals.panel_fill = BACKGROUND;
                 style.visuals.override_text_color = Some(FOREGROUND);
