@@ -7,6 +7,7 @@ description = "A place for creativity."
 publish = false
 
 [dependencies]
+dom_smoothie = "0.18.2"
 eframe = { version = "0.37.0", default-features = false, features = ["clipboard", "glow", "wayland", "x11"] }
 freetype-sys = "0.23"
 pango = { version = "0.21", features = ["v1_56"] }
@@ -19,3 +20,6 @@ yeslogic-fontconfig-sys = "6.0"
 
 [build-dependencies]
 pkg-config = "0.3"
+
+[target.'cfg(target_os = "macos")'.dependencies]
+muda = { version = "0.21.2", default-features = false }

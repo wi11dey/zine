@@ -2,6 +2,13 @@
 
 /A place for creativity./
 
+* Source Layout
+
+ - =src= contains the Rust source for the editor
+ - =haskell= contains the Haskell source for
+   - the internal mathematics language, =zine-math=
+   - a foreign function interface for Rust to call Pandoc, for viewing e-books
+
 * Naming
 
 Zine Is Not Emacs.

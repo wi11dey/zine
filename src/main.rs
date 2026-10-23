@@ -2,6 +2,7 @@ mod display_list;
 mod fonts;
 mod haskell;
 
+use eframe::CreationContext;
 use eframe::egui::{
     self, Align2, Color32, FontFamily, FontId, Frame, Id, Key, Margin, Painter, Rect, ScrollArea,
     Sense, Shape, Stroke, StrokeKind, TextEdit, Ui, UiBuilder, Vec2, pos2, vec2,
@@ -26,32 +27,47 @@ fn main() -> eframe::Result {
                 .with_min_inner_size([400.0, 300.0]),
             ..Default::default()
         },
-        Box::new(|cc| {
-            configure(&cc.egui_ctx);
-            Ok(Box::new(Zine::default()))
+        Box::new(|CreationContext { egui_ctx : ctx, .. }| {
+            ctx.tessellation_options_mut(|options| {
+                options.feathering = false;
+                options.prerasterized_discs = false;
+            });
+            fonts::install(ctx);
+            ctx.set_visuals(egui::Visuals::light());
+            ctx.all_styles_mut(|style| {
+                style.visuals.panel_fill = BACKGROUND;
+                style.visuals.override_text_color = Some(FOREGROUND);
+                style.visuals.text_cursor.stroke = Stroke::new(1.0, FOREGROUND);
+                style.visuals.selection.bg_fill = FOREGROUND;
+                style.visuals.selection.stroke = Stroke::new(1.0, BACKGROUND);
+                style
+                    .text_styles
+                    .insert(egui::TextStyle::Body, FontId::proportional(12.0));
+                style.spacing.item_spacing = Vec2::ZERO;
+                style.animation_time = 0.0;
+            });
+
+            Ok(Box::new(Zine {
+                documents: ["main.typ", "references.bib"]
+                    .into_iter()
+                    .map(|name| Document {
+                        name: name.into(),
+                        text: String::new(),
+                        scroll: 0.0,
+                        height: 0.0,
+                    })
+                    .collect(),
+                active: 0,
+                scrollbar_grab: 0.0,
+                // Sample transcript from the frame. No evaluator is connected yet.
+                transcript: vec![
+                    "Command: Inspect Figure 1".into(),
+                    "ripple-01 → surface → mesh → vertex [12, 4]".into(),
+                ],
+                command: String::new(),
+            }))
         }),
     )
-}
-
-fn configure(ctx: &egui::Context) {
-    ctx.tessellation_options_mut(|options| {
-        options.feathering = false;
-        options.prerasterized_discs = false;
-    });
-    fonts::install(ctx);
-    ctx.set_visuals(egui::Visuals::light());
-    ctx.all_styles_mut(|style| {
-        style.visuals.panel_fill = BACKGROUND;
-        style.visuals.override_text_color = Some(FOREGROUND);
-        style.visuals.text_cursor.stroke = Stroke::new(1.0, FOREGROUND);
-        style.visuals.selection.bg_fill = FOREGROUND;
-        style.visuals.selection.stroke = Stroke::new(1.0, BACKGROUND);
-        style
-            .text_styles
-            .insert(egui::TextStyle::Body, FontId::proportional(12.0));
-        style.spacing.item_spacing = Vec2::ZERO;
-        style.animation_time = 0.0;
-    });
 }
 
 fn paint_stipple(painter: &Painter, rect: Rect) {
@@ -113,30 +129,6 @@ struct Zine {
     scrollbar_grab: f32,
     transcript: Vec<String>,
     command: String,
-}
-
-impl Default for Zine {
-    fn default() -> Self {
-        Self {
-            documents: ["main.typ", "references.bib"]
-                .into_iter()
-                .map(|name| Document {
-                    name: name.into(),
-                    text: String::new(),
-                    scroll: 0.0,
-                    height: 0.0,
-                })
-                .collect(),
-            active: 0,
-            scrollbar_grab: 0.0,
-            // Sample transcript from the frame. No evaluator is connected yet.
-            transcript: vec![
-                "Command: Inspect Figure 1".into(),
-                "ripple-01 → surface → mesh → vertex [12, 4]".into(),
-            ],
-            command: String::new(),
-        }
-    }
 }
 
 impl eframe::App for Zine {
