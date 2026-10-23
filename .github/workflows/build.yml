@@ -1,0 +1,21 @@
+name: Build
+
+on: push
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    runs-on: macos-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install native and Haskell dependencies
+        run: brew install pkg-config pango freetype fontconfig haskell-stack
+
+      - name: Install pinned Rust toolchain
+        run: rustup show
+
+      - name: Build
+        run: cargo build --locked
