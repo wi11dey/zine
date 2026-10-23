@@ -139,12 +139,6 @@ impl eframe::App for Zine {
             .frame(Frame::NONE.fill(BACKGROUND))
             .show(ui, |ui| self.tabs(ui));
 
-        egui::Panel::bottom("listener")
-            .exact_size(LISTENER_HEIGHT)
-            .show_separator_line(false)
-            .frame(Frame::NONE.fill(BACKGROUND))
-            .show(ui, |ui| self.listener(ui));
-
         egui::CentralPanel::default()
             .frame(Frame::NONE.fill(BACKGROUND))
             .show(ui, |ui| self.viewport(ui));
