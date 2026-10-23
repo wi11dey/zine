@@ -10,6 +10,7 @@ build-type:     Simple
 
 library
   exposed-modules:
+      Zine.Interaction
       Zine.Prelude
   other-modules:
       Paths_zine_math

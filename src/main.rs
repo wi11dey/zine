@@ -1,9 +1,12 @@
 mod display_list;
 mod fonts;
-mod haskell;
 
 use eframe::CreationContext;
-use eframe::egui::{self, Align, Align2, CentralPanel, Color32, FontFamily, FontId, Frame, Id, Key, Margin, Painter, Panel, Rect, ScrollArea, Sense, Shape, Stroke, StrokeKind, TextEdit, TextStyle, Ui, UiBuilder, Vec2, pos2, vec2, Mesh};
+use eframe::egui::{
+    self, Align, Align2, CentralPanel, Color32, FontFamily, FontId, Frame, Id, Key, Margin, Mesh,
+    Painter, Panel, Rect, ScrollArea, Sense, Shape, Stroke, StrokeKind, TextEdit, TextStyle, Ui,
+    UiBuilder, Vec2, pos2, vec2,
+};
 use egui::scroll_area::ScrollBarVisibility;
 
 const FOREGROUND: Color32 = Color32::BLACK;
