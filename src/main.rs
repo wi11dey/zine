@@ -3,10 +3,7 @@ mod fonts;
 mod haskell;
 
 use eframe::CreationContext;
-use eframe::egui::{
-    self, Align2, Color32, FontFamily, FontId, Frame, Id, Key, Margin, Painter, Rect, ScrollArea,
-    Sense, Shape, Stroke, StrokeKind, TextEdit, Ui, UiBuilder, Vec2, pos2, vec2,
-};
+use eframe::egui::{self, Align, Align2, CentralPanel, Color32, FontFamily, FontId, Frame, Id, Key, Margin, Painter, Panel, Rect, ScrollArea, Sense, Shape, Stroke, StrokeKind, TextEdit, TextStyle, Ui, UiBuilder, Vec2, pos2, vec2, Mesh};
 use egui::scroll_area::ScrollBarVisibility;
 
 const FOREGROUND: Color32 = Color32::BLACK;
@@ -41,7 +38,7 @@ fn main() -> eframe::Result {
                 style.visuals.selection.stroke = Stroke::new(1.0, BACKGROUND);
                 style
                     .text_styles
-                    .insert(egui::TextStyle::Body, FontId::proportional(12.0));
+                    .insert(TextStyle::Body, FontId::proportional(12.0));
                 style.spacing.item_spacing = Vec2::ZERO;
                 style.animation_time = 0.0;
             });
@@ -66,7 +63,7 @@ fn main() -> eframe::Result {
 fn paint_stipple(painter: &Painter, rect: Rect) {
     let painter = painter.with_clip_rect(rect);
     painter.rect_filled(rect, 0.0, BACKGROUND);
-    let mut mesh = egui::Mesh::default();
+    let mut mesh = Mesh::default();
     for y in 0..rect.height().ceil() as usize {
         let offset = y % 2;
         for x in (offset..rect.width().ceil() as usize).step_by(2) {
@@ -124,7 +121,7 @@ struct Zine {
 
 impl eframe::App for Zine {
     fn ui(&mut self, ui: &mut Ui, _frame: &mut eframe::Frame) {
-        egui::Panel::top("tabs")
+        Panel::top("tabs")
             .exact_size(TAB_HEIGHT)
             .show_separator_line(false)
             .frame(Frame::NONE.fill(BACKGROUND))
@@ -210,13 +207,13 @@ impl eframe::App for Zine {
                             self.active = self.documents.len() - 1;
                             ui.scroll_to_rect(
                                 Rect::from_min_size(add.min, vec2(210.0, 27.0)),
-                                Some(egui::Align::Max),
+                                Some(Align::Max),
                             );
                         }
                     });
             });
 
-        egui::CentralPanel::default()
+        CentralPanel::default()
             .frame(Frame::NONE.fill(BACKGROUND))
             .show(ui, |ui| {
                 let bounds = ui.max_rect();
