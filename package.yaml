@@ -5,9 +5,11 @@ dependencies:
   - constrained-categories
   - ghc
   - kan-extensions
+  - megaparsec
   - numeric-prelude
   - pandoc
   - symtegration
+  - text
 library:
   source-dirs: haskell
   default-extensions:
