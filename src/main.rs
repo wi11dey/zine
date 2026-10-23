@@ -58,12 +58,6 @@ fn main() -> eframe::Result {
                     .collect(),
                 active: 0,
                 scrollbar_grab: 0.0,
-                // Sample transcript from the frame. No evaluator is connected yet.
-                transcript: vec![
-                    "Command: Inspect Figure 1".into(),
-                    "ripple-01 → surface → mesh → vertex [12, 4]".into(),
-                ],
-                command: String::new(),
             }))
         }),
     )
@@ -126,8 +120,6 @@ struct Zine {
     documents: Vec<Document>,
     active: usize,
     scrollbar_grab: f32,
-    transcript: Vec<String>,
-    command: String,
 }
 
 impl eframe::App for Zine {
@@ -338,76 +330,5 @@ impl Zine {
         let title_rect =
             Align2::LEFT_CENTER.anchor_size(header.left_center() + vec2(8.0, 0.0), title.size());
         ui.painter().galley(title_rect.min, title, BACKGROUND);
-        Frame::NONE
-            .inner_margin(Margin {
-                left: 12,
-                right: 12,
-                top: 6,
-                bottom: 0,
-            })
-            .show(ui, |ui| {
-                ScrollArea::vertical()
-                    .id_salt("transcript")
-                    .min_scrolled_height(48.0)
-                    .max_height(48.0)
-                    .auto_shrink([false, false])
-                    .stick_to_bottom(true)
-                    .show(ui, |ui| {
-                        for line in &self.transcript {
-                            let (rect, _) = ui.allocate_exact_size(
-                                vec2(ui.available_width(), 24.0),
-                                Sense::hover(),
-                            );
-                            ui.painter().text(
-                                rect.left_center(),
-                                Align2::LEFT_CENTER,
-                                line,
-                                font.clone(),
-                                FOREGROUND,
-                            );
-                        }
-                    });
-                ui.allocate_ui_with_layout(
-                    vec2(ui.available_width(), 35.0),
-                    egui::Layout::left_to_right(egui::Align::Center),
-                    |ui| {
-                        ui.spacing_mut().item_spacing.x = 7.0;
-                        ui.label(
-                            egui::RichText::new("Command:")
-                                .font(font.clone())
-                                .color(FOREGROUND),
-                        );
-                        let input = ui.add(
-                            TextEdit::singleline(&mut self.command)
-                                .id(Id::unique("command_input"))
-                                .font(font.clone())
-                                .desired_width(f32::INFINITY)
-                                .margin(Vec2::ZERO)
-                                .frame(Frame::NONE),
-                        );
-                        if self.command.is_empty() && !input.has_focus() {
-                            ui.painter().rect_stroke(
-                                Rect::from_min_size(
-                                    pos2(input.rect.left(), input.rect.center().y - 8.0),
-                                    vec2(7.0, 16.0),
-                                ),
-                                0.0,
-                                Stroke::new(1.0, FOREGROUND),
-                                StrokeKind::Inside,
-                            );
-                        }
-                        if input.lost_focus() && ui.input(|input| input.key_pressed(Key::Enter)) {
-                            let command = self.command.trim();
-                            if command == "clear" {
-                                self.transcript.clear();
-                            } else if !command.is_empty() {
-                                self.transcript.push(format!("Command: {command}"));
-                            }
-                            self.command.clear();
-                            input.request_focus();
-                        }
-                    },
-                );
-            });
     }
 }
