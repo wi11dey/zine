@@ -1,3 +1,5 @@
+{-# LANGUAGE OverloadedStrings #-}
+
 module Zine.Interaction where
 
 import Data.Text (Text)
@@ -8,7 +10,10 @@ import GHC.Hs (GhciLStmt)
 import GHC.Hs.Extension (GhcPs)
 import GHC.Runtime.Context (InteractiveContext (..))
 import GHC.Runtime.Eval (execStmt')
-import Text.Megaparsec (Parsec)
+import GHC.ThToHs (convertToHsExpr)
+import Language.Haskell.TH
+import Text.Megaparsec
+import Text.Megaparsec.Char
 
 type Parser = Parsec Void Text
 
@@ -21,5 +26,19 @@ restoreSession saved = do
         hsc_IC = (hsc_IC saved) {ic_mod_index = ic_mod_index (hsc_IC current)}
       }
 
-fromTypst :: Text -> GhciLStmt GhcPs
-fromTypst = undefined
+-- | A single letter is a variable.
+variable :: Parser Exp
+variable = do
+  name <- letterChar
+  return $ LitE (StringL [name])
+
+operator :: Parser Exp
+operator = do
+  name <- some letterChar
+  return $ VarE (mkName name)
+
+fromTypstMath :: Parser Exp
+fromTypstMath = undefined
+
+toGhciLStmt :: Exp -> GhciLStmt GhcPs
+toGhciLStmt = undefined

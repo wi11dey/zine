@@ -9,6 +9,7 @@ dependencies:
   - numeric-prelude
   - pandoc
   - symtegration
+  - template-haskell
   - text
 library:
   source-dirs: haskell
