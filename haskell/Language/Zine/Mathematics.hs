@@ -52,6 +52,16 @@ expression :: Parser Exp
 expression = do
   factors <- some atom
   undefined
+  where
+    groupOperation :: Exp
+    groupOperation = VarE (mkName "op'")
+
+    -- \| Adds groupOperations where needed to avoid two consecutive literals
+    separateLiterals :: [Exp] -> [Exp]
+    separateLiterals (LitE literal1 : LitE literal2 : rest) =
+      LitE literal1 : groupOperation : separateLiterals (LitE literal2 : rest)
+    separateLiterals (first : rest) = first : separateLiterals rest
+    separateLiterals [] = []
 
 fromTypst :: Parser Exp
 fromTypst = undefined

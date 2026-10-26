@@ -6,6 +6,8 @@ cabal-version: 1.12
 
 name:           zine-math
 version:        1.0.0
+license:        AGPL-3
+license-file:   LICENSE
 build-type:     Simple
 
 library
