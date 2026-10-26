@@ -56,7 +56,7 @@ expression = do
     groupOperation :: HsExpr GhcPs
     groupOperation = HsVar noExtField (noLocA (mkVarUnqual (mkFastString "op'")))
 
-    -- \| Adds groupOperations where needed to avoid two consecutive literals
+    -- \| Add groupOperations in between consecutive literals
     separateLiterals :: [HsExpr GhcPs] -> [HsExpr GhcPs]
     separateLiterals (first@(HsOverLit {}) : second@(HsOverLit {}) : rest) =
       first : groupOperation : separateLiterals (second : rest)
