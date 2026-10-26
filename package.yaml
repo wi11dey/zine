@@ -15,3 +15,12 @@ library:
   source-dirs: haskell
   default-extensions:
     - BlockArguments
+tests:
+  zine-math-test:
+    main: Spec.hs
+    source-dirs: test
+    dependencies:
+      - zine-math
+      - hspec
+    build-tools:
+      - hspec-discover
