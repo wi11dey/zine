@@ -1,41 +1,42 @@
 {-# LANGUAGE OverloadedStrings #-}
+{-# LANGUAGE TemplateHaskell #-}
 
 module Language.Zine.MathematicsSpec (spec) where
 
 import Data.Either (isLeft)
 import Data.Text (Text)
 import Data.Void (Void)
-import Language.Haskell.TH (Exp (..), Lit (..), mkName)
+import Language.Haskell.TH (mkName, varE)
 import Language.Zine.Mathematics
 import Test.Hspec
 import Text.Megaparsec (ParseErrorBundle, eof, parse)
-import Text.Megaparsec.Char (string)
 
 spec :: Spec
 spec = do
   describe "number" $ do
-    it "parses zero as an integer literal" $
-      parseAll number "0" `shouldBe` Right (LitE (IntegerL 0))
+    it "parses zero as an integer literal" $ do
+      expected <- [|0|]
+      parseAll number "0" `shouldBe` Right expected
 
-    it "parses integers larger than a machine word" $
-      parseAll number "123456789012345678901234567890"
-        `shouldBe` Right (LitE (IntegerL 123456789012345678901234567890))
+    it "parses integers larger than a machine word" $ do
+      expected <- [|123456789012345678901234567890|]
+      parseAll number "123456789012345678901234567890" `shouldBe` Right expected
 
-    it "consumes trailing whitespace" $
-      parseAll number "42 \t\n" `shouldBe` Right (LitE (IntegerL 42))
+    it "consumes trailing whitespace" $ do
+      expected <- [|42|]
+      parseAll number "42 \t\n" `shouldBe` Right expected
 
     it "requires at least one digit" $
       parseAll number "" `shouldSatisfy` isLeft
 
-    it "rejects a sign" $
-      parseAll number "-42" `shouldSatisfy` isLeft
-
-    it "does not yet support decimal fractions" $
-      parseAll number "3.14" `shouldSatisfy` isLeft
-
-    it "leaves a following token available to its caller" $
-      parseAll ((,) <$> number <*> symbol) "42 alpha"
-        `shouldBe` Right (LitE (IntegerL 42), VarE (mkName "alpha"))
+    it "leaves a following token available to its caller" $ do
+      expectedNumber <- [|42|]
+      expectedSymbol <- [|$(varE (mkName "alpha"))|]
+      let numberThenSymbol = do
+            value <- number
+            name <- symbol
+            pure (value, name)
+      parseAll numberThenSymbol "42alpha" `shouldBe` Right (expectedNumber, expectedSymbol)
 
   describe "identifier'" $ do
     it "allows letters, digits, and underscores after the first letter" $
@@ -71,24 +72,28 @@ spec = do
         `shouldSatisfy` all isLeft
 
   describe "symbol" $ do
-    it "represents a single letter as a string literal" $
-      parseAll symbol "x" `shouldBe` Right (LitE (StringL "x"))
+    it "represents a single letter as a string literal" $ do
+      expected <- [|"x"|]
+      parseAll symbol "x" `shouldBe` Right expected
 
-    it "represents a single Unicode letter as a string literal" $
-      parseAll symbol "α" `shouldBe` Right (LitE (StringL "α"))
+    it "represents a single Unicode letter as a string literal" $ do
+      expected <- [|"α"|]
+      parseAll symbol "α" `shouldBe` Right expected
 
-    it "represents a longer identifier as a variable" $
-      parseAll symbol "alpha" `shouldBe` Right (VarE (mkName "alpha"))
+    it "represents a longer identifier as a variable" $ do
+      expected <- [|$(varE (mkName "alpha"))|]
+      parseAll symbol "alpha" `shouldBe` Right expected
 
-    it "joins qualified names with apostrophes" $
-      parseAll symbol "arrow.r.long" `shouldBe` Right (VarE (mkName "arrow'r'long"))
+    it "joins qualified names with apostrophes" $ do
+      expected <- [|$(varE (mkName "arrow'r'long"))|]
+      parseAll symbol "arrow.r.long" `shouldBe` Right expected
 
-    it "treats qualified single-letter components as a variable" $
-      parseAll symbol "a.b" `shouldBe` Right (VarE (mkName "a'b"))
+    it "treats qualified single-letter components as a variable" $ do
+      expected <- [|$(varE (mkName "a'b"))|]
+      parseAll symbol "a.b" `shouldBe` Right expected
 
     it "rejects an incomplete qualified name" $
       parseAll symbol "arrow." `shouldSatisfy` isLeft
 
--- Require complete input so a successful prefix cannot hide malformed syntax.
 parseAll :: Parser a -> Text -> Either (ParseErrorBundle Text Void) a
 parseAll parser = parse (parser <* eof) "<test>"

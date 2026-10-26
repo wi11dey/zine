@@ -43,6 +43,11 @@ symbol = do
     [[variable]] -> LitE (StringL [variable])
     _ -> VarE (mkName (intercalate "'" path))
 
+expression :: Parser Exp
+expression = do
+  factors <- some (number <|> symbol)
+  undefined
+
 fromTypst :: Parser Exp
 fromTypst = undefined
 
