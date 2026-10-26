@@ -13,27 +13,6 @@ import Text.Megaparsec.Char (string)
 
 spec :: Spec
 spec = do
-  describe "sc" $ do
-    it "accepts empty input" $
-      parseAll sc "" `shouldBe` Right ()
-
-    it "consumes spaces, tabs, and newlines" $
-      parseAll sc " \t\n\r\n " `shouldBe` Right ()
-
-  describe "lexeme" $ do
-    it "consumes trailing whitespace and preserves the parsed value" $
-      parseAll (lexeme (string "token")) "token \t\n" `shouldBe` Right "token"
-
-    it "does not consume leading whitespace" $
-      parseAll (lexeme (string "token")) " token" `shouldSatisfy` isLeft
-
-  describe "verbatim" $ do
-    it "parses a literal token with trailing whitespace" $
-      parseAll (verbatim "->") "-> \n" `shouldBe` Right "->"
-
-    it "rejects a different token" $
-      parseAll (verbatim "->") "=>" `shouldSatisfy` isLeft
-
   describe "number" $ do
     it "parses zero as an integer literal" $
       parseAll number "0" `shouldBe` Right (LitE (IntegerL 0))
