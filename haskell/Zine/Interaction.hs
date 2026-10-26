@@ -13,4 +13,3 @@ restoreSession saved = do
       { -- Ensure the internal name counter stays monotonically increasing
         hsc_IC = (hsc_IC saved) {ic_mod_index = ic_mod_index (hsc_IC current)}
       }
-

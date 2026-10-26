@@ -41,11 +41,12 @@ symbol = do
     identifier = lexeme $ do
       first <- letterChar <|> char '_'
       rest <- many (alphaNumChar <|> char '_')
-      return $ first:rest
+      return $ first : rest
 
 atom :: Parser Exp
-atom = number
-  <|> symbol
+atom =
+  number
+    <|> symbol
 
 expression :: Parser Exp
 expression = do
