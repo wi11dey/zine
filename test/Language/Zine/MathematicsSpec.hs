@@ -7,7 +7,7 @@ import Data.Either (isLeft)
 import Data.Text (Text)
 import Data.Void (Void)
 import GHC.Data.FastString (unpackFS)
-import GHC.Hs (HsExpr (..), HsLit (..), HsOverLit (..), OverLitVal (..))
+import GHC.Hs (HsExpr (..), HsOverLit (..), OverLitVal (..))
 import GHC.Hs.Extension (GhcPs)
 import GHC.Types.Name.Occurrence (occNameString)
 import GHC.Types.Name.Reader (rdrNameOcc)
@@ -47,11 +47,11 @@ spec = do
       parseAll numberThenSymbol "42alpha" `shouldBe` Right (expectedNumber, expectedSymbol)
 
   describe "symbol" $ do
-    it "represents a single letter as a string literal" $ do
+    it "represents a single letter as an overloaded string literal" $ do
       expected <- [|"x"|]
       parseExpression symbol "x" `shouldBe` Right expected
 
-    it "represents a single Unicode letter as a string literal" $ do
+    it "represents a single Unicode letter as an overloaded string literal" $ do
       expected <- [|"α"|]
       parseExpression symbol "α" `shouldBe` Right expected
 
@@ -76,7 +76,7 @@ parseAll parser = parse (parser <* eof) "<test>"
 -- Keep the existing expectations while checking GHC's parsed constructors.
 asTH :: HsExpr GhcPs -> TH.Exp
 asTH (HsOverLit _ OverLit {ol_val = HsIntegral literal}) = TH.LitE (TH.IntegerL (il_value literal))
-asTH (HsLit _ (HsString _ value)) = TH.LitE (TH.StringL (unpackFS value))
+asTH (HsOverLit _ OverLit {ol_val = HsIsString _ value}) = TH.LitE (TH.StringL (unpackFS value))
 asTH (HsVar _ name) = TH.VarE (mkName (occNameString (rdrNameOcc (unLoc name))))
 asTH (OpApp _ lhs operator rhs) = TH.UInfixE (asTH (unLoc lhs)) (asTH (unLoc operator)) (asTH (unLoc rhs))
 asTH _ = error "unexpected GHC expression in parser result"

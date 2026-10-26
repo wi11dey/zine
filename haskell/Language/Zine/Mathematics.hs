@@ -4,11 +4,11 @@ import Data.List (intercalate)
 import Data.Text (Text)
 import Data.Void (Void)
 import GHC.Data.FastString (mkFastString)
-import GHC.Hs (HsExpr (..), mkHsIntegral, mkHsString, noExtField)
+import GHC.Hs (HsExpr (..), mkHsIntegral, mkHsIsString, noExtField)
 import GHC.Hs.Extension (GhcPs)
 import GHC.Parser.Annotation (noAnn, noLocA)
 import GHC.Types.Name.Reader (mkVarUnqual)
-import GHC.Types.SourceText (mkIntegralLit)
+import GHC.Types.SourceText (SourceText (NoSourceText), mkIntegralLit)
 import Text.Megaparsec
 import Text.Megaparsec.Char
 import qualified Text.Megaparsec.Char.Lexer as L
@@ -33,7 +33,7 @@ symbol :: Parser (HsExpr GhcPs)
 symbol = do
   symbolPath <- path
   return $ case symbolPath of
-    [[variable]] -> HsLit noExtField (mkHsString [variable])
+    [[variable]] -> HsOverLit noExtField (mkHsIsString NoSourceText (mkFastString [variable]))
     _ -> HsVar noExtField (noLocA (mkVarUnqual (mkFastString (intercalate "'" symbolPath))))
   where
     path :: Parser [String]
@@ -71,16 +71,10 @@ expression = do
 
     -- \| Adds groupOperations where needed to avoid two consecutive literals
     separateLiterals :: [HsExpr GhcPs] -> [HsExpr GhcPs]
-    separateLiterals (first : second : rest)
-      | isLiteral first && isLiteral second =
-          first : groupOperation : separateLiterals (second : rest)
+    separateLiterals (first@(HsOverLit {}) : second@(HsOverLit {}) : rest) =
+      first : groupOperation : separateLiterals (second : rest)
     separateLiterals (first : rest) = first : separateLiterals rest
     separateLiterals [] = []
-
-    isLiteral :: HsExpr GhcPs -> Bool
-    isLiteral HsLit {} = True
-    isLiteral HsOverLit {} = True
-    isLiteral _ = False
 
 fromTypst :: Parser (HsExpr GhcPs)
 fromTypst = undefined
