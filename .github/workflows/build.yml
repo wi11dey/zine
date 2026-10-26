@@ -24,3 +24,9 @@ jobs:
 
       - name: Build
         run: cargo build --locked
+
+      - name: Test Rust
+        run: cargo test --locked
+
+      - name: Test Haskell
+        run: stack test
