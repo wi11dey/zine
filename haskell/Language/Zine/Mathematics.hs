@@ -27,25 +27,29 @@ number = do
   value <- lexeme L.decimal
   return $ LitE (IntegerL value)
 
-identifier' :: Parser String
-identifier' = lexeme $ do
-  first <- letterChar <|> char '_'
-  rest <- many (alphaNumChar <|> char '_')
-  return $ first:rest
-
-symbol' :: Parser [String]
-symbol' = identifier' `sepBy1` char '.'
-
 symbol :: Parser Exp
 symbol = do
-  path <- symbol'
-  return $ case path of
+  symbolPath <- path
+  return $ case symbolPath of
     [[variable]] -> LitE (StringL [variable])
-    _ -> VarE (mkName (intercalate "'" path))
+    _ -> VarE (mkName (intercalate "'" symbolPath))
+  where
+    path :: Parser [String]
+    path = identifier `sepBy1` char '.'
+
+    identifier :: Parser String
+    identifier = lexeme $ do
+      first <- letterChar <|> char '_'
+      rest <- many (alphaNumChar <|> char '_')
+      return $ first:rest
+
+atom :: Parser Exp
+atom = number
+  <|> symbol
 
 expression :: Parser Exp
 expression = do
-  factors <- some (number <|> symbol)
+  factors <- some atom
   undefined
 
 fromTypst :: Parser Exp

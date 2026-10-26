@@ -38,39 +38,6 @@ spec = do
             pure (value, name)
       parseAll numberThenSymbol "42alpha" `shouldBe` Right (expectedNumber, expectedSymbol)
 
-  describe "identifier'" $ do
-    it "allows letters, digits, and underscores after the first letter" $
-      parseAll identifier' "alpha_2" `shouldBe` Right "alpha_2"
-
-    it "allows an initial underscore" $
-      parseAll identifier' "_value2" `shouldBe` Right "_value2"
-
-    it "accepts Unicode letters" $
-      parseAll identifier' "αβ" `shouldBe` Right "αβ"
-
-    it "consumes trailing whitespace" $
-      parseAll identifier' "alpha \n" `shouldBe` Right "alpha"
-
-    it "rejects empty input" $
-      parseAll identifier' "" `shouldSatisfy` isLeft
-
-    it "rejects an initial digit" $
-      parseAll identifier' "2alpha" `shouldSatisfy` isLeft
-
-    it "rejects punctuation inside an identifier" $
-      parseAll identifier' "alpha-beta" `shouldSatisfy` isLeft
-
-  describe "symbol'" $ do
-    it "parses an unqualified identifier as a singleton path" $
-      parseAll symbol' "alpha" `shouldBe` Right ["alpha"]
-
-    it "splits a qualified symbol into path components" $
-      parseAll symbol' "arrow.r.long \n" `shouldBe` Right ["arrow", "r", "long"]
-
-    it "rejects empty path components" $
-      map (parseAll symbol') ["", ".alpha", "alpha.", "alpha..beta"]
-        `shouldSatisfy` all isLeft
-
   describe "symbol" $ do
     it "represents a single letter as a string literal" $ do
       expected <- [|"x"|]
