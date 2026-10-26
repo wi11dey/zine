@@ -50,21 +50,10 @@ atom =
   number
     <|> symbol
 
--- | Fold alternating operands and operators; reject empty or even-length lists.
-foldInfix :: [HsExpr GhcPs] -> Maybe (HsExpr GhcPs)
-foldInfix [] = Nothing
-foldInfix [value] = Just value
-foldInfix (lhs : operator : rhs : rest) =
-  -- GHC expects left-associated OpApps before resolving fixities.
-  foldInfix (OpApp noAnn (noLocA lhs) (noLocA operator) (noLocA rhs) : rest)
-foldInfix _ = Nothing
-
 expression :: Parser (HsExpr GhcPs)
 expression = do
   factors <- some atom
-  case foldInfix (separateLiterals factors) of
-    Just result -> pure result
-    Nothing -> fail "expected an operand after an infix operator"
+  foldInfix (separateLiterals factors)
   where
     groupOperation :: HsExpr GhcPs
     groupOperation = HsVar noExtField (noLocA (mkVarUnqual (mkFastString "op'")))
@@ -75,6 +64,12 @@ expression = do
       first : groupOperation : separateLiterals (second : rest)
     separateLiterals (first : rest) = first : separateLiterals rest
     separateLiterals [] = []
+
+    foldInfix :: (MonadFail m) => [HsExpr GhcPs] -> m (HsExpr GhcPs)
+    foldInfix [value] = return value
+    foldInfix (lhs : operator : rhs : rest) =
+      foldInfix (OpApp noAnn (noLocA lhs) (noLocA operator) (noLocA rhs) : rest)
+    foldInfix _ = fail ""
 
 fromTypst :: Parser (HsExpr GhcPs)
 fromTypst = undefined
