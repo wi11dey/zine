@@ -8,6 +8,8 @@
  - =haskell= contains the Haskell source for
    - the internal mathematics language, =zine-math=
    - a foreign function interface for Rust to call Pandoc, for viewing e-books
+ - =tests= contains Rust integration tests, as is Rust’s convention
+ - =test= contains Haskell unit tests, as is Haskell’s convention
 
 * Naming
 
