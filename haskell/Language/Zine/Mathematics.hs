@@ -45,14 +45,12 @@ symbol = do
       rest <- many (alphaNumChar <|> char '_')
       return $ first : rest
 
-atom :: Parser (HsExpr GhcPs)
-atom =
-  number
-    <|> symbol
-
 expression :: Parser (HsExpr GhcPs)
 expression = do
-  factors <- some atom
+  factors <-
+    some $
+      number
+        <|> symbol
   foldInfix (separateLiterals factors)
   where
     groupOperation :: HsExpr GhcPs
