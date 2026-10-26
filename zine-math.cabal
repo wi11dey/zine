@@ -10,6 +10,7 @@ build-type:     Simple
 
 library
   exposed-modules:
+      Language.Zine.Mathematics
       Zine.Interaction
       Zine.Prelude
   other-modules:
