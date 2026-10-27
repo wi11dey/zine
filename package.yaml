@@ -5,22 +5,11 @@ dependencies:
   - constrained-categories
   - ghc
   - kan-extensions
-  - megaparsec
   - numeric-prelude
   - pandoc
   - symtegration
-  - template-haskell
   - text
 library:
   source-dirs: haskell
   default-extensions:
     - BlockArguments
-tests:
-  zine-math-test:
-    main: Spec.hs
-    source-dirs: test
-    dependencies:
-      - zine-math
-      - hspec
-    build-tools:
-      - hspec-discover

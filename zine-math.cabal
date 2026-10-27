@@ -12,7 +12,6 @@ build-type:     Simple
 
 library
   exposed-modules:
-      Language.Zine.Mathematics
       Zine.Interaction
       Zine.Prelude
   other-modules:
@@ -26,35 +25,8 @@ library
     , constrained-categories
     , ghc
     , kan-extensions
-    , megaparsec
     , numeric-prelude
     , pandoc
     , symtegration
-    , template-haskell
     , text
-  default-language: Haskell2010
-
-test-suite zine-math-test
-  type: exitcode-stdio-1.0
-  main-is: Spec.hs
-  other-modules:
-      Language.Zine.MathematicsSpec
-      Paths_zine_math
-  hs-source-dirs:
-      test
-  build-tool-depends:
-      hspec-discover:hspec-discover
-  build-depends:
-      base
-    , constrained-categories
-    , ghc
-    , hspec
-    , kan-extensions
-    , megaparsec
-    , numeric-prelude
-    , pandoc
-    , symtegration
-    , template-haskell
-    , text
-    , zine-math
   default-language: Haskell2010
