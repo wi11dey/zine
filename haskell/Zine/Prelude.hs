@@ -5,3 +5,6 @@ where
 
 import NumericPrelude
 import Symtegration
+
+data Argument = Positional Expression
+              | Named String Expression
