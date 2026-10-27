@@ -1,6 +1,6 @@
 use typst::syntax::ast::{Expr, MathTextKind};
 
-pub fn push_haskell(haskell: &mut String, math: &Expr) -> Result<(), String> {
+pub fn push_haskell(haskell: &mut String, math: Expr) -> Result<(), String> {
     match math {
         Expr::Math(math) => {
             haskell.push('(');
@@ -14,7 +14,7 @@ pub fn push_haskell(haskell: &mut String, math: &Expr) -> Result<(), String> {
                 first = false;
 
                 if let Expr::MathIdent(_) = expr {
-                    if (last_ident) {
+                    if last_ident {
                         haskell.push_str("∗ ");
                         next_operator = false;
                     }
@@ -27,7 +27,7 @@ pub fn push_haskell(haskell: &mut String, math: &Expr) -> Result<(), String> {
                 if next_operator {
                     haskell.push('`');
                 }
-                push_haskell(haskell, &expr)?;
+                push_haskell(haskell, expr)?;
                 if next_operator {
                     haskell.push('`');
                 }
@@ -63,9 +63,9 @@ pub fn push_haskell(haskell: &mut String, math: &Expr) -> Result<(), String> {
             haskell.push(' ');
         }
         Expr::MathFrac(frac) => {
-            push_haskell(haskell, &frac.num())?;
+            push_haskell(haskell, frac.num())?;
             haskell.push('/');
-            push_haskell(haskell, &frac.denom())?;
+            push_haskell(haskell, frac.denom())?;
         }
         Expr::MathRoot(_) => todo!(),
         Expr::MathAlignPoint(_) => {},
