@@ -1,5 +1,6 @@
 mod display_list;
 mod fonts;
+mod haskell;
 
 use eframe::CreationContext;
 use eframe::egui::{
