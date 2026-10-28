@@ -8,7 +8,25 @@ use typst::visualize::{
     ConicGradient, DashPattern, FixedStroke, LinearGradient, ProcessColorSpace, RadialGradient,
     Shape,
 };
-use webrender::api::{DisplayItem, PropertyBinding, ReferenceTransformBinding, SpatialTreeItem};
+use webrender::api::{
+    BuiltDisplayList, DisplayItem, PipelineId, PropertyBinding, ReferenceTransformBinding,
+    SpatialTreeItem,
+};
+
+fn convert_item((location, item): (Point, FrameItem)) -> BuiltDisplayList {
+    let mut builder = DisplayListBuilder::new(PipelineId(0, 0));
+    builder.begin();
+    push_item(
+        &mut builder,
+        location,
+        &item,
+        State {
+            space: state_root(),
+            parent: None,
+        },
+    );
+    builder.end().1
+}
 
 fn point(x: f64, y: f64) -> Point {
     Point::new(Abs::pt(x), Abs::pt(y))
@@ -20,7 +38,7 @@ fn shape(shape: Shape) -> FrameItem {
     FrameItem::Shape(shape, Span::detached())
 }
 fn convert(shape_: Shape) -> BuiltDisplayList {
-    to_displayitem((point(12.0, 24.0), shape(shape_)))
+    convert_item((point(12.0, 24.0), shape(shape_)))
 }
 fn items(list: &BuiltDisplayList) -> Vec<DisplayItem> {
     let mut iter = list.iter();
@@ -33,13 +51,12 @@ fn items(list: &BuiltDisplayList) -> Vec<DisplayItem> {
 fn transforms(list: &BuiltDisplayList) -> Vec<LayoutTransform> {
     let mut result = Vec::new();
     list.iter_spatial_tree(|item| {
-        if let SpatialTreeItem::ReferenceFrame(frame) = item {
-            if let ReferenceTransformBinding::Static {
+        if let SpatialTreeItem::ReferenceFrame(frame) = item
+            && let ReferenceTransformBinding::Static {
                 binding: PropertyBinding::Value(transform),
             } = frame.reference_frame.transform
-            {
-                result.push(transform);
-            }
+        {
+            result.push(transform);
         }
     });
     result
@@ -116,7 +133,7 @@ fn nested_groups_keep_transforms_and_clips_scoped() {
         Point::zero(),
         shape(Geometry::Rect(size(3.0, 3.0)).filled(Color::WHITE)),
     );
-    let list = to_displayitem((point(12.0, 24.0), FrameItem::Group(GroupItem::new(outer))));
+    let list = convert_item((point(12.0, 24.0), FrameItem::Group(GroupItem::new(outer))));
     let transforms = transforms(&list);
     assert_eq!(transforms.len(), 2);
     assert_eq!(
@@ -159,61 +176,34 @@ fn nested_groups_keep_transforms_and_clips_scoped() {
 }
 
 #[test]
-fn diagonal_and_reversed_lines_reach_the_original_endpoints() {
+fn diagonal_and_round_lines_are_crisp_registered_images() {
     for end in [point(9.0, 12.0), point(-9.0, 0.0), point(0.0, -9.0)] {
-        let list = convert(
-            Geometry::Line(end).stroked(FixedStroke::from_pair(Color::BLACK, Abs::pt(3.0))),
+        let item = shape(Geometry::Line(end).stroked(FixedStroke {
+            cap: LineCap::Round,
+            thickness: Abs::pt(3.0),
+            ..Default::default()
+        }));
+        let list = convert_item((point(12.0, 24.0), item.clone()));
+        let [DisplayItem::Image(image)] = items(&list)[..] else {
+            panic!("image primitive")
+        };
+        let raster = resources::rasterize(point(12.0, 24.0), &item, None).unwrap();
+        assert_eq!(image.image_key, raster.key);
+        assert!(raster.data.as_chunks::<4>().0.iter().any(|p| p[3] == 255));
+        assert!(
+            raster
+                .data
+                .as_chunks::<4>()
+                .0
+                .iter()
+                .all(|p| p[3] == 0 || p[3] == 255)
         );
-        let transform = transforms(&list)[0];
-        let line = items(&list)
-            .into_iter()
-            .find_map(|i| {
-                if let DisplayItem::Rectangle(r) = i {
-                    Some(r)
-                } else {
-                    None
-                }
-            })
-            .unwrap();
-        let start = transform
-            .transform_point2d(LayoutPoint::new(line.bounds.min.x, 0.0))
-            .unwrap();
-        let finish = transform
-            .transform_point2d(LayoutPoint::new(line.bounds.max.x, 0.0))
-            .unwrap();
-        assert_eq!(start, LayoutPoint::new(16.0, 32.0));
-        let expected = LayoutPoint::new(px(Abs::pt(12.0) + end.x), px(Abs::pt(24.0) + end.y));
-        assert!((finish - expected).length() < 0.0001);
-        assert_eq!(line.bounds.height(), 4.0);
+        assert!(raster.rect.contains(LayoutPoint::new(16.0, 32.0)));
+        assert!(raster.rect.contains(LayoutPoint::new(
+            px(Abs::pt(12.0) + end.x),
+            px(Abs::pt(24.0) + end.y)
+        )));
     }
-}
-
-#[test]
-fn round_caps_use_one_clipped_primitive() {
-    let list = convert(Geometry::Line(point(9.0, 0.0)).stroked(FixedStroke {
-        cap: LineCap::Round,
-        thickness: Abs::pt(3.0),
-        ..Default::default()
-    }));
-    let all = items(&list);
-    let clip = all
-        .iter()
-        .find_map(|i| {
-            if let DisplayItem::RoundedRectClip(c) = i {
-                Some(c)
-            } else {
-                None
-            }
-        })
-        .unwrap();
-    assert_bounds(clip.clip.rect, [-2.0, -2.0], [14.0, 2.0]);
-    assert_eq!(clip.clip.radii, BorderRadius::uniform(2.0));
-    assert_eq!(
-        all.iter()
-            .filter(|i| matches!(i, DisplayItem::Rectangle(_)))
-            .count(),
-        1
-    );
 }
 
 #[test]
@@ -255,23 +245,22 @@ fn square_dash_caps_are_merged_before_alpha_compositing() {
 
 #[test]
 fn zero_length_round_line_is_a_dot() {
-    let list = convert(Geometry::Line(Point::zero()).stroked(FixedStroke {
+    let item = shape(Geometry::Line(Point::zero()).stroked(FixedStroke {
         cap: LineCap::Round,
         thickness: Abs::pt(3.0),
         ..Default::default()
     }));
-    let all = items(&list);
-    let clip = all
-        .iter()
-        .find_map(|i| {
-            if let DisplayItem::RoundedRectClip(c) = i {
-                Some(c)
-            } else {
-                None
-            }
-        })
-        .unwrap();
-    assert_bounds(clip.clip.rect, [-2.0, -2.0], [2.0, 2.0]);
+    let raster = resources::rasterize(Point::zero(), &item, None).unwrap();
+    assert_bounds(raster.rect, [-2.0, -2.0], [2.0, 2.0]);
+    assert!(raster.data.as_chunks::<4>().0.iter().any(|p| p[3] == 255));
+    assert!(
+        raster
+            .data
+            .as_chunks::<4>()
+            .0
+            .iter()
+            .all(|p| p[3] == 0 || p[3] == 255)
+    );
 }
 
 #[test]
@@ -339,7 +328,7 @@ fn parent_relative_gradient_stays_anchored_through_soft_groups() {
     );
     let mut outer = Frame::hard(size(72.0, 36.0));
     outer.push(point(12.0, 0.0), FrameItem::Group(GroupItem::new(inner)));
-    let list = to_displayitem((Point::zero(), FrameItem::Group(GroupItem::new(outer))));
+    let list = convert_item((Point::zero(), FrameItem::Group(GroupItem::new(outer))));
     let all = transforms(&list);
     assert_eq!(all.len(), 3);
     assert_eq!(
@@ -419,16 +408,25 @@ fn text_glyph_positions_preserve_shaping_offsets_and_invert_y() {
 }
 
 #[test]
-#[should_panic(expected = "register the Typst font")]
-fn visible_text_reaches_only_the_font_registration_placeholder() {
-    to_displayitem((Point::zero(), FrameItem::Text(text())));
+fn visible_text_uses_registered_monochrome_font_key() {
+    let text = text();
+    let list = convert_item((Point::zero(), FrameItem::Text(text.clone())));
+    let all = items(&list);
+    let DisplayItem::Text(item) = all[0] else {
+        panic!("text primitive")
+    };
+    assert_eq!(item.font_key, font_key(&text));
+    assert_eq!(
+        item.glyph_options.unwrap().render_mode,
+        webrender::api::FontRenderMode::Mono
+    );
 }
 
 #[test]
 fn empty_text_and_tags_emit_no_primitives() {
     let mut empty = text();
     empty.glyphs.clear();
-    assert!(items(&to_displayitem((Point::zero(), FrameItem::Text(empty)))).is_empty());
+    assert!(items(&convert_item((Point::zero(), FrameItem::Text(empty)))).is_empty());
     let tag = Tag::End(
         Location::new(1),
         0,
@@ -437,5 +435,87 @@ fn empty_text_and_tags_emit_no_primitives() {
             tagged: false,
         },
     );
-    assert!(items(&to_displayitem((Point::zero(), FrameItem::Tag(tag)))).is_empty());
+    assert!(items(&convert_item((Point::zero(), FrameItem::Tag(tag)))).is_empty());
+}
+
+fn document(source: &str) -> PagedDocument {
+    let typesetter = crate::editor::Typesetter::new();
+    let mut docs = vec![crate::editor::Document::new(
+        "render-test.typ".into(),
+        source.into(),
+    )];
+    typesetter.compile(&mut docs, 0);
+    assert!(docs[0].error.is_empty(), "{}", docs[0].error);
+    docs.remove(0).rendered.unwrap()
+}
+
+#[test]
+fn all_pages_append_to_the_callers_builder_and_pipeline() {
+    let doc =
+        document("#set page(width: 100pt, height: 100pt, margin: 10pt)\nFirst#pagebreak()Second");
+    assert_eq!(doc.pages().len(), 2);
+    let pipeline = PipelineId(19, 42);
+    let mut builder = DisplayListBuilder::new(pipeline);
+    builder.begin();
+    let rect = LayoutRect::from_origin_and_size(LayoutPoint::zero(), LayoutSize::new(5.0, 5.0));
+    builder.push_rect(
+        &CommonItemProperties::new(rect, SpaceAndClipInfo::root_scroll(pipeline)),
+        rect,
+        ColorF::BLACK,
+    );
+    to_display_list(&mut builder, doc);
+    let (id, list) = builder.end();
+    assert_eq!(id, pipeline);
+    assert!(matches!(items(&list)[0], DisplayItem::Rectangle(_)));
+    let all = items(&list);
+    assert_eq!(
+        all.iter()
+            .filter(|i| matches!(i, DisplayItem::Text(_)))
+            .count(),
+        2
+    );
+    assert!(
+        transforms(&list)
+            .iter()
+            .any(|t| (t.m42 - (100.0 * 4.0 / 3.0 + PAGE_GAP)).abs() < 0.001)
+    );
+}
+
+#[test]
+fn resource_uploads_match_display_items_are_cached_and_retired() {
+    use webrender::{ResourceUpdate, Transaction};
+    let doc = document("Hello $x^2$ #circle(radius: 8pt, fill: black) #rotate(20deg)[Turn]");
+    let mut resources = Resources::default();
+    let mut txn = Transaction::new();
+    resources.update(&mut txn, &doc);
+    let mut builder = DisplayListBuilder::new(PipelineId(0, 1));
+    builder.begin();
+    to_display_list(&mut builder, doc.clone());
+    for item in items(&builder.end().1) {
+        match item {
+            DisplayItem::Text(text) => assert!(txn.resource_updates.iter().any(|r| matches!(r,
+                ResourceUpdate::AddFontInstance(f) if f.key == text.font_key && f.options.unwrap().render_mode == webrender::api::FontRenderMode::Mono))),
+            DisplayItem::Image(image) => assert!(txn.resource_updates.iter().any(|r| matches!(r, ResourceUpdate::AddImage(i) if i.key == image.image_key))),
+            _ => {}
+        }
+    }
+    let mut again = Transaction::new();
+    resources.update(&mut again, &doc);
+    assert!(again.resource_updates.is_empty());
+    resources.update(
+        &mut again,
+        &PagedDocument::new(Default::default(), Default::default()),
+    );
+    assert!(
+        again
+            .resource_updates
+            .iter()
+            .any(|r| matches!(r, ResourceUpdate::DeleteFont(_)))
+    );
+    assert!(
+        again
+            .resource_updates
+            .iter()
+            .any(|r| matches!(r, ResourceUpdate::DeleteImage(_)))
+    );
 }

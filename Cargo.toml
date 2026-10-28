@@ -6,16 +6,31 @@ rust-version = "1.95"
 description = "A place for creativity."
 publish = false
 
+[[test]]
+name = "compositor"
+harness = false
+
 [dependencies]
+comemo = "0.5.1"
 confy = "1"
 dom_smoothie = "0.18.2"
+# Retained for fonts.rs's egui import and the standalone ligature example.
 eframe = { version = "0.37.0", default-features = false, features = ["clipboard", "glow", "wayland", "x11"] }
+egui_glow = { version = "0.37.0", features = ["winit", "clipboard", "wayland", "x11"] }
+gleam = "0.15.1"
+glutin = "0.32.3"
+glutin-winit = "0.5.0"
 freetype-sys = "0.23"
 pango = { version = "0.21", features = ["v1_56"] }
 ropey = "1.6.1"
 tempfile = "3"
 typst = "0.15.1"
+typst-layout = "0.15.1"
+typst-assets = { version = "0.15.1", features = ["fonts"] }
+typst-svg = "0.15.1"
+resvg = "0.47"
 webrender = "0.70.0"
+winit = { version = "0.30.13", default-features = false, features = ["rwh_06", "wayland", "x11"] }
 yeslogic-fontconfig-sys = "6.0"
 
 [build-dependencies]

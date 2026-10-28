@@ -1,36 +1,70 @@
+mod resources;
+pub use resources::Resources;
+use resources::{font_key, needs_raster, push_raster};
+use typst::layout::{Frame, GroupItem};
+use typst_layout::{Page, PagedDocument};
+
+pub const PAGE_GAP: f32 = 16.0;
+
 use typst::layout::{Abs, FrameItem, Point, Ratio, Rect, Size, Transform};
 use typst::text::TextItem;
 use typst::visualize::{
-    Color, Curve, CurveItem, Geometry, Gradient, Image, ImageScaling, LineCap, LineJoin, Paint,
-    RelativeTo,
+    Color, Curve, CurveItem, Geometry, Gradient, LineCap, LineJoin, Paint, RelativeTo,
 };
 use webrender::api::units::{
     LayoutPoint, LayoutRect, LayoutSideOffsets, LayoutSize, LayoutTransform,
 };
 use webrender::api::{
-    AlphaType, BorderDetails, BorderRadius, BorderSide, BorderStyle, BuiltDisplayList, ClipChainId,
-    ClipMode, ColorF, CommonItemProperties, ComplexClipRegion, DisplayListBuilder, ExtendMode,
-    FontInstanceKey, GlyphInstance, GradientStop, ImageKey, ImageRendering, NormalBorder,
-    PipelineId, ReferenceFrameKind, SpaceAndClipInfo, TransformStyle,
+    AlphaType, BorderDetails, BorderRadius, BorderSide, BorderStyle, ClipChainId, ClipMode, ColorF,
+    CommonItemProperties, ComplexClipRegion, DisplayListBuilder, ExtendMode, FontInstanceKey,
+    GlyphInstance, GradientStop, ImageKey, ImageRendering, NormalBorder, ReferenceFrameKind,
+    SpaceAndClipInfo, TransformStyle,
 };
 
-/// Uses CSS pixels (96 px = 72 pt).
-///
-/// Links and introspection tags have no visual content and emit no primitives.
-/// Wrap items in their containing group to resolve parent-relative paints.
-pub fn to_displayitem((location, frame_item): (Point, FrameItem)) -> BuiltDisplayList {
-    let mut builder = DisplayListBuilder::new(PipelineId(0, 0));
-    builder.begin();
-    push_item(
-        &mut builder,
-        location,
-        &frame_item,
-        State {
-            space: SpaceAndClipInfo::root_scroll(PipelineId(0, 0)),
-            parent: None,
-        },
-    );
-    builder.end().1
+/// Append all pages in CSS pixels (96 px = 72 pt), stacked vertically.
+/// The caller owns begin/end, resource uploads, and the enclosing viewport.
+pub fn to_display_list(builder: &mut DisplayListBuilder, document: PagedDocument) {
+    let mut y = 0.0;
+    for page in document.pages() {
+        let frame = page_frame(page);
+        push_item(
+            builder,
+            Point::new(Abs::zero(), Abs::pt(y * 0.75)),
+            &FrameItem::Group(GroupItem::new(frame)),
+            State {
+                space: SpaceAndClipInfo::root_scroll(builder.pipeline_id),
+                parent: None,
+            },
+        );
+        y += f64::from(px(page.frame.height()) + PAGE_GAP);
+    }
+}
+
+fn page_frame(page: &Page) -> Frame {
+    let mut frame = page.frame.clone();
+    if let Some(fill) = page.fill_or_white() {
+        frame.prepend(
+            Point::zero(),
+            FrameItem::Shape(
+                Geometry::Rect(frame.size()).filled(fill),
+                typst::syntax::Span::detached(),
+            ),
+        );
+    }
+    frame
+}
+
+fn group_parent(
+    parent: Option<(Size, Transform)>,
+    group: &GroupItem,
+    transform: Transform,
+) -> Option<(Size, Transform)> {
+    match parent {
+        Some((size, to_parent)) if group.frame.kind().is_soft() => {
+            Some((size, to_parent.pre_concat(transform)))
+        }
+        _ => Some((group.frame.size(), Transform::identity())),
+    }
 }
 
 #[derive(Clone, Copy)]
@@ -41,21 +75,20 @@ struct State {
 }
 
 fn push_item(builder: &mut DisplayListBuilder, location: Point, item: &FrameItem, state: State) {
+    if needs_raster(item) {
+        push_raster(builder, location, item, state);
+        return;
+    }
     match item {
         FrameItem::Group(group) => {
             let transform =
                 Transform::translate(location.x, location.y).pre_concat(group.transform);
             let mut child = state;
             child.space.spatial_id = reference_frame(builder, state.space, matrix(transform));
-            child.parent = match state.parent {
-                Some((size, to_parent)) if group.frame.kind().is_soft() => {
-                    Some((size, to_parent.pre_concat(transform)))
-                }
-                _ => Some((group.frame.size(), Transform::identity())),
-            };
+            child.parent = group_parent(state.parent, group, transform);
             if let Some(curve) = &group.clip {
                 let Some(rect) = curve_rect(curve) else {
-                    todo!("non-rectangular group clips require a registered image mask");
+                    unreachable!("non-rectangular group clips require a registered image mask");
                 };
                 let clip =
                     builder.define_clip_rect(child.space.spatial_id, bounds(Point::zero(), rect));
@@ -71,10 +104,12 @@ fn push_item(builder: &mut DisplayListBuilder, location: Point, item: &FrameItem
                 return;
             }
             if text.stroke.is_some() {
-                todo!("stroked text requires glyph outlines rendered to a registered resource");
+                unreachable!(
+                    "stroked text requires glyph outlines rendered to a registered resource"
+                );
             }
             let Paint::Solid(fill) = &text.fill else {
-                todo!("gradient or tiled text requires a registered glyph mask");
+                unreachable!("gradient or tiled text requires a registered glyph mask");
             };
             let rect = text.bbox();
             if ![rect.min.x, rect.min.y, rect.max.x, rect.max.y]
@@ -92,7 +127,10 @@ fn push_item(builder: &mut DisplayListBuilder, location: Point, item: &FrameItem
                 &glyphs,
                 font_key(text),
                 color(fill),
-                None,
+                Some(webrender::api::GlyphOptions {
+                    render_mode: webrender::api::FontRenderMode::Mono,
+                    flags: webrender::api::FontInstanceFlags::empty(),
+                }),
             );
         }
         FrameItem::Shape(shape, _) => match &shape.geometry {
@@ -108,14 +146,18 @@ fn push_item(builder: &mut DisplayListBuilder, location: Point, item: &FrameItem
                         return;
                     }
                     if stroke.dash.is_some() {
-                        todo!("dashed rectangle outlines require a rasterized path resource");
+                        unreachable!(
+                            "dashed rectangle outlines require a rasterized path resource"
+                        );
                     }
                     let radius = match stroke.join {
                         LineJoin::Round => px(stroke.thickness) / 2.0,
                         LineJoin::Miter if stroke.miter_limit.get() >= std::f64::consts::SQRT_2 => {
                             0.0
                         }
-                        _ => todo!("beveled rectangle outlines require a rasterized path resource"),
+                        _ => unreachable!(
+                            "beveled rectangle outlines require a rasterized path resource"
+                        ),
                     };
                     let outer = bounds(location, shape.bbox(true));
                     let width = px(stroke.thickness);
@@ -134,7 +176,7 @@ fn push_item(builder: &mut DisplayListBuilder, location: Point, item: &FrameItem
                                 top: side,
                                 bottom: side,
                                 radius: BorderRadius::uniform(radius),
-                                do_aa: true,
+                                do_aa: false,
                             }),
                         );
                     } else {
@@ -236,7 +278,7 @@ fn push_item(builder: &mut DisplayListBuilder, location: Point, item: &FrameItem
                         .windows(2)
                         .any(|pair| pair[1].0 - pair[0].1 < 2.0 * half)
                 {
-                    todo!("overlapping round dash caps require a registered path mask");
+                    unreachable!("overlapping round dash caps require a registered path mask");
                 }
                 for (start, end) in segments {
                     let extension = if stroke.cap == LineCap::Butt {
@@ -275,25 +317,13 @@ fn push_item(builder: &mut DisplayListBuilder, location: Point, item: &FrameItem
                         state,
                     );
                 } else {
-                    todo!("arbitrary paths require rasterization to a registered image or mask");
+                    unreachable!(
+                        "arbitrary paths require rasterization to a registered image or mask"
+                    );
                 }
             }
         },
-        FrameItem::Image(image, size, _) => {
-            let bounds = bounds(location, Rect::from_pos_size(Point::zero(), *size));
-            let rendering = match image.scaling().unwrap_or(ImageScaling::Smooth) {
-                ImageScaling::Smooth => ImageRendering::Auto,
-                ImageScaling::Pixelated => ImageRendering::Pixelated,
-            };
-            builder.push_image(
-                &CommonItemProperties::new(bounds, state.space),
-                bounds,
-                rendering,
-                AlphaType::PremultipliedAlpha,
-                image_key(image),
-                ColorF::WHITE,
-            );
-        }
+        FrameItem::Image(..) => unreachable!("images use registered raster resources"),
         FrameItem::Link(_, _) | FrameItem::Tag(_) => {}
     }
 }
@@ -317,14 +347,6 @@ fn text_glyphs(location: Point, text: &TextItem) -> Vec<GlyphInstance> {
         .collect()
 }
 
-fn font_key(_text: &TextItem) -> FontInstanceKey {
-    todo!("register the Typst font, its variations, and its size in CSS pixels with WebRender")
-}
-
-fn image_key(_image: &Image) -> ImageKey {
-    todo!("register the decoded image as premultiplied RGBA with WebRender")
-}
-
 fn paint_rect(
     builder: &mut DisplayListBuilder,
     state: State,
@@ -346,7 +368,9 @@ fn paint_rect(
             return;
         }
         Paint::Gradient(gradient) => gradient,
-        Paint::Tiling(_) => todo!("tilings require rendering and registering a tile resource"),
+        Paint::Tiling(_) => {
+            unreachable!("tilings require rendering and registering a tile resource")
+        }
     };
     let (mut transform, size) = match gradient.unwrap_relative(false) {
         RelativeTo::Self_ => (own, own_size),
@@ -407,7 +431,9 @@ fn paint_rect(
         }
         Gradient::Radial(radial) => {
             if radial.focal_center != radial.center {
-                todo!("off-center radial gradients require a registered rasterized paint resource");
+                unreachable!(
+                    "off-center radial gradients require a registered rasterized paint resource"
+                );
             }
             let radius = radial.radius.get() as f32;
             let inner = radial.focal_radius.get() as f32;
@@ -484,7 +510,7 @@ fn dash_segments(length: f32, pattern: &[f32], phase: f32) -> Vec<(f32, f32)> {
         pattern.iter().all(|v| v.is_finite() && *v >= 0.0),
         "invalid dash lengths"
     );
-    let count = if pattern.len() % 2 == 0 {
+    let count = if pattern.len().is_multiple_of(2) {
         pattern.len()
     } else {
         2 * pattern.len()
@@ -597,7 +623,7 @@ fn box_transform(origin: Point, size: Size) -> LayoutTransform {
     ))
 }
 
-fn px(length: Abs) -> f32 {
+pub fn px(length: Abs) -> f32 {
     (length.to_pt() * 96.0 / 72.0) as f32
 }
 
