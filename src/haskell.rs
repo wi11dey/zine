@@ -1,4 +1,4 @@
-use typst::syntax::ast::{AstNode, Expr, MathAccess, MathTextKind};
+use typst::syntax::ast::{Expr, MathAccess, MathTextKind};
 
 // TODO produce LINE and COLUMN pragmas as well
 pub fn push_haskell(haskell: &mut String, math: Expr) -> Result<(), String> {
