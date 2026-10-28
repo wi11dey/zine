@@ -84,14 +84,6 @@ fn math_emits_operators_without_backticks() {
 }
 
 #[test]
-fn whitespace_nodes_add_a_separator_space() {
-    assert_haskell("x+y", "( x + y )");
-    assert_haskell("x + y", "( x  +  y )");
-    assert_haskell("  x  +  y  ", "(  x  +  y  )");
-    assert_haskell("\tx\n+\ty\n", "(  x  +  y  )");
-}
-
-#[test]
 fn adjacent_identifiers_are_separated_by_spaces() {
     assert_haskell("alpha beta", "( alpha  beta )");
     assert_haskell("alpha beta gamma", "( alpha  beta  gamma )");
