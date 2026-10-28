@@ -8,3 +8,4 @@ import Symtegration
 
 data Argument = Positional Expression
               | Named String Expression
+              | Semicolon
