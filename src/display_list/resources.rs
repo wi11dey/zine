@@ -42,12 +42,11 @@ impl Resources {
     pub fn update(&mut self, txn: &mut Transaction, document: &PagedDocument) {
         let mut used = Self::default();
         for page in document.pages() {
-            let frame = page_frame(page);
             self.visit(
                 txn,
                 &mut used,
                 Point::zero(),
-                &FrameItem::Group(GroupItem::new(frame)),
+                &FrameItem::Group(GroupItem::new(page.frame.clone())),
                 None,
             );
         }

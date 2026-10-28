@@ -3,11 +3,11 @@ mod editor;
 mod fonts;
 mod haskell;
 mod render;
-mod ui;
+mod gui;
 
 use render::{Graphics, Wake};
 use std::time::{Duration, Instant};
-use ui::{Zine, configure};
+use gui::{Zine, configure};
 use winit::{
     application::ApplicationHandler,
     event::{StartCause, WindowEvent},

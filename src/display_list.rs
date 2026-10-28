@@ -26,11 +26,10 @@ use webrender::api::{
 pub fn to_display_list(builder: &mut DisplayListBuilder, document: PagedDocument) {
     let mut y = 0.0;
     for page in document.pages() {
-        let frame = page_frame(page);
         push_item(
             builder,
             Point::new(Abs::zero(), Abs::pt(y * 0.75)),
-            &FrameItem::Group(GroupItem::new(frame)),
+            &FrameItem::Group(GroupItem::new(page.frame.clone())),
             State {
                 space: SpaceAndClipInfo::root_scroll(builder.pipeline_id),
                 parent: None,
@@ -38,20 +37,6 @@ pub fn to_display_list(builder: &mut DisplayListBuilder, document: PagedDocument
         );
         y += f64::from(px(page.frame.height()) + PAGE_GAP);
     }
-}
-
-fn page_frame(page: &Page) -> Frame {
-    let mut frame = page.frame.clone();
-    if let Some(fill) = page.fill_or_white() {
-        frame.prepend(
-            Point::zero(),
-            FrameItem::Shape(
-                Geometry::Rect(frame.size()).filled(fill),
-                typst::syntax::Span::detached(),
-            ),
-        );
-    }
-    frame
 }
 
 fn group_parent(

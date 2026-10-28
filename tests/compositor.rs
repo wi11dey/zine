@@ -7,13 +7,13 @@ mod app {
     pub mod editor;
     pub mod fonts;
     pub mod render;
-    pub mod ui;
+    pub mod gui;
 }
-use app::{display_list, editor, fonts, render, ui};
+use app::{display_list, editor, fonts, render, gui};
 use editor::Document;
 use eframe::egui::{self, Color32, Rect, pos2, vec2};
 use render::{Graphics, Wake};
-use ui::{Zine, configure};
+use gui::{Zine, configure};
 use winit::{
     application::ApplicationHandler,
     event::WindowEvent,
