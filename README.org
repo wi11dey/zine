@@ -5,6 +5,20 @@
 * Source Layout
 
  - =src= contains the Rust source for the editor
+   - =src/main.rs=: winit event loop. =src/ui.rs= keeps the original egui tabs
+     and scrollbar.
+   - =src/render.rs=: one glutin GL context; WebRender paints the window first,
+     then =egui_glow= paints the UI directly into the same framebuffer.
+   - =src/editor.rs=: one persistent Source per tab, the Typst World, and editing.
+     Each mutation uses Source::edit, compiles synchronously, submits a display
+     list, and waits for WebRender's frame before painting. Fonts are bundled
+     Typst fonts plus the existing Zine fonts. Local imports can read other tabs;
+     package downloads and datetime.today are not configured.
+   - =src/display_list.rs=: append pages to a caller-owned DisplayListBuilder.
+     Its resource module registers monochrome font instances and images. Paths,
+     complex paints, and rotated groups use individual crisp SVG image resources;
+     the complete WebRender and egui layers are never rendered to intermediate
+     textures. Scrolling reuses the document's display list.
  - =haskell= contains the Haskell source for
    - the internal mathematics language, =zine-math=
    - a foreign function interface for Rust to call Pandoc, for viewing e-books
@@ -12,32 +26,3 @@
 * Naming
 
 Zine Is Not Emacs.
-
-* Running the editor
-
-=cargo run -- [document.typ ...]= opens local documents. With no arguments,
-the existing =main.typ= and =references.bib= tabs are used. Click rendered text
-to place the caret; type Typst, use Shift with arrows to select, and use the
-platform copy/paste, select-all, and undo/redo shortcuts. Edits are in memory;
-file saving is not implemented. Incomplete Typst keeps the last successful
-layout and shows the compiler error until the source becomes valid again.
-
- - =src/main.rs=: winit event loop. =src/ui.rs= keeps the original egui tabs
-   and scrollbar.
- - =src/render.rs=: one glutin GL context; WebRender paints the window first,
-   then egui_glow paints the UI directly into the same framebuffer.
- - =src/editor.rs=: one persistent Source per tab, the Typst World, and editing.
-   Each mutation uses Source::edit, compiles synchronously, submits a display
-   list, and waits for WebRender's frame before painting. Fonts are bundled
-   Typst fonts plus the existing Zine fonts. Local imports can read other tabs;
-   package downloads and datetime.today are not configured.
- - =src/display_list.rs=: append pages to a caller-owned DisplayListBuilder.
-   Its resource module registers monochrome font instances and images. Paths,
-   complex paints, and rotated groups use individual crisp SVG image resources;
-   the complete WebRender and egui layers are never rendered to intermediate
-   textures. Scrolling reuses the document's display list.
-
-=cargo test --all-targets= runs the unit tests. To exercise the real window,
-=ZINE_GL_TEST=1 cargo test --test compositor= checks composition, monochrome
-pixels, scrolling, keyboard input, and tab switching. It requires a desktop
-session. =ZINE_GL_CAPTURE=/tmp/zine.png= optionally captures its first frame.
