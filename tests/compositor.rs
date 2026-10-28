@@ -6,13 +6,13 @@ mod app {
     pub mod display_list;
     pub mod manuscript;
     pub mod fonts;
-    pub mod render;
+    pub mod webrender;
     pub mod gui;
 }
-use app::{display_list, manuscript, fonts, render, gui};
+use app::{display_list, manuscript, fonts, webrender, gui};
 use manuscript::Document;
 use eframe::egui::{self, Color32, Rect, pos2, vec2};
-use render::{Graphics, Wake};
+use webrender::{Graphics, Wake};
 use gui::{Zine, configure};
 use winit::{
     application::ApplicationHandler,

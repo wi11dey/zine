@@ -2,10 +2,10 @@ mod display_list;
 mod manuscript;
 mod fonts;
 mod haskell;
-mod render;
+mod webrender;
 mod gui;
 
-use render::{Graphics, Wake};
+use webrender::{Graphics, Wake};
 use std::time::{Duration, Instant};
 use gui::{Zine, configure};
 use winit::{

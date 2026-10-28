@@ -11,7 +11,7 @@ const SCROLLBAR_WIDTH: f32 = 9.0;
 
 use crate::manuscript::{Manuscript, Typesetter};
 use crate::fonts;
-use crate::render::{WebRenderer, View};
+use crate::webrender::{WebRenderer, View};
 
 pub(crate) fn configure(ctx: &egui::Context) {
     ctx.tessellation_options_mut(|options| {
