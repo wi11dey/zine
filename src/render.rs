@@ -61,7 +61,7 @@ impl api::RenderNotifier for Notifier {
 pub struct Graphics {
     pub window: Window,
     pub egui: EguiGlow,
-    pub render: DocumentRenderer,
+    pub render: WebRenderer,
     gl: Arc<glow::Context>,
     surface: Surface<WindowSurface>,
     context: PossiblyCurrentContext,
@@ -149,7 +149,7 @@ impl Graphics {
         .expect("initialize WebRender");
         let api = sender.create_api();
         let document = api.add_document(DeviceIntSize::new(size.width as i32, size.height as i32));
-        let render = DocumentRenderer {
+        let render = WebRenderer {
             renderer: Some(renderer),
             api,
             document,
@@ -240,7 +240,7 @@ pub struct View {
     pub size: [u32; 2],
 }
 
-pub struct DocumentRenderer {
+pub struct WebRenderer {
     renderer: Option<Renderer>,
     api: RenderApi,
     document: api::DocumentId,
@@ -251,7 +251,7 @@ pub struct DocumentRenderer {
     content_size: LayoutSize,
 }
 
-impl DocumentRenderer {
+impl WebRenderer {
     /// A new document is supplied on every edit/tab switch; scrolling only
     /// rebuilds the tiny enclosing viewport list, reusing the document pipeline.
     pub fn submit(&mut self, document: Option<&PagedDocument>, view: View) {

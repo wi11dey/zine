@@ -11,7 +11,7 @@ const SCROLLBAR_WIDTH: f32 = 9.0;
 
 use crate::manuscript::{Manuscript, Typesetter};
 use crate::fonts;
-use crate::render::{DocumentRenderer, View};
+use crate::render::{WebRenderer, View};
 
 pub(crate) fn configure(ctx: &egui::Context) {
     ctx.tessellation_options_mut(|options| {
@@ -111,7 +111,7 @@ impl Zine {
         }
     }
 
-    pub(crate) fn ui(&mut self, ui: &mut Ui, render: &mut DocumentRenderer, size: [u32; 2]) {
+    pub(crate) fn ui(&mut self, ui: &mut Ui, render: &mut WebRenderer, size: [u32; 2]) {
         Panel::top("tabs")
             .exact_size(TAB_HEIGHT)
             .show_separator_line(false)
