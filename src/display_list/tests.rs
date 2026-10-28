@@ -439,8 +439,8 @@ fn empty_text_and_tags_emit_no_primitives() {
 }
 
 fn document(source: &str) -> PagedDocument {
-    let typesetter = crate::editor::Typesetter::new();
-    let mut docs = vec![crate::editor::Document::new(
+    let typesetter = crate::manuscript::Typesetter::new();
+    let mut docs = vec![crate::manuscript::Manuscript::new(
         "render-test.typ".into(),
         source.into(),
     )];

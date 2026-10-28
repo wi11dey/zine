@@ -13,7 +13,7 @@ use typst_layout::PagedDocument;
 
 use crate::display_list::{PAGE_GAP, px};
 
-pub struct Document {
+pub struct Manuscript {
     pub name: String,
     pub source: Source,
     pub rendered: Option<PagedDocument>,
@@ -39,7 +39,7 @@ struct Edit {
     after: String,
 }
 
-impl Document {
+impl Manuscript {
     pub fn new(name: String, text: String) -> Self {
         let id = RootedPath::new(VirtualRoot::Project, VirtualPath::new(&name).unwrap()).intern();
         Self {
@@ -392,7 +392,7 @@ impl Typesetter {
         }
     }
 
-    pub fn compile(&self, documents: &mut [Document], active: usize) {
+    pub fn compile(&self, documents: &mut [Manuscript], active: usize) {
         let world = EditorWorld {
             typesetter: self,
             documents,
@@ -421,7 +421,7 @@ impl Typesetter {
 
 struct EditorWorld<'a> {
     typesetter: &'a Typesetter,
-    documents: &'a [Document],
+    documents: &'a [Manuscript],
     active: usize,
 }
 

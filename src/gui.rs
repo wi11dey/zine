@@ -9,7 +9,7 @@ const BACKGROUND: Color32 = Color32::WHITE;
 const TAB_HEIGHT: f32 = 36.0;
 const SCROLLBAR_WIDTH: f32 = 9.0;
 
-use crate::editor::{Document, Typesetter};
+use crate::manuscript::{Manuscript, Typesetter};
 use crate::fonts;
 use crate::render::{DocumentRenderer, View};
 
@@ -79,7 +79,7 @@ fn paint_tab(painter: &Painter, rect: Rect, active: bool) {
 }
 
 pub(crate) struct Zine {
-    pub(crate) documents: Vec<Document>,
+    pub(crate) documents: Vec<Manuscript>,
     pub(crate) active: usize,
     scrollbar_grab: f32,
     typesetter: Typesetter,
@@ -100,7 +100,7 @@ impl Zine {
                 .into_iter()
                 .map(|name| {
                     let text = std::fs::read_to_string(&name).unwrap_or_default();
-                    Document::new(name, text)
+                    Manuscript::new(name, text)
                 })
                 .collect(),
             active: 0,
@@ -191,7 +191,7 @@ impl Zine {
                             .on_hover_text("New document")
                             .clicked()
                         {
-                            self.documents.push(Document::new(
+                            self.documents.push(Manuscript::new(
                                 format!("untitled-{}.typ", self.documents.len() - 1),
                                 String::new(),
                             ));

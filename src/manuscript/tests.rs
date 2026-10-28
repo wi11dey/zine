@@ -15,8 +15,8 @@ fn edits_preserve_source_identity_unicode_and_tabs() {
     let ctx = egui::Context::default();
     let typesetter = Typesetter::new();
     let mut docs = vec![
-        Document::new("main.typ".into(), String::new()),
-        Document::new("other.typ".into(), "Other tab".into()),
+        Manuscript::new("main.typ".into(), String::new()),
+        Manuscript::new("other.typ".into(), "Other tab".into()),
     ];
     let id = docs[0].source.id();
     assert!(docs[0].event(&Event::Text("Hello é🙂".into()), &ctx));
@@ -40,7 +40,7 @@ fn edits_preserve_source_identity_unicode_and_tabs() {
 fn incomplete_typst_keeps_last_layout_and_recovers() {
     let ctx = egui::Context::default();
     let typesetter = Typesetter::new();
-    let mut docs = vec![Document::new("main.typ".into(), "Hello".into())];
+    let mut docs = vec![Manuscript::new("main.typ".into(), "Hello".into())];
     typesetter.compile(&mut docs, 0);
     let before = typst::utils::hash128(docs[0].rendered.as_ref().unwrap());
     docs[0].move_cursor(5, false);
@@ -63,7 +63,7 @@ fn incomplete_typst_keeps_last_layout_and_recovers() {
 #[test]
 fn click_maps_ligatures_and_utf8_back_to_source() {
     let typesetter = Typesetter::new();
-    let mut docs = vec![Document::new("main.typ".into(), "office café".into())];
+    let mut docs = vec![Manuscript::new("main.typ".into(), "office café".into())];
     typesetter.compile(&mut docs, 0);
     let doc = &mut docs[0];
     assert!(doc.error.is_empty(), "{}", doc.error);
@@ -82,7 +82,7 @@ fn click_maps_ligatures_and_utf8_back_to_source() {
 #[test]
 fn undo_redo_and_selection_use_incremental_edits() {
     let ctx = egui::Context::default();
-    let mut doc = Document::new("main.typ".into(), "abc".into());
+    let mut doc = Manuscript::new("main.typ".into(), "abc".into());
     doc.move_cursor(3, false);
     doc.move_cursor(1, true);
     assert!(doc.event(&Event::Paste("é".into()), &ctx));
@@ -104,8 +104,8 @@ fn undo_redo_and_selection_use_incremental_edits() {
 fn imports_see_other_tabs_in_memory() {
     let typesetter = Typesetter::new();
     let mut docs = vec![
-        Document::new("main.typ".into(), "#include \"other.typ\"".into()),
-        Document::new("other.typ".into(), "From another tab".into()),
+        Manuscript::new("main.typ".into(), "#include \"other.typ\"".into()),
+        Manuscript::new("other.typ".into(), "From another tab".into()),
     ];
     typesetter.compile(&mut docs, 0);
     assert!(docs[0].error.is_empty(), "{}", docs[0].error);

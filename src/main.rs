@@ -1,5 +1,5 @@
 mod display_list;
-mod editor;
+mod manuscript;
 mod fonts;
 mod haskell;
 mod render;
